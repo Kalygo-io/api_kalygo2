@@ -1,0 +1,16 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateVpc",
+                "sts:*",
+                "ec2:DeleteTags",
+                "ec2:CreateTags"
+            ],
+            "Resource": "*"
+        }
+    ]
+}

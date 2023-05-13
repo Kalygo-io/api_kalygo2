@@ -1,0 +1,11 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": "ec2:CreateInternetGateway",
+            "Resource": "arn:aws:ec2:us-east-1:333427308013:internet-gateway/*"
+        }
+    ]
+}

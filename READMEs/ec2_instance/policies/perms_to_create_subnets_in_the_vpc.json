@@ -1,0 +1,14 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": "ec2:CreateSubnet",
+            "Resource": [
+                "arn:aws:ec2:us-east-1:333427308013:subnet/*",
+                "arn:aws:ec2:us-east-1:333427308013:vpc/vpc-0ddf64f712f5c8dd1"
+            ]
+        }
+    ]
+}

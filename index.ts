@@ -1,3 +1,4 @@
+require("module-alias/register");
 import app from "./server";
 
 const PORT = 4000;

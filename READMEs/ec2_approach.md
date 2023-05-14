@@ -10,3 +10,5 @@
 2. install software (lookin good)
 3. install db (looking good)
 4. setup alb
+
+TIP: ssh -i "*.pem" <USER_NAME>@<IP_ADDRESS>

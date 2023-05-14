@@ -3,7 +3,7 @@ sudo -u postgres psql
 ## TODO
 
 CREATE ROLE your-username WITH PASSWORD 'password';
-CREATE DATABASE database_name
+CREATE DATABASE database_name;
 GRANT ALL PRIVILEGES ON DATABASE database_name TO your-username;
 REVOKE DROP ON db FROM user; <!-- this did not work -->
 \l

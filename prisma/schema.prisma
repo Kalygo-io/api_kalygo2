@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Film {
-  code Int @id @default(autoincrement())
+  code  Int    @id @default(autoincrement())
   title String
-  kind String
+  kind  String
 }

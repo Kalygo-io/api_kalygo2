@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 
-import prisma from "db/prisma_client";
+import prisma from "@db/prisma_client";
 
 export interface ResponseBodyDto {
   message: any;

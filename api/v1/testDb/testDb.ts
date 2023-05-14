@@ -1,5 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 
+import prisma from "db/prisma_client";
+
 export interface ResponseBodyDto {
   message: any;
 }
@@ -10,8 +12,11 @@ router.get(
   "/testDb",
   async function (req: Request, res: Response, next: NextFunction) {
     try {
-      req.i18n.reloadResources();
-      res.status(200).send("OK");
+      //   const results = await prisma.$queryRaw`SELECT * FROM film`;
+      const allFilms = await prisma.film.findMany();
+      console.log(allFilms);
+
+      res.status(200).send(allFilms);
     } catch (e) {
       throw e;
     }

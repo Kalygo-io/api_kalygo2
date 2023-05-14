@@ -20,6 +20,8 @@ open -a Docker
         GRANT ALL PRIVILEGES ON DATABASE kalygo TO kalygo;
         GRANT ALL ON SCHEMA public TO kalygo;
         ALTER ROLE "kalygo" WITH LOGIN; <-- if necessary -->
+
+        ALTER USER kalygo CREATEDB;
         \q
 
     in shell: 
@@ -39,3 +41,8 @@ open -a Docker
 docker run -it --rm postgres psql -h 172.17.0.2 -U postgres -d kalygo
 docker run -it --rm postgres psql -h 172.17.0.2 -U kalygo -d kalygo
 psql -h localhost -U username -d database_name
+
+## After launching PostgreSQL container
+
+- ALTER USER kalygo CREATEDB; <!-- for the prisma shadow db -->
+- npx prisma migrate dev --name init

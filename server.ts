@@ -42,7 +42,10 @@ app.set("view engine", "pug");
 app.use(requestLogger);
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin:
+      process.env.NODE_ENV === "development"
+        ? ["http://localhost:3000", "http://localhost:3001"]
+        : ["https://kalygo2.io"],
   })
 );
 app.use("/locales", express.static("locales"));

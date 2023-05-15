@@ -1,8 +1,19 @@
-SELECT 
-   table_name, 
-   column_name, 
-   data_type 
-FROM 
+##
+
+SELECT
+   table_name,
+   column_name,
+   data_type
+FROM
    information_schema.columns
-WHERE 
+WHERE
    table_name = 'city';
+
+##
+
+https://www.prisma.io/docs/reference/database-reference/connection-urls
+https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding
+
+##
+
+select * from "Account"

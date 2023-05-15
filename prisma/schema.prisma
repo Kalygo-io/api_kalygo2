@@ -15,3 +15,16 @@ model Film {
   title String
   kind  String
 }
+
+model Account {
+  id                     Int     @id @default(autoincrement())
+  email                  String
+  firstName              String?
+  lastName               String?
+  alias                  String?
+  phone                  String?
+  passwordHash           String?
+  resetPasswordToken     String?
+  emailVerificationToken String?
+  emailVerified          Boolean @default(false)
+}

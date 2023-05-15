@@ -42,7 +42,7 @@ app.set("view engine", "pug");
 app.use(requestLogger);
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "http://localhost:3001"],
   })
 );
 app.use("/locales", express.static("locales"));

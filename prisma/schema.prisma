@@ -28,3 +28,8 @@ model Account {
   emailVerificationToken String?
   emailVerified          Boolean @default(false)
 }
+
+model Feedback {
+  id       Int    @id @default(autoincrement())
+  feedback String @unique
+}

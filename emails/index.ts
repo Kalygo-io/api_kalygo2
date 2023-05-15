@@ -1,3 +1,3 @@
-import { generateResetPasswordConfigSes } from "./resetPassword";
+import { generateResetPassword_SES_Config } from "./resetPassword";
 
-export { generateResetPasswordConfigSes };
+export { generateResetPassword_SES_Config };

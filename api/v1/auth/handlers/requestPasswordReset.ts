@@ -3,10 +3,9 @@ import { Request, Response, NextFunction } from "express";
 import { SESClient, SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { v4 } from "uuid";
 
-import { generateResetPasswordConfigSes } from "@emails/resetPassword";
+import { generateResetPassword_SES_Config } from "@emails/resetPassword";
 
 const REGION = process.env.REGION;
-
 const sesClient = new SESClient({ region: REGION });
 
 export async function requestPasswordReset(
@@ -28,7 +27,7 @@ export async function requestPasswordReset(
       */
       const RESET_LINK = `${process.env.FRONTEND_HOSTNAME}/resetPassword/${UUID}`;
       // and send the email
-      const emailConfig = generateResetPasswordConfigSes(email, RESET_LINK);
+      const emailConfig = generateResetPassword_SES_Config(email, RESET_LINK);
       await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
       res.status(200).send();
     } else res.status(404).send();

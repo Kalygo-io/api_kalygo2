@@ -1,0 +1,15 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "ses:SendTemplatedEmail",
+            "Resource": [
+                "arn:aws:ses:us-east-1:333427308013:template/*",
+                "arn:aws:ses:us-east-1:333427308013:configuration-set/<YOUR_CONFIG_SET>",
+                "arn:aws:ses:us-east-1:333427308013:identity/<YOUR_VERIFIED_IDENTITY>"
+            ]
+        }
+    ]
+}

@@ -1,4 +1,4 @@
-export function generateResetPassword_SES_Config(
+export function generateVerifyEmail_SES_Config(
   email: string,
   RESET_LINK: string
 ) {
@@ -10,14 +10,14 @@ export function generateResetPassword_SES_Config(
     Source: "Kalygo <admin@kalygo.io>",
     Template: "CMD_GENERIC_EMAIL",
     TemplateData: `
-            { 
-                \"SUBJECT\":\"Reset Password\", 
-                \"MESSAGE_AS_TEXT\":\"Reset Password\",
-                \"GREETING\":\"Password Reset Requested\",
-                \"MESSAGE\":\"Reset Link: ${RESET_LINK}\",
-                \"ENDING\":\"Good Luck!\"
-            }
-        `,
+              { 
+                  \"SUBJECT\":\"Verify Email\", 
+                  \"MESSAGE_AS_TEXT\":\"Verify Email\",
+                  \"GREETING\":\"Welcome to Kalygo\",
+                  \"MESSAGE\":\"Verification Link: ${RESET_LINK}\",
+                  \"ENDING\":\": )\"
+              }
+          `,
     ReplyToAddresses: ["no-reply@kalygo.io"],
     ConfigurationSetName: "kalygo_config_set",
     Tags: [

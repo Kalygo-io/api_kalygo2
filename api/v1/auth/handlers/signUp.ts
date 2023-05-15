@@ -4,6 +4,13 @@ import prisma from "@db/prisma_client";
 import argon2 from "argon2";
 import { v4 } from "uuid";
 
+import { SESClient, SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
+
+import { generateVerifyEmail_SES_Config } from "@emails/verifyEmail";
+
+const REGION = process.env.REGION;
+const sesClient = new SESClient({ region: REGION });
+
 export async function signUp(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, password } = req.body;
@@ -19,6 +26,12 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
         emailVerificationToken,
       },
     });
+
+    const emailConfig = generateVerifyEmail_SES_Config(
+      email,
+      `${process.env.FRONTEND_HOSTNAME}/verifyEmail/${emailVerificationToken}`
+    );
+    await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
 
     res.status(200).send();
   } catch (e) {

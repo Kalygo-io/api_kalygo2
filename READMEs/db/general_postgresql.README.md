@@ -17,3 +17,7 @@ https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding
 ##
 
 select * from "Account"
+
+##
+
+DELETE FROM "Account" WHERE id = 2;

@@ -18,7 +18,7 @@ model Film {
 
 model Account {
   id                     Int     @id @default(autoincrement())
-  email                  String
+  email                  String  @unique
   firstName              String?
   lastName               String?
   alias                  String?

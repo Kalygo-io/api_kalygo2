@@ -1,5 +1,4 @@
-import { NextFunction } from "connect";
-import express, { Request, Response } from "express";
+import express, { Request, Response, NextFunction } from "express";
 
 export interface ErrorResponseBodyDto {
   message: string;

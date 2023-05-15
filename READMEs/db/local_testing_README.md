@@ -46,3 +46,9 @@ psql -h localhost -U username -d database_name
 
 - ALTER USER kalygo CREATEDB; <!-- for the prisma shadow db -->
 - npx prisma migrate dev --name init
+
+## Migrations
+
+npx prisma migrate dev --name <name_of_migration_here>
+
+

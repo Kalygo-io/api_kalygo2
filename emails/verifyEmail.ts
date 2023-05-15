@@ -1,6 +1,6 @@
 export function generateVerifyEmail_SES_Config(
   email: string,
-  RESET_LINK: string
+  VERIFY_LINK: string
 ) {
   return {
     Destination: {
@@ -14,7 +14,7 @@ export function generateVerifyEmail_SES_Config(
                   \"SUBJECT\":\"Verify Email\", 
                   \"MESSAGE_AS_TEXT\":\"Verify Email\",
                   \"GREETING\":\"Welcome to Kalygo\",
-                  \"MESSAGE\":\"Verification Link: ${RESET_LINK}\",
+                  \"MESSAGE\":\"Verification Link: ${VERIFY_LINK}\",
                   \"ENDING\":\": )\"
               }
           `,

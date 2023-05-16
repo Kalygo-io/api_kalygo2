@@ -10,9 +10,8 @@ git pull
 npm i
 
 npx prisma migrate deploy <!-- if migrations needed -->
-npx prisma generate <!-- was needed for some reason -->
+npx prisma generate <!-- was needed for some reason when creating new Models -->
 
 npm run build
-
 
 pm2 start ecosystem.config.js --env production

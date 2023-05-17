@@ -9,6 +9,12 @@ export async function generalFeedback(
   try {
     const { feedback } = req.body;
 
+    const count = await prisma.feedback.count();
+
+    if (count > 100) {
+      throw new Error("RATE_LIMIT");
+    }
+
     const result = await prisma.feedback.create({
       data: {
         feedback,

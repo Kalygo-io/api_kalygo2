@@ -15,6 +15,12 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, password } = req.body;
 
+    const count = await prisma.account.count();
+
+    if (count > 200) {
+      throw new Error("RATE_LIMIT");
+    }
+
     // hash password and store in db
     const passwordHash = await argon2.hash(password);
     const emailVerificationToken = v4();

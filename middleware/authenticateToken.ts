@@ -6,20 +6,23 @@ export default function authenticateToken(
   res: Response,
   next: NextFunction
 ) {
-  const jwtCookie = req.cookies["jwt"];
-  const token = jwtCookie;
+  console.log("!#!#!");
 
-  if (token == null) return res.sendStatus(401);
+  res.status(200).send();
+  // const jwtCookie = req.cookies["jwt"];
+  // const token = jwtCookie;
 
-  jwt.verify(token, process.env.JWT_SECRET!, (err: any, user: any) => {
-    console.log(err);
-    console.log(user);
+  // if (token == null) return res.sendStatus(401);
 
-    if (err) return res.sendStatus(403);
+  // jwt.verify(token, process.env.JWT_SECRET!, (err: any, user: any) => {
+  //   console.log(err);
+  //   console.log(user);
 
-    // @ts-ignore
-    req.user = user;
+  //   if (err) return res.sendStatus(403);
 
-    next();
-  });
+  //   // @ts-ignore
+  //   req.user = user;
+
+  //   next();
+  // });
 }

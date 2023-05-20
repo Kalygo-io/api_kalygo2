@@ -1,4 +1,5 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import jsonBodyParser from "./middleware/jsonBodyParser";
 import errorMiddleware from "./middleware/error";
 import apiRouter from "./api/router";
@@ -46,16 +47,20 @@ app.use(
       process.env.NODE_ENV === "development"
         ? ["http://localhost:3000", "http://localhost:3001"]
         : ["https://kalygo2.io"],
+    credentials: true,
   })
 );
+
 app.use("/locales", express.static("locales"));
 app.use(i18nextMiddleware.handle(i18next));
 app.use(jsonBodyParser);
+app.use(cookieParser());
+
 app.use("/api", apiRouter);
 
 app.get("/", (req, res) => {
-  console.log("req.i18n.language", req.i18n.language);
-  console.log("req.i18n.languages", req.i18n.languages);
+  // console.log("req.i18n.language", req.i18n.language);
+  // console.log("req.i18n.languages", req.i18n.languages);
 
   res.render("index");
 });

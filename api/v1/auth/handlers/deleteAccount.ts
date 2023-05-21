@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-// const { Account } = require("@db/models/Account");
 
 export async function deleteAccount(
   req: Request,

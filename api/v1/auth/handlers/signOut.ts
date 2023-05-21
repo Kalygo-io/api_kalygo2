@@ -1,7 +1,5 @@
 import prisma from "@db/prisma_client";
-import express, { Request, Response, NextFunction } from "express";
-
-// const { Account } = require("../../../db/models/Account");
+import { Request, Response, NextFunction } from "express";
 
 export async function signOut(req: Request, res: Response, next: NextFunction) {
   try {

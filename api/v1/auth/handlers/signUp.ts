@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 
 import prisma from "@db/prisma_client";
 import argon2 from "argon2";

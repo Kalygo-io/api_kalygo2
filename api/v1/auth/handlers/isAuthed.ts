@@ -1,7 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 
-// import { Account } from "@db/models/Account";
-import argon2 from "argon2";
 import prisma from "@db/prisma_client";
 
 export async function isAuthed(

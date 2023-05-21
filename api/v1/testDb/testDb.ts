@@ -14,8 +14,6 @@ router.get(
     try {
       //   const results = await prisma.$queryRaw`SELECT * FROM film`;
       const allFilms = await prisma.film.findMany();
-      console.log(allFilms);
-
       res.status(200).send(allFilms);
     } catch (e) {
       throw e;

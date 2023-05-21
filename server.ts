@@ -45,9 +45,15 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === "development"
-        ? ["http://localhost:3000", "http://localhost:3001"]
+        ? [
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "http://192.168.1.8:3001",
+            "http://127.0.0.1:3001",
+          ]
         : ["https://kalygo2.io"],
     credentials: true,
+    exposedHeaders: ["set-cookie"],
   })
 );
 

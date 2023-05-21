@@ -1,7 +1,7 @@
 import {
   isAuthed,
   // clearAccounts,
-  signIn,
+  logIn,
   signUp,
   signOut,
   resetPassword,
@@ -18,7 +18,7 @@ import { authenticateToken } from "@middleware/index";
 const router = Router();
 
 router.route("/is-authed").get(authenticateToken, isAuthed);
-router.route("/sign-in").post(signIn);
+router.route("/log-in").post(logIn);
 router.route("/sign-up").post(signUp);
 router.route("/sign-out").delete(authenticateToken, signOut);
 router.route("/request-password-reset").post(requestPasswordReset);

@@ -10,24 +10,20 @@ export async function isAuthed(
   next: NextFunction
 ) {
   try {
-    console.log("_!_ _!_");
-
-    res.status(200).send();
-
     // @ts-ignore
-    // let { email } = req.user;
+    let { email } = req.user;
 
-    // const result = await prisma.account.findFirst({
-    //   where: {
-    //     email,
-    //   },
-    // });
+    const result = await prisma.account.findFirst({
+      where: {
+        email,
+      },
+    });
 
-    // if (result) {
-    //   res.status(200).send();
-    // } else {
-    //   res.status(404).send();
-    // }
+    if (result) {
+      res.status(200).send();
+    } else {
+      res.status(404).send();
+    }
   } catch (e) {
     next(e);
   }

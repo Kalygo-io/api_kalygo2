@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-// import { Account } from "../../../db/models/Account";
-import { generateAccessToken } from "@utils/generateAccessToken";
+import { generateAccessToken } from "../../../../utils/index";
+import prisma from "@db/prisma_client";
 const argon2 = require("argon2");
 
-export async function signIn(
+export async function logIn(
   req: Request<
     null,
     null,
@@ -19,20 +19,26 @@ export async function signIn(
     const { email, password } = req.body;
 
     // const result = await Account.findOne({ email, verified: true });
-    const result = false;
+    const result = await prisma.account.findFirst({
+      where: {
+        email,
+      },
+    });
 
     if (result) {
       const { passwordHash } = result;
 
       if (await argon2.verify(passwordHash, password)) {
         const token = generateAccessToken(email);
+
         res
           .status(200)
           .cookie("jwt", token, {
             sameSite: "strict",
             path: "/",
-            expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 2),
+            expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 1),
             httpOnly: true,
+            secure: true,
           })
           .send();
       } else res.status(401).send();

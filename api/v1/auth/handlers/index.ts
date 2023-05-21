@@ -1,4 +1,4 @@
-import { signIn } from "./signIn";
+import { logIn } from "./logIn";
 import { signUp } from "./signUp";
 import { signOut } from "./signOut";
 import { resetPassword } from "./resetPassword";
@@ -11,7 +11,7 @@ import { isAuthed } from "./isAuthed";
 // import { clearAccounts } from "./clearAccounts";
 
 export {
-  signIn,
+  logIn,
   signUp,
   resetPassword,
   mockRequestPasswordReset,

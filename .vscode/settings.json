@@ -5,5 +5,7 @@
     "[javascript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "react-i18n.i18nPaths": "locales,api/v1/i18n,dist/api/v1/i18n",
+    "i18next.i18nPaths": "/Users/a/src/actual_projects/api_kalygo2/locales,/Users/a/src/actual_projects/api_kalygo2/api/v1/i18n,/Users/a/src/actual_projects/api_kalygo2/dist/api/v1/i18n"
 }

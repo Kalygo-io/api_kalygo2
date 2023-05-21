@@ -22,8 +22,6 @@ router.get(
         languages: req.i18n.languages,
       };
 
-      // throw new Error("Yay!");
-
       res.status(200).json(responseBody);
     } catch (e) {
       next(e);

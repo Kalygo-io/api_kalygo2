@@ -4,7 +4,7 @@ import i18n from "./i18n";
 import testDb from "./testDb";
 import auth from "./auth";
 import feedback from "./feedback";
-// import messages from "./messages";
+import version from "./version";
 
 const router = express.Router();
 
@@ -13,6 +13,7 @@ router.use(i18n);
 router.use(testDb);
 router.use("/auth", auth);
 router.use("/feedback", feedback);
-// router.use(messages);
+
+router.use(version);
 
 export default router;

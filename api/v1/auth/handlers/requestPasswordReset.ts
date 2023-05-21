@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-// const { Account } = require("@db/models/Account");
 import { SESClient, SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
-import { v4 } from "uuid";
+import { nanoid } from "nanoid";
+import prisma from "@db/prisma_client";
 
 import { generateResetPassword_SES_Config } from "@emails/resetPassword";
 
@@ -15,19 +15,36 @@ export async function requestPasswordReset(
 ) {
   try {
     const { email } = req.body;
-    // const result = await Account.findOne({ email });
-    const result = false;
+
+    const result = await prisma.account.findFirst({
+      where: {
+        email,
+      },
+    });
+
+    console.log("result", result);
 
     if (result) {
       // generate the reset password token
-      const UUID = v4();
-      /*
-        result.resetPasswordToken = UUID;
-        await result.save();
-      */
-      const RESET_LINK = `${process.env.FRONTEND_HOSTNAME}/resetPassword/${UUID}`;
+      // const UUID = v4();
+      const UUID = nanoid(10);
+
+      const updatedAccount = await prisma.account.update({
+        where: {
+          email: email,
+        },
+        data: {
+          resetPasswordToken: UUID,
+        },
+      });
+
+      const RESET_LINK = `${process.env.FRONTEND_HOSTNAME}/reset-password?${email}`;
       // and send the email
-      const emailConfig = generateResetPassword_SES_Config(email, RESET_LINK);
+      const emailConfig = generateResetPassword_SES_Config(
+        email,
+        RESET_LINK,
+        UUID
+      );
       await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
       res.status(200).send();
     } else res.status(404).send();

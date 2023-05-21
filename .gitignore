@@ -6,6 +6,6 @@ logs
 
 ecosystem.config.js
 
-.env
+.env*
 
 kalygo*.sql

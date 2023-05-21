@@ -1,6 +1,7 @@
 export function generateResetPassword_SES_Config(
   email: string,
-  RESET_LINK: string
+  RESET_LINK: string,
+  token: string
 ) {
   return {
     Destination: {
@@ -13,9 +14,9 @@ export function generateResetPassword_SES_Config(
             { 
                 \"SUBJECT\":\"Reset Password\", 
                 \"MESSAGE_AS_TEXT\":\"Reset Password\",
-                \"GREETING\":\"Password Reset Requested\",
+                \"GREETING\":\"${token}\",
                 \"MESSAGE\":\"Reset Link: ${RESET_LINK}\",
-                \"ENDING\":\"Good Luck!\"
+                \"ENDING\":\"\"
             }
         `,
     ReplyToAddresses: ["no-reply@kalygo.io"],

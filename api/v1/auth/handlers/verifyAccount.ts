@@ -1,3 +1,4 @@
+import prisma from "@/db/prisma_client";
 import { Request, Response, NextFunction } from "express";
 
 // import { Account } from "@db/models/Account";
@@ -8,20 +9,25 @@ export async function verifyAccount(
   next: NextFunction
 ) {
   try {
-    let { email, verificationToken } = req.body;
+    let { email, emailVerificationToken } = req.body;
 
-    // const result = await Account.findOne({
-    //   email,
-    //   verificationToken,
-    // });
-    const result = false;
+    const result = await prisma.account.findFirst({
+      where: {
+        email,
+        emailVerificationToken: emailVerificationToken,
+      },
+    });
 
     if (result) {
-      /*
-      result.verified = true;
-      result.verificationToken = null;
-      await result.save();
-      */
+      const updatedAccount = await prisma.account.update({
+        where: {
+          email: email,
+        },
+        data: {
+          emailVerificationToken: null,
+          emailVerified: true,
+        },
+      });
 
       res.status(200).send();
     } else {

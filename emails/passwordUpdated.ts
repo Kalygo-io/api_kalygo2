@@ -1,7 +1,4 @@
-export function generateVerifyEmail_SES_Config(
-  email: string,
-  VERIFY_LINK: string
-) {
+export function generatePasswordUpdated_SES_Config(email: string) {
   return {
     Destination: {
       CcAddresses: [],
@@ -11,11 +8,11 @@ export function generateVerifyEmail_SES_Config(
     Template: "CMD_GENERIC_EMAIL",
     TemplateData: `
               { 
-                  \"SUBJECT\":\"Verify Email\", 
-                  \"MESSAGE_AS_TEXT\":\"Verify Email\",
-                  \"GREETING\":\"Welcome to Kalygo\",
-                  \"MESSAGE\":\"Verification Link: ${VERIFY_LINK}\",
-                  \"ENDING\":\": )\"
+                  \"SUBJECT\":\"Password Updated\", 
+                  \"MESSAGE_AS_TEXT\":\"Password Updated\",
+                  \"GREETING\":\"\",
+                  \"MESSAGE\":\"Your password was recently updated. If this was not you please reach out to support@kalygo.io immediately.\",
+                  \"ENDING\":\"\"
               }
           `,
     ReplyToAddresses: ["no-reply@kalygo.io"],

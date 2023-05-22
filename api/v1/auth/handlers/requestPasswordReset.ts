@@ -26,7 +26,6 @@ export async function requestPasswordReset(
 
     if (result) {
       // generate the reset password token
-      // const UUID = v4();
       const UUID = nanoid(10);
 
       const updatedAccount = await prisma.account.update({
@@ -38,7 +37,7 @@ export async function requestPasswordReset(
         },
       });
 
-      const RESET_LINK = `${process.env.FRONTEND_HOSTNAME}/reset-password?${email}`;
+      const RESET_LINK = `${process.env.FRONTEND_HOSTNAME}/reset-password?email=${email}`;
       // and send the email
       const emailConfig = generateResetPassword_SES_Config(
         email,

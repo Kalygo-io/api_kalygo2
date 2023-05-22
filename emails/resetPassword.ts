@@ -8,12 +8,12 @@ export function generateResetPassword_SES_Config(
       CcAddresses: [],
       ToAddresses: [email],
     },
-    Source: "Kalygo <admin@kalygo.io>",
+    Source: "Kalygo <noreply@kalygo.io>",
     Template: "CMD_GENERIC_EMAIL",
     TemplateData: `
             { 
-                \"SUBJECT\":\"Reset Password\", 
-                \"MESSAGE_AS_TEXT\":\"Reset Password\",
+                \"SUBJECT\":\"Reset Password Token\", 
+                \"MESSAGE_AS_TEXT\":\"Reset Password Token\",
                 \"GREETING\":\"${token}\",
                 \"MESSAGE\":\"Reset Link: ${RESET_LINK}\",
                 \"ENDING\":\"\"

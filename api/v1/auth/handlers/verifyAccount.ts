@@ -1,8 +1,6 @@
 import prisma from "@/db/prisma_client";
 import { Request, Response, NextFunction } from "express";
 
-// import { Account } from "@db/models/Account";
-
 export async function verifyAccount(
   req: Request,
   res: Response,

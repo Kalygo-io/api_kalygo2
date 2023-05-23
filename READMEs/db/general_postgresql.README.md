@@ -26,3 +26,11 @@ DELETE FROM "Account" WHERE id = 13;
 
 - pg_dump -h localhost -U <DB_USERNAME> -d <DB> > kalygo.sql
 - scp <USER>@<IP_ADDRESS>:~/src/kalygo.sql ./kalygo.sql
+
+##
+
+update "Account" set "emailVerificationToken"=null, "emailVerified"=true where id=21;
+
+##
+
+DELETE FROM "Account" WHERE id=26;

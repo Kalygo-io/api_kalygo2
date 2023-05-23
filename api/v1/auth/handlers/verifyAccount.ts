@@ -19,9 +19,10 @@ export async function verifyAccount(
     });
 
     if (result) {
-      const updatedAccount = await prisma.account.update({
+      const updatedAccount = await prisma.account.updateMany({
         where: {
           email: email,
+          emailVerificationToken: emailVerificationToken,
         },
         data: {
           emailVerificationToken: null,

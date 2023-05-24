@@ -9,3 +9,8 @@ ecosystem.config.js
 .env*
 
 kalygo*.sql
+
+inventory
+ansible.cfg
+
+cicd.yml

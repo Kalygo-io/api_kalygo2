@@ -1,0 +1,16 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: install httpd aka apache2 package
+    yum:
+      name: httpd
+      update_cache: true
+      state: absent
+
+  - name: install php
+    yum:
+      name: php
+      state: absent

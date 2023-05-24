@@ -15,4 +15,8 @@ eval $(ssh-agent)
 ssh-add
 ```
 
+## running cicd script
+
+ansible-playbook cicd.yml
+
 

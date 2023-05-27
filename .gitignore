@@ -4,6 +4,8 @@ node_modules
 dist
 logs
 
+uploads
+
 ecosystem.config.js
 
 .env*

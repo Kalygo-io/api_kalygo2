@@ -12,10 +12,10 @@ const router = Router();
 //   .route("/upload")
 //   .post([multerS3Middleware.array("documents", 3)], upload);
 
-router.route("/summarize").post([authenticateToken], summarize);
+// router.route("/summarize").post([authenticateToken], summarize);
 
-// router
-//   .route("/summarize")
-//   .post([uploadToDiskMiddleware.single("file")], summarize);
+router
+  .route("/summarize")
+  .post([uploadToDiskMiddleware.single("file")], summarize);
 
 export default router;

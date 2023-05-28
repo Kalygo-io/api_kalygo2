@@ -2,30 +2,45 @@ import { Request, Response, NextFunction } from "express";
 
 // import prisma from "@db/prisma_client";
 
+import { OpenAI } from "langchain/llms/openai";
+import { loadSummarizationChain } from "langchain/chains";
+import {
+  RecursiveCharacterTextSplitter,
+  CharacterTextSplitter,
+} from "langchain/text_splitter";
+import * as fs from "fs";
+
 export async function summarize(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    console.log("--- upload controller ---");
+    const text = fs.readFileSync(`${req.file?.path}`, "utf8");
 
-    console.log(req.file);
+    const model = new OpenAI({
+      temperature: 0,
+      modelName: "text-davinci-002",
+    });
 
-    // // @ts-ignore
-    // let { email } = req.user;
+    const textSplitter = new CharacterTextSplitter({
+      chunkSize: 1000,
+    });
 
-    // const result = await prisma.account.findFirst({
-    //   where: {
-    //     email,
-    //   },
+    // const textSplitter = new RecursiveCharacterTextSplitter({
+    //   separators: ["\n\n", "\n"],
     // });
 
-    // if (result) {
-    res.status(200).send();
-    // } else {
-    //   res.status(404).send();
-    // }
+    const docs = await textSplitter.createDocuments([text]);
+
+    const chain = loadSummarizationChain(model, { type: "map_reduce" });
+    const resp = await chain.call({
+      input_documents: docs,
+    });
+
+    res.status(200).json({
+      summary: resp,
+    });
   } catch (e) {
     next(e);
   }

@@ -4,7 +4,7 @@ node_modules
 dist
 logs
 
-uploads
+uploads/
 
 ecosystem.config.js
 

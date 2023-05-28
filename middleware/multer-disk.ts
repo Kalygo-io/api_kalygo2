@@ -16,4 +16,13 @@ const storage = multer.diskStorage({
   },
 });
 
-export const uploadToDiskMiddleware = multer({ storage: storage });
+export const uploadToDiskMiddleware = multer({
+  storage: storage,
+  limits: { fileSize: 1048576 },
+});
+
+// 1 MB is 1,048,576 Bytes
+// 1 KB is 1,024 Bytes
+
+// .25 MB is 262,144 Bytes
+// .25 KB is 256 Bytes

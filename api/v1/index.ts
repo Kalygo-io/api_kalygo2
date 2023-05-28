@@ -18,6 +18,6 @@ router.use(testDb);
 router.use("/auth", auth);
 router.use("/feedback", feedback);
 
-router.use(summarize);
+// router.use(summarize);
 
 export default router;

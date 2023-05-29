@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-
 import prisma from "@db/prisma_client";
 import argon2 from "argon2";
 import { v4 } from "uuid";

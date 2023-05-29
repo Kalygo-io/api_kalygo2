@@ -6,6 +6,7 @@ import auth from "./auth";
 import feedback from "./feedback";
 import version from "./version";
 import summarize from "./summarize";
+import account from "./account";
 
 const router = express.Router();
 
@@ -16,6 +17,7 @@ router.use(i18n);
 router.use(testDb);
 
 router.use("/auth", auth);
+router.use("/account", account);
 router.use("/feedback", feedback);
 
 // router.use(summarize);

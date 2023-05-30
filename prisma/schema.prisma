@@ -27,6 +27,7 @@ model Account {
   resetPasswordToken     String?
   emailVerificationToken String?
   emailVerified          Boolean @default(false)
+  stripeId               String?
 }
 
 model Feedback {

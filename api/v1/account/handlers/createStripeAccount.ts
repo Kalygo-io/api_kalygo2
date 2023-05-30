@@ -1,5 +1,6 @@
 import { stripe } from "@/stripe_client";
 import { Request, Response, NextFunction } from "express";
+import prisma from "@db/prisma_client";
 
 export async function createStripeAccount(
   req: Request,
@@ -9,15 +10,34 @@ export async function createStripeAccount(
   try {
     console.log("GET createStripeAccount");
 
-    // create Stripe account
-    // const customer: any = await stripe.customers.create({
-    //   //   email: email,
-    //   description: "Kalygo customer",
-    // });
+    const result = await prisma.account.findFirst({
+      where: {
+        // @ts-ignore
+        email: req.user.email,
+      },
+    });
 
-    // console.log(customer.id);
+    if (!result?.stripeId) {
+      const customer: any = await stripe.customers.create({
+        // @ts-ignore
+        email: req.user.email,
+        description: "Kalygo customer",
+      });
 
-    res.status(200).send();
+      await prisma.account.updateMany({
+        where: {
+          // @ts-ignore
+          email: req.user.email,
+        },
+        data: {
+          stripeId: customer.id,
+        },
+      });
+
+      res.status(201).send();
+    } else {
+      res.status(200).send();
+    }
   } catch (e) {
     next(e);
   }

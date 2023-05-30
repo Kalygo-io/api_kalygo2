@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { stripe } from "@/stripe_client";
+import prisma from "@db/prisma_client";
+import pick from "lodash.pick";
 
 export async function getStripeCards(
   req: Request,
@@ -9,22 +11,27 @@ export async function getStripeCards(
   try {
     console.log("getStripeCards");
 
-    // stripe.customers.listCards(req.decoded.stripe_id, function (err, cards) {
-    //   if (err) {
-    //     console.log(err);
-    //     return res.status(400).json({
-    //       success: false,
-    //       message:
-    //         "Error occurred when retrieving all user credit card information",
-    //     });
-    //   }
-    //   console.log(cards);
-    //   return res.status(200).json({
-    //     success: true,
-    //     message: "Successfully retrieved all user credit card information",
-    //     cards: cards,
-    //   });
-    // });
+    // @ts-ignore
+    console.log("req.user", req.user);
+
+    const account = await prisma.account.findFirst({
+      where: {
+        // @ts-ignore
+        email: req.user.email,
+      },
+    });
+
+    console.log("account", account);
+
+    if (account) {
+      const cards = await stripe.customers.listSources(account.stripeId);
+
+      console.log("cards", cards);
+
+      res.status(200).json(cards.data);
+    } else {
+      res.status(404).send();
+    }
   } catch (e) {
     next(e);
   }

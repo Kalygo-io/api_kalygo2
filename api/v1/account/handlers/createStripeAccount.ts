@@ -1,4 +1,4 @@
-import { stripe } from "@/stripe_client";
+import { stripe } from "@/clients/stripe_client";
 import { Request, Response, NextFunction } from "express";
 import prisma from "@db/prisma_client";
 

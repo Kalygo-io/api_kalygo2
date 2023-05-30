@@ -1,5 +1,5 @@
 import prisma from "@db/prisma_client";
-import { stripe } from "@/stripe_client";
+import { stripe } from "@/clients/stripe_client";
 import pick from "lodash.pick";
 import { Request, Response, NextFunction } from "express";
 

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { stripe } from "@/stripe_client";
+import { stripe } from "@/clients/stripe_client";
 
 export async function getDefaultStripeCard(
   req: Request,
@@ -8,9 +8,8 @@ export async function getDefaultStripeCard(
 ) {
   try {
     console.log("getDefaultCard");
-    //   console.log(req.decoded.stripe_id);
 
-    //   stripe.customers.retrieve(req.decoded.stripe_id, function (err, customer) {
+    //   stripe.customers.retrieve(stripe_id, function (err, customer) {
     //     if (err) {
     //       return res.status(400).json({
     //         success: false,

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { stripe } from "@/stripe_client";
+import { stripe } from "@/clients/stripe_client";
 import prisma from "@db/prisma_client";
 import pick from "lodash.pick";
 
@@ -10,9 +10,6 @@ export async function getStripeCards(
 ) {
   try {
     console.log("getStripeCards");
-
-    // @ts-ignore
-    console.log("req.user", req.user);
 
     const account = await prisma.account.findFirst({
       where: {

@@ -20,6 +20,6 @@ router.use("/auth", auth);
 router.use("/account", account);
 router.use("/feedback", feedback);
 
-// router.use(summarize);
+router.use(summarize);
 
 export default router;

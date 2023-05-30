@@ -16,6 +16,6 @@ const router = Router();
 
 router
   .route("/summarize")
-  .post([uploadToDiskMiddleware.single("file")], summarize);
+  .post([authenticateToken, uploadToDiskMiddleware.single("file")], summarize);
 
 export default router;

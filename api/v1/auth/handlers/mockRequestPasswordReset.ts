@@ -5,10 +5,15 @@ import { Request, Response, NextFunction } from "express";
 import { SESClient, SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { v4 } from "uuid";
 
-const REGION = process.env.AWS_REGION;
 import { generateResetPassword_SES_Config } from "@emails/resetPassword";
 
-const sesClient = new SESClient({ region: REGION });
+const sesClient = new SESClient({
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+  region: process.env.AWS_REGION,
+});
 
 export async function mockRequestPasswordReset(
   req: Request,

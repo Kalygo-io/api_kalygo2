@@ -5,7 +5,7 @@ import prisma from "@db/prisma_client";
 
 import { generateResetPassword_SES_Config } from "@emails/resetPassword";
 
-const REGION = process.env.REGION;
+const REGION = process.env.AWS_REGION;
 const sesClient = new SESClient({ region: REGION });
 
 export async function requestPasswordReset(

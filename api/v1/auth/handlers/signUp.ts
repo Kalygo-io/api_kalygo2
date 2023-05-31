@@ -7,7 +7,7 @@ import { SESClient, SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 
 import { generateVerifyEmail_SES_Config } from "@emails/verifyEmail";
 
-const REGION = process.env.REGION;
+const REGION = process.env.AWS_REGION;
 const sesClient = new SESClient({ region: REGION });
 
 export async function signUp(req: Request, res: Response, next: NextFunction) {

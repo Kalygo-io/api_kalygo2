@@ -6,7 +6,7 @@ import argon2 from "argon2";
 import { generateResetPassword_SES_Config } from "@emails/resetPassword";
 import { generatePasswordUpdated_SES_Config } from "@emails/passwordUpdated";
 
-const REGION = process.env.REGION;
+const REGION = process.env.AWS_REGION;
 const sesClient = new SESClient({ region: REGION });
 
 export async function resetPassword(

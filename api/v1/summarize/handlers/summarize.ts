@@ -19,14 +19,17 @@ function isPartsValid(parts: string[]): boolean {
   return true;
 }
 
-const PROMPT_PREFIX = `Please provide a detailed summary of the following ORIGINAL_TEXT
+const PROMPT_PREFIX = (
+  lng: string
+) => `Please provide a detailed summary of the following ORIGINAL_TEXT
             
 The summary should be:
-      
-1) Grammatically correct
-2) Have professional punctuation
-3) Be accurate
-4) In cases where accuracy is not possible please provide a disclaimer
+
+- Written in ${lng}
+- Grammatically correct
+- Have professional punctuation
+- Be accurate
+- In cases where accuracy is not possible please provide a disclaimer
       
 Here is the ORIGINAL_TEXT:`;
 
@@ -36,14 +39,25 @@ export async function summarize(
   next: NextFunction
 ) {
   try {
+    let language: string = req?.i18n?.language?.substring(0, 2) || "en";
+
+    switch (language) {
+      case "en":
+        language = "English";
+        break;
+      case "es":
+        language = "Spanish";
+        break;
+      default:
+        language = "English";
+    }
+
     const result = await prisma.account.findFirst({
       where: {
         // @ts-ignore
         email: req.user.email,
       },
     });
-
-    console.log(result);
 
     if (result?.stripeId) {
       const text = fs.readFileSync(`${req.body.filePath}`, "utf8");
@@ -70,7 +84,7 @@ export async function summarize(
         let newParts = [];
 
         for (let i = 0; i < parts.length; i++) {
-          const prompt = PROMPT_PREFIX + parts[i];
+          const prompt = PROMPT_PREFIX(language) + parts[i];
 
           if (enc.encode(prompt).length > 4000) {
             let middle = Math.floor(prompt.length / 2);
@@ -96,7 +110,7 @@ export async function summarize(
       console.log("parts.length", parts.length);
 
       for (let i = 0; i < parts.length; i++) {
-        const prompt = `${PROMPT_PREFIX} ${parts[i]}`;
+        const prompt = `${PROMPT_PREFIX(language)} ${parts[i]}`;
 
         tokenAccum += enc.encode(prompt).length;
 

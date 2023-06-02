@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { get_encoding, encoding_for_model } from "@dqbd/tiktoken";
+import { encoding_for_model } from "@dqbd/tiktoken";
 import * as fs from "fs";
 import prisma from "@/db/prisma_client";
 import { stripe } from "@/clients/stripe_client";
@@ -61,13 +61,10 @@ export async function summarize(
 
     if (result?.stripeId) {
       const text = fs.readFileSync(`${req.body.filePath}`, "utf8");
-
-      const tokenCount = enc.encode(text).length;
-
+      const tokenCount: number = enc.encode(text).length;
       const apiCost = (tokenCount / 1000) * 0.002;
       const markup = 1.4; // 40%
-
-      const quote = Number.parseFloat(
+      const quote: number = Number.parseFloat(
         (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2)
       );
 
@@ -106,15 +103,13 @@ export async function summarize(
       }
 
       let finalAnswer = [];
-      let tokenAccum = 0;
+      let tokenAccum: number = 0;
       console.log("parts.length", parts.length);
 
       for (let i = 0; i < parts.length; i++) {
         const prompt = `${PROMPT_PREFIX(language)} ${parts[i]}`;
 
         tokenAccum += enc.encode(prompt).length;
-
-        console.log(enc.encode(prompt).length);
 
         console.log("part", i);
         console.log("token length of part", enc.encode(prompt).length);
@@ -158,9 +153,3 @@ export async function summarize(
     next(e);
   }
 }
-
-// const resp = completion.data?.choices[0]?.message?.content;
-// gpt-3.5-turbo $0.002 / 1K tokens
-// gpt-3.5-turbo 90,000 TPM
-// gpt-3.5-turbo token limit per request is 4096 tokens
-// 2171 / 1000 = 2.1 x 0.002 = $0.004?

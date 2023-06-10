@@ -42,7 +42,6 @@
     "express": "^4.18.2",
     "express-winston": "^4.2.0",
     "faiss-node": "^0.2.1",
-    "hnswlib-node": "^1.4.2",
     "i18next": "^22.4.15",
     "i18next-fs-backend": "^2.1.1",
     "i18next-http-backend": "^2.2.0",

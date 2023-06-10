@@ -25,7 +25,7 @@ DELETE FROM "Account" WHERE id = 13;
 ## Dumping or Backing up the database
 
 - pg_dump -h localhost -U <DB_USERNAME> -d <DB> > kalygo.sql
-- scp <USER>@<IP_ADDRESS>:~/src/kalygo.sql ./kalygo.sql
+- scp -i <PEM_FILE> <USER>@<IP_ADDRESS>:~/src/kalygo.sql ./kalygo.sql
 
 ##
 

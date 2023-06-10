@@ -7,6 +7,7 @@ import feedback from "./feedback";
 import version from "./version";
 import summarize from "./summarize";
 import account from "./account";
+import similaritySearch from "./similarity";
 
 const router = express.Router();
 
@@ -21,5 +22,6 @@ router.use("/account", account);
 router.use("/feedback", feedback);
 
 router.use(summarize);
+router.use(similaritySearch);
 
 export default router;

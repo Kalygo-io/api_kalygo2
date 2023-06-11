@@ -1,9 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import * as fs from "fs";
-
+import crypto from "crypto";
 import { ChromaClient } from "chromadb";
+import prisma from "@/db/prisma_client";
 
+import { stripe } from "@/clients/stripe_client";
 import { OpenAIEmbeddingFunction } from "chromadb";
+
 const embedder = new OpenAIEmbeddingFunction({
   openai_api_key: process.env.OPENAI_API_KEY!,
 });
@@ -16,51 +19,58 @@ export async function performSimilaritySearch(
   next: NextFunction
 ) {
   try {
+    const result = await prisma.account.findFirst({
+      where: {
+        // @ts-ignore
+        email: req.user.email,
+      },
+    });
+
+    await stripe.charges.create({
+      amount: 0.5 * 100, // 50¢
+      currency: "usd",
+      description: `Vector Search for ${req.file?.path}`,
+      customer: result?.stripeId,
+    });
+
     const query = req.body.query;
 
     console.log("query", query);
 
     const text = fs.readFileSync(`${req.file?.path}`, "utf8");
 
-    // const splitter = new RecursiveCharacterTextSplitter({
-    //   separators: ["\n\n", "\n", "."],
-    // });
-    // const output = await splitter.createDocuments([text]);
+    let intResults: any = text.match(/[^\.!\?]+[\.!\?]+/g);
 
-    // const re = RegExp("(?<!w.w.)(?<![A-Z][a-z].)(?<=.|?)s");
-    // const matches = text.match(re);
-    // console.log("matches", matches);
+    // console.log("intResults", intResults);
 
-    let intResults = text.match(/[^\.!\?]+[\.!\?]+/g);
+    intResults = intResults?.slice(0, 2048);
 
-    console.log("intResults", intResults);
-
-    let chunks = intResults?.map((i, idx) => {
-      //   console.log("i", i.pageContent);
-
+    let chunks = intResults?.map((i: string, idx: number) => {
       return i;
     });
-
-    let metadata = intResults?.map((i, idx) => {
+    let metadata = intResults?.map((i: string, idx: number) => {
       return {
         index: idx,
       };
     });
-
-    let ids: any = intResults?.map((i, idx) => {
-      //   console.log("i", i.metadata);
-
+    let ids: any = intResults?.map((i: string, idx: number) => {
       return `id${idx}`;
     });
 
+    const shasum = crypto.createHash("sha1");
+    shasum.update(text);
+    const hashIdOfText = shasum.digest("hex");
+
+    console.log("hashIdOfText", hashIdOfText);
+
     try {
       await client.deleteCollection({
-        name: "test_collection",
+        name: hashIdOfText,
       });
     } catch (e) {}
 
     const test_collection = await client.createCollection({
-      name: "test_collection",
+      name: hashIdOfText,
       embeddingFunction: embedder,
     });
 
@@ -75,7 +85,7 @@ export async function performSimilaritySearch(
       queryTexts: [query],
     });
 
-    console.log(results);
+    // console.log(results);
 
     // const vectorStore = await HNSWLib.fromTexts(
     //   chunks,
@@ -91,11 +101,11 @@ export async function performSimilaritySearch(
 
     // const results = await vectorStore.similaritySearchWithScore(query);
 
-    console.log("___ --- ___ --- ___");
+    // console.log("___ --- ___ --- ___");
 
     try {
       await client.deleteCollection({
-        name: "test_collection",
+        name: hashIdOfText,
       });
     } catch (e) {}
 

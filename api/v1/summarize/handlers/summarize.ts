@@ -68,12 +68,12 @@ export async function summarize(
         (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2)
       );
 
-      // await stripe.charges.create({
-      //   amount: quote * 100,
-      //   currency: "usd",
-      //   description: `Summarization for ${req.body.filePath}`,
-      //   customer: result?.stripeId,
-      // });
+      await stripe.charges.create({
+        amount: quote * 100,
+        currency: "usd",
+        description: `Summarization for ${req.body.filePath}`,
+        customer: result?.stripeId,
+      });
 
       let parts = [text];
 

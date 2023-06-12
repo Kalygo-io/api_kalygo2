@@ -39,6 +39,8 @@ export async function summarize(
   next: NextFunction
 ) {
   try {
+    console.log("POST summarize");
+
     let language: string = req?.i18n?.language?.substring(0, 2) || "en";
 
     switch (language) {
@@ -59,6 +61,8 @@ export async function summarize(
       },
     });
 
+    console.log("account", result);
+
     if (result?.stripeId) {
       const text = fs.readFileSync(`${req.body.filePath}`, "utf8");
       const tokenCount: number = enc.encode(text).length;
@@ -75,6 +79,8 @@ export async function summarize(
         customer: result?.stripeId,
       });
 
+      console.log("splitting text...");
+
       let parts = [text];
 
       while (!isPartsValid(parts)) {
@@ -85,8 +91,10 @@ export async function summarize(
 
           if (enc.encode(prompt).length > 4000) {
             let middle = Math.floor(prompt.length / 2);
-            let before = prompt.lastIndexOf(" ", middle);
-            let after = prompt.indexOf(" ", middle + 1);
+            // let before = prompt.lastIndexOf(" ", middle);
+            // let after = prompt.indexOf(" ", middle + 1);
+            let before = middle;
+            let after = middle + 1;
 
             if (middle - before < after - middle) {
               middle = before;
@@ -101,6 +109,8 @@ export async function summarize(
 
         parts = newParts;
       }
+
+      console.log("splitting text DONE");
 
       let finalAnswer = [];
       let tokenAccum: number = 0;

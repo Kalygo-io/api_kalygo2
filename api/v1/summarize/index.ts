@@ -1,4 +1,9 @@
-import { summarize, getSummarizationQuote, accountSummaries } from "./handlers";
+import {
+  summarize,
+  getSummarizationQuote,
+  accountSummaries,
+  getSummary,
+} from "./handlers";
 
 import { Router } from "express";
 
@@ -19,6 +24,8 @@ router
   .post([authenticateToken, uploadToDiskMiddleware.single("file")], summarize);
 
 router.route("/account-summaries").get([authenticateToken], accountSummaries);
+
+router.route("/get-summary/:id").get([authenticateToken], getSummary);
 
 router
   .route("/get-summarization-quote")

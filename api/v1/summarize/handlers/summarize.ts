@@ -54,16 +54,16 @@ export async function summarize(
         language = "English";
     }
 
-    const result = await prisma.account.findFirst({
+    const account = await prisma.account.findFirst({
       where: {
         // @ts-ignore
         email: req.user.email,
       },
     });
 
-    console.log("account", result);
+    console.log("account", account);
 
-    if (result?.stripeId) {
+    if (account?.stripeId) {
       const text = fs.readFileSync(`${req.body.filePath}`, "utf8");
       const tokenCount: number = enc.encode(text).length;
       const apiCost = (tokenCount / 1000) * 0.002;
@@ -76,7 +76,7 @@ export async function summarize(
         amount: quote * 100,
         currency: "usd",
         description: `Summarization for ${req.body.filePath}`,
-        customer: result?.stripeId,
+        customer: account?.stripeId,
       });
 
       console.log("splitting text...");
@@ -147,6 +147,18 @@ export async function summarize(
       }
 
       fs.unlinkSync(`${req.body?.filePath}`);
+
+      const summaryRecord = await prisma.summary.create({
+        data: {
+          requesterId: account.id,
+          content: finalAnswer.join("\n\n"),
+          originalCharCount: text.length,
+          condensedCharCount: finalAnswer.reduce(
+            (acc, element) => acc + element!.length,
+            0
+          ),
+        },
+      });
 
       res.status(200).json({
         summary: finalAnswer,

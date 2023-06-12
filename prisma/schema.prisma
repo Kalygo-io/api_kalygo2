@@ -17,8 +17,8 @@ model Film {
 }
 
 model Account {
-  id                     Int     @id @default(autoincrement())
-  email                  String  @unique
+  id                     Int       @id @default(autoincrement())
+  email                  String    @unique
   firstName              String?
   lastName               String?
   alias                  String?
@@ -26,8 +26,18 @@ model Account {
   passwordHash           String?
   resetPasswordToken     String?
   emailVerificationToken String?
-  emailVerified          Boolean @default(false)
+  emailVerified          Boolean   @default(false)
   stripeId               String?
+  Summary                Summary[]
+}
+
+model Summary {
+  id                 Int     @id @default(autoincrement())
+  requester          Account @relation(fields: [requesterId], references: [id])
+  requesterId        Int
+  content            String
+  originalCharCount  Int
+  condensedCharCount Int
 }
 
 model Feedback {

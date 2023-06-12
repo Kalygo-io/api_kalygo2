@@ -6,6 +6,8 @@ export default function authenticateToken(
   res: Response,
   next: NextFunction
 ) {
+  console.log("authenticateToken");
+
   const jwtCookie = req.cookies["jwt"];
   const token = jwtCookie;
 

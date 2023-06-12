@@ -1,8 +1,11 @@
 import { Request, Response, NextFunction } from "express";
+import { get_encoding, encoding_for_model } from "@dqbd/tiktoken";
 import * as fs from "fs";
 import crypto from "crypto";
 import { ChromaClient } from "chromadb";
 import prisma from "@/db/prisma_client";
+
+const enc = encoding_for_model("text-embedding-ada-002");
 
 import { stripe } from "@/clients/stripe_client";
 import { OpenAIEmbeddingFunction } from "chromadb";
@@ -26,18 +29,27 @@ export async function performSimilaritySearch(
       },
     });
 
+    // vvv vvv $0.0004 per 1000 tokens for embeddings with
+    // https://platform.openai.com/docs/guides/embeddings/what-are-embeddings
+    const text = fs.readFileSync(`${req.file?.path}`, "utf8");
+    const tokenCount = enc.encode(text).length;
+    const apiCost = (tokenCount / 1000) * 0.0004; // text-embedding-ada-002
+    const markup = 1.4; // 40%
+    const quote = Number.parseFloat(
+      (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2)
+    );
+
     await stripe.charges.create({
-      amount: 0.5 * 100, // 50¢
+      amount: quote * 100,
       currency: "usd",
       description: `Vector Search for ${req.file?.path}`,
       customer: result?.stripeId,
     });
+    // ^^^ ^^^
 
     const query = req.body.query;
 
     console.log("query", query);
-
-    const text = fs.readFileSync(`${req.file?.path}`, "utf8");
 
     let intResults: any = text.match(/[^\.!\?]+[\.!\?]+/g);
 

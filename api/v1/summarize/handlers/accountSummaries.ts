@@ -17,6 +17,11 @@ export async function accountSummaries(
     });
 
     const summaries = await prisma.summary.findMany({
+      orderBy: [
+        {
+          createdAt: "desc",
+        },
+      ],
       where: {
         // @ts-ignore
         requesterId: account?.id,

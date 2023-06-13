@@ -29,15 +29,19 @@ model Account {
   emailVerified          Boolean   @default(false)
   stripeId               String?
   Summary                Summary[]
+  createdAt              DateTime? @default(now())
+  updatedAt              DateTime? @updatedAt
 }
 
 model Summary {
-  id                 Int     @id @default(autoincrement())
-  requester          Account @relation(fields: [requesterId], references: [id])
+  id                 Int       @id @default(autoincrement())
+  requester          Account   @relation(fields: [requesterId], references: [id])
   requesterId        Int
   content            String
   originalCharCount  Int
   condensedCharCount Int
+  createdAt          DateTime? @default(now())
+  updatedAt          DateTime? @updatedAt
 }
 
 model Feedback {

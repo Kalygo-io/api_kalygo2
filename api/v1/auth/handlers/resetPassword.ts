@@ -1,21 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { SESClient, SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
+import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import prisma from "@db/prisma_client";
 import argon2 from "argon2";
-
-import { generateResetPassword_SES_Config } from "@emails/resetPassword";
 import { generatePasswordUpdated_SES_Config } from "@emails/passwordUpdated";
-
-// const REGION = process.env.AWS_REGION;
-// const sesClient = new SESClient({ region: REGION });
-
-const sesClient = new SESClient({
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-  region: process.env.AWS_REGION,
-});
+import { sesClient } from "@/clients/ses_client";
 
 export async function resetPassword(
   req: Request,

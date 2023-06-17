@@ -1,17 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { SESClient, SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
+import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { nanoid } from "nanoid";
 import prisma from "@db/prisma_client";
-
 import { generateResetPassword_SES_Config } from "@emails/resetPassword";
-
-const sesClient = new SESClient({
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-  region: process.env.AWS_REGION,
-});
+import { sesClient } from "@/clients/ses_client";
 
 export async function requestPasswordReset(
   req: Request,

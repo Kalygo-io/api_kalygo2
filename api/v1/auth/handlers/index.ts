@@ -8,6 +8,9 @@ import { verifyAccount } from "./verifyAccount";
 import { mockReceiveVerificationToken } from "./mockReceiveVerificationToken";
 import { deleteAccount } from "./deleteAccount";
 import { isAuthed } from "./isAuthed";
+
+import { subscriptionSignUp } from "./subscriptionSignUp";
+
 // import { clearAccounts } from "./clearAccounts";
 
 export {
@@ -22,4 +25,5 @@ export {
   // clearAccounts,
   isAuthed,
   signOut,
+  subscriptionSignUp,
 };

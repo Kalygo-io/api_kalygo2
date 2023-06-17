@@ -10,6 +10,7 @@ import {
   verifyAccount,
   mockReceiveVerificationToken,
   deleteAccount,
+  subscriptionSignUp,
 } from "./handlers";
 
 import { Router } from "express";
@@ -20,6 +21,7 @@ const router = Router();
 router.route("/is-authed").get(authenticateToken, isAuthed);
 router.route("/log-in").post(logIn);
 router.route("/sign-up").post(signUp);
+router.route("/subscription-sign-up").post(subscriptionSignUp);
 router.route("/sign-out").delete(authenticateToken, signOut);
 router.route("/request-password-reset").post(requestPasswordReset);
 router.route("/mock-request-password-reset").post(mockRequestPasswordReset);

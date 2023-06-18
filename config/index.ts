@@ -2,8 +2,8 @@ export default {
   stripe: {
     products: {
       kalygoPremiumPlan: {
-        id: "prod_O5vOF7lwVB9NtW",
-        price: "price_1NJjZ4BProJYO6FDp0fjKLku",
+        id: process.env.STRIPE_PREMIUM_PLAN_PRODUCT_ID,
+        price: process.env.STRIPE_PREMIUM_PLAN_PRICE_ID,
       },
     },
   },

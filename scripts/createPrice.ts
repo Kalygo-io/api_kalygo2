@@ -6,12 +6,10 @@ async function main() {
     unit_amount: 999,
     currency: "usd",
     recurring: { interval: "month" },
-    product: "prod_O5vOF7lwVB9NtW",
+    product: "prod_O6LxkI90QuQXAl",
   });
 
   console.log("price", price); // prod_O5vOF7lwVB9NtW
-
-  // price_1NJjZ4BProJYO6FDp0fjKLku
 }
 
 main();

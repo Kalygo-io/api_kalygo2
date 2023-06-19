@@ -24,8 +24,7 @@ export async function getAccount(
     let subscriptions = {
       data: [],
     };
-    // if (account?.stripeId) {
-    if (null) {
+    if (account?.stripeId) {
       subscriptions = await stripe.subscriptions.list({
         customer: account?.stripeId,
       });

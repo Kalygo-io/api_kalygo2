@@ -6,7 +6,6 @@ import { mockRequestPasswordReset } from "./mockRequestPasswordReset";
 import { requestPasswordReset } from "./requestPasswordReset";
 import { verifyAccount } from "./verifyAccount";
 import { mockReceiveVerificationToken } from "./mockReceiveVerificationToken";
-import { deleteAccount } from "./deleteAccount";
 import { isAuthed } from "./isAuthed";
 
 import { subscriptionSignUp } from "./subscriptionSignUp";
@@ -21,7 +20,6 @@ export {
   requestPasswordReset,
   mockReceiveVerificationToken,
   verifyAccount,
-  deleteAccount,
   // clearAccounts,
   isAuthed,
   signOut,

@@ -1,6 +1,7 @@
 import { stripe } from "@/clients/stripe_client";
 import { Request, Response, NextFunction } from "express";
 import prisma from "@db/prisma_client";
+import get from "lodash.get";
 
 export async function deleteStripeCard(
   req: Request,
@@ -19,9 +20,11 @@ export async function deleteStripeCard(
 
     console.log("account", account);
 
-    if (account?.stripeId) {
-      /* ADD CARD */
+    const subscriptions = await stripe.subscriptions.list({
+      customer: account?.stripeId,
+    });
 
+    if (account?.stripeId && get(subscriptions, "data").length === 0) {
       const addCardStripeResp = await stripe.customers.deleteSource(
         account?.stripeId,
         req.body.card_id
@@ -30,7 +33,7 @@ export async function deleteStripeCard(
       console.log("addCardStripeResp", addCardStripeResp);
       res.status(200).send();
     } else {
-      res.status(400).send();
+      res.status(402).send();
     }
   } catch (e) {
     next(e);

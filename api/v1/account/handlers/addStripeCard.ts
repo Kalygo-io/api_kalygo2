@@ -8,7 +8,7 @@ export async function addStripeCard(
   next: NextFunction
 ) {
   try {
-    console.log("GET addStripeCard");
+    console.log("GET addStripeCard", req.body);
 
     const result = await prisma.account.findFirst({
       where: {

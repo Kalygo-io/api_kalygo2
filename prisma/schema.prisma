@@ -10,15 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Film {
-  code  Int    @id @default(autoincrement())
-  title String
-  kind  String
-}
-
 model Account {
-  id                     Int       @id @default(autoincrement())
-  email                  String    @unique
+  id                     Int              @id @default(autoincrement())
+  email                  String           @unique
   firstName              String?
   lastName               String?
   alias                  String?
@@ -26,11 +20,12 @@ model Account {
   passwordHash           String?
   resetPasswordToken     String?
   emailVerificationToken String?
-  emailVerified          Boolean   @default(false)
-  stripeId               String?
+  emailVerified          Boolean          @default(false)
+  stripeId               String           @default("")
   Summary                Summary[]
-  createdAt              DateTime? @default(now())
-  updatedAt              DateTime? @updatedAt
+  createdAt              DateTime?        @default(now())
+  updatedAt              DateTime?        @updatedAt
+  subscriptionPlan       SubscriptionPlan @default(FREE)
 }
 
 model Summary {
@@ -47,4 +42,10 @@ model Summary {
 model Feedback {
   id       Int    @id @default(autoincrement())
   feedback String @unique
+}
+
+enum SubscriptionPlan {
+  FREE
+  STANDARD
+  PREMIUM
 }

@@ -59,10 +59,8 @@ export async function subscriptionSignUp(
     console.log("addCardStripeResp", addCardStripeResp);
 
     const subscription = await stripe.subscriptions.create({
-      // name: planName,
       customer: customer.id,
       items: [{ price: config.stripe.products.kalygoPremiumPlan.price }],
-      // trial_end: 1610403705, // UNIX timestamp of when first default payment source will be charged
       trial_period_days: 14, // UNIX timestamp of when first default payment source will be charged
     });
 

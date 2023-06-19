@@ -19,3 +19,7 @@ CREATE TABLE public.films (
     title       varchar(40) NOT NULL,
     kind        varchar(10)
 );
+
+##
+
+DELETE FROM "Account" WHERE id=81;

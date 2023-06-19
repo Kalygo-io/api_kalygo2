@@ -9,7 +9,6 @@ import {
   requestPasswordReset,
   verifyAccount,
   mockReceiveVerificationToken,
-  deleteAccount,
   subscriptionSignUp,
 } from "./handlers";
 
@@ -30,7 +29,6 @@ router
   .post(mockReceiveVerificationToken);
 router.route("/verify-account").post(verifyAccount);
 router.route("/reset-password").post(resetPassword);
-router.route("/delete-account").delete(authenticateToken, deleteAccount);
 // router.route("/accounts").delete(clearAccounts);
 
 export default router;

@@ -14,15 +14,27 @@ export async function getAccount(
     // @ts-ignore
     console.log("req.user", req.user);
 
-    const result = await prisma.account.findFirst({
+    const account = await prisma.account.findFirst({
       where: {
         // @ts-ignore
         email: req.user.email,
       },
     });
 
-    if (result) {
-      res.status(200).json(pick(result, ["email", "firstName", "lastName"]));
+    const subscriptions = await stripe.subscriptions.list({
+      customer: account?.stripeId,
+    });
+
+    if (account) {
+      res.status(200).json({
+        ...pick(account, [
+          "email",
+          "firstName",
+          "lastName",
+          "subscriptionPlan",
+        ]),
+        subscriptions: subscriptions,
+      });
     } else {
       res.status(404).send();
     }

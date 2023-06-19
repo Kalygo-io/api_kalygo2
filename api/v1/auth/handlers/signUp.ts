@@ -6,6 +6,7 @@ import { v4 } from "uuid";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { generateVerifyEmail_SES_Config } from "@emails/verifyEmail";
 import { sesClient } from "@/clients/ses_client";
+import { stripe } from "@/clients/stripe_client";
 
 export async function signUp(req: Request, res: Response, next: NextFunction) {
   try {
@@ -17,6 +18,12 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
       throw new Error("RATE_LIMIT");
     }
 
+    const customer: any = await stripe.customers.create({
+      // @ts-ignore
+      email: email,
+      description: "Kalygo customer",
+    });
+
     // hash password and store in db
     const passwordHash = await argon2.hash(password);
     const emailVerificationToken = v4();
@@ -26,6 +33,7 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
         email,
         passwordHash,
         emailVerificationToken,
+        stripeId: customer.id,
       },
     });
 

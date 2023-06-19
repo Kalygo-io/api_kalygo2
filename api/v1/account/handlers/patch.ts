@@ -7,12 +7,13 @@ export async function patchAccount(
   req: Request<{
     firstName: string;
     lastName: string;
+    subscriptionPlan: string;
   }>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { firstName, lastName } = req.body;
+    const { firstName, lastName, subscriptionPlan } = req.body;
 
     await prisma.account.updateMany({
       where: {
@@ -22,6 +23,7 @@ export async function patchAccount(
       data: {
         firstName: firstName,
         lastName: lastName,
+        subscriptionPlan: subscriptionPlan,
       },
     });
 

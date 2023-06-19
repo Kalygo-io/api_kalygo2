@@ -11,6 +11,17 @@ export async function cancelSubscription(
     console.log("cancelSubscription");
     const { subscriptionId } = req.body;
     await stripe.subscriptions.cancel(subscriptionId);
+
+    await prisma.account.updateMany({
+      where: {
+        // @ts-ignore
+        email: req.user.email,
+      },
+      data: {
+        subscriptionPlan: "STANDARD",
+      },
+    });
+
     res.status(200).send();
   } catch (e) {
     next(e);

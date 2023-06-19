@@ -23,3 +23,12 @@ CREATE TABLE public.films (
 ##
 
 DELETE FROM "Account" WHERE id=81;
+
+##
+
+UPDATE "Account" SET "stripeId"='<STRIPE_ID>' WHERE id=<RECORD_ID_HERE>;
+UPDATE "Account" SET "stripeId"='<STRIPE_ID>' WHERE id=<RECORD_ID_HERE>;
+
+##
+
+select * from "Account" where email='tad@cmdlabs.io';

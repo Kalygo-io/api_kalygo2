@@ -21,9 +21,15 @@ export async function getAccount(
       },
     });
 
-    const subscriptions = await stripe.subscriptions.list({
-      customer: account?.stripeId,
-    });
+    let subscriptions = {
+      data: [],
+    };
+    // if (account?.stripeId) {
+    if (null) {
+      subscriptions = await stripe.subscriptions.list({
+        customer: account?.stripeId,
+      });
+    }
 
     if (account) {
       res.status(200).json({

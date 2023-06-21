@@ -18,18 +18,26 @@ export async function logIn(
   try {
     const { email, password } = req.body;
 
-    // const result = await Account.findOne({ email, verified: true });
-    const result = await prisma.account.findFirst({
+    // const account = await Account.findOne({ email, verified: true });
+    const account = await prisma.account.findFirst({
       where: {
         email,
         emailVerified: true,
       },
     });
 
-    if (result) {
-      const { passwordHash } = result;
+    if (account) {
+      const { passwordHash } = account;
 
       if (await argon2.verify(passwordHash, password)) {
+        console.log("before recording login");
+        await prisma.login.create({
+          data: {
+            accountId: account.id,
+          },
+        });
+        console.log("after recording login");
+
         const token = generateAccessToken(email);
 
         res

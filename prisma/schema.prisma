@@ -26,6 +26,7 @@ model Account {
   createdAt              DateTime?        @default(now())
   updatedAt              DateTime?        @updatedAt
   subscriptionPlan       SubscriptionPlan @default(FREE)
+  Logins                 Login[]
 }
 
 model Summary {
@@ -42,6 +43,13 @@ model Summary {
 model Feedback {
   id       Int    @id @default(autoincrement())
   feedback String @unique
+}
+
+model Login {
+  id        Int       @id @default(autoincrement())
+  account   Account   @relation(fields: [accountId], references: [id])
+  accountId Int
+  createdAt DateTime? @default(now())
 }
 
 enum SubscriptionPlan {

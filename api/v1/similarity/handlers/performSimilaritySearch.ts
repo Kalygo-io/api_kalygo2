@@ -32,6 +32,9 @@ export async function performSimilaritySearch(
     // vvv vvv $0.0004 per 1000 tokens for embeddings with
     // https://platform.openai.com/docs/guides/embeddings/what-are-embeddings
     const text = fs.readFileSync(`${req.file?.path}`, "utf8");
+
+    console.log("text", text);
+
     const tokenCount = enc.encode(text).length;
     const apiCost = (tokenCount / 1000) * 0.0004; // text-embedding-ada-002
     const markup = 1.4; // 40%
@@ -49,7 +52,7 @@ export async function performSimilaritySearch(
 
     const query = req.body.query;
 
-    console.log("query", query);
+    // console.log("query", query);
 
     let intResults: any = text.match(/[^\.!\?]+[\.!\?]+/g);
 
@@ -63,6 +66,7 @@ export async function performSimilaritySearch(
     let metadata = intResults?.map((i: string, idx: number) => {
       return {
         index: idx,
+        lineNumber: idx,
       };
     });
     let ids: any = intResults?.map((i: string, idx: number) => {

@@ -17,20 +17,26 @@ const router = Router();
 //   .route("/upload")
 //   .post([multerS3Middleware.array("documents", 3)], upload);
 
-// router.route("/summarize").post([authenticateToken], summarize);
+router.route("/summarize").post([authenticateToken], summarize);
 
-router
-  .route("/summarize")
-  .post([authenticateToken, uploadToDiskMiddleware.single("file")], summarize);
+// router
+//   .route("/summarize")
+//   .post([authenticateToken, uploadToDiskMiddleware.single("file")], summarize);
 
 router.route("/account-summaries").get([authenticateToken], accountSummaries);
 
 router.route("/get-summary/:id").get([authenticateToken], getSummary);
 
+// router.route("/get-summarization-quote").post(
+// [authenticateToken, uploadToDiskMiddleware.array("documents", 3)],
+// [authenticateToken],
+// getSummarizationQuote
+// );
+
 router
   .route("/get-summarization-quote")
   .post(
-    [authenticateToken, uploadToDiskMiddleware.single("file")],
+    [authenticateToken, multerS3Middleware.array("documents")],
     getSummarizationQuote
   );
 

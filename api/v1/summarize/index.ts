@@ -3,6 +3,8 @@ import {
   getSummarizationQuote,
   accountSummaries,
   getSummary,
+  viewQueue,
+  removeJobFromQueue,
 } from "./handlers";
 
 import { Router } from "express";
@@ -18,6 +20,11 @@ const router = Router();
 //   .post([multerS3Middleware.array("documents", 3)], upload);
 
 router.route("/summarize").post([authenticateToken], summarize);
+
+router.route("/view-summary-queue").get([authenticateToken], viewQueue);
+router
+  .route("/remove-job-from-queue")
+  .delete([authenticateToken], removeJobFromQueue);
 
 // router
 //   .route("/summarize")

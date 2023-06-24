@@ -6,6 +6,9 @@ import { OpenAI } from "@/clients/openai_client";
 import { s3Client, s3, GetObjectCommand } from "@/clients/s3_client";
 
 import { encoding_for_model } from "@dqbd/tiktoken";
+import { summaryJobComplete_SES_Config } from "./emails/summaryJobComplete";
+import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
+import { sesClient } from "./clients/ses_client";
 
 const enc = encoding_for_model("gpt-3.5-turbo");
 
@@ -166,7 +169,7 @@ summarizationJobQueue.process(async function (job, done) {
     job.progress(Math.floor((i / parts.length) * 100));
   }
 
-  await prisma.summary.create({
+  const summaryRecord = await prisma.summary.create({
     data: {
       requesterId: account!.id,
       content: finalAnswer.join("\n\n"),
@@ -181,6 +184,14 @@ summarizationJobQueue.process(async function (job, done) {
   // Send an email
 
   job.progress(100);
+
+  try {
+    const emailConfig = summaryJobComplete_SES_Config(
+      email,
+      `${process.env.FRONTEND_HOSTNAME}/dashboard/summary?summary-id=${summaryRecord.id}`
+    );
+    await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
+  } catch (e) {}
 
   done();
 

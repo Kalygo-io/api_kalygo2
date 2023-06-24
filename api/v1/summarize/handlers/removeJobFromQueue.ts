@@ -9,9 +9,7 @@ export async function removeJobFromQueue(
 ) {
   try {
     console.log("DELETE removeJobFromQueue", req.body.jobId);
-
     await summarizationJobQueue.removeJobs(req.body.jobId);
-
     res.status(200).send();
   } catch (e) {
     next(e);

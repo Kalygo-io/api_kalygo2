@@ -58,11 +58,6 @@ summarizationJobQueue.process(async function (job, done) {
     console.log(bucket, key, language, email, originalName);
 
     if (!bucket || !key || !language || !email || !originalName) {
-      console.log(
-        "Invalid Data",
-        !bucket || !key || !language || !email || !originalName
-      );
-
       done(new Error("Invalid Data"));
       return;
     }
@@ -70,6 +65,11 @@ summarizationJobQueue.process(async function (job, done) {
     const account = await prisma.account.findFirst({
       where: {
         email: email,
+        emailVerified: true,
+      },
+      include: {
+        SummaryCredits: true,
+        VectorSearchCredits: true,
       },
     });
 
@@ -96,12 +96,24 @@ summarizationJobQueue.process(async function (job, done) {
       (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2)
     );
 
-    await stripe.charges.create({
-      amount: quote * 100,
-      currency: "usd",
-      description: `Summarization for ${bucket}/${key}`,
-      customer: account?.stripeId,
-    });
+    const accountSummaryCredits = account?.SummaryCredits?.amount;
+    if (accountSummaryCredits && accountSummaryCredits > 0) {
+      await prisma.summaryCredits.updateMany({
+        where: {
+          accountId: account.id,
+        },
+        data: {
+          amount: accountSummaryCredits - 1,
+        },
+      });
+    } else {
+      await stripe.charges.create({
+        amount: quote * 100,
+        currency: "usd",
+        description: `Summarization for ${bucket}/${key}`,
+        customer: account?.stripeId,
+      });
+    }
 
     console.log("splitting text...");
 
@@ -187,7 +199,6 @@ summarizationJobQueue.process(async function (job, done) {
     });
 
     // Send an email
-
     job.progress(100);
 
     try {

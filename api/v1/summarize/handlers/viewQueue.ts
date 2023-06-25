@@ -10,9 +10,12 @@ export async function viewQueue(
   try {
     console.log("GET viewQueue");
 
-    const activeJobs = await summarizationJobQueue.getJobs([]);
+    let activeJobs = await summarizationJobQueue.getJobs([]);
 
-    console.log("activeJobs", activeJobs);
+    activeJobs = activeJobs.filter((i) => {
+      // @ts-ignore
+      return i?.data?.email === req?.user?.email;
+    });
 
     res.status(200).send({
       activeJobs,

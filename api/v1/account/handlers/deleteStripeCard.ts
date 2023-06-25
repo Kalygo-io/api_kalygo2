@@ -18,17 +18,29 @@ export async function deleteStripeCard(
       },
     });
 
-    console.log("account", account);
-
     const subscriptions = await stripe.subscriptions.list({
       customer: account?.stripeId,
     });
 
-    if (account?.stripeId && get(subscriptions, "data").length === 0) {
+    if (account?.stripeId && get(subscriptions, "data", []).length === 0) {
+      for (let s of get(subscriptions, "data")) {
+        await stripe.subscriptions.cancel(s.id);
+      }
+
       const addCardStripeResp = await stripe.customers.deleteSource(
         account?.stripeId,
         req.body.card_id
       );
+
+      await prisma.account.updateMany({
+        where: {
+          // @ts-ignore
+          email: req.user.email,
+        },
+        data: {
+          subscriptionPlan: "FREE",
+        },
+      });
 
       console.log("addCardStripeResp", addCardStripeResp);
       res.status(200).send();

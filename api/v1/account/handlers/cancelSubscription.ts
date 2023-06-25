@@ -18,7 +18,7 @@ export async function cancelSubscription(
         email: req.user.email,
       },
       data: {
-        subscriptionPlan: "STANDARD",
+        subscriptionPlan: "FREE",
       },
     });
 

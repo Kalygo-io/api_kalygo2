@@ -1,6 +1,5 @@
 import prisma from "@db/prisma_client";
 import { stripe } from "@/clients/stripe_client";
-import pick from "lodash.pick";
 import get from "lodash.get";
 import { Request, Response, NextFunction } from "express";
 import config from "@/config";
@@ -13,7 +12,7 @@ export async function changePlan(
   next: NextFunction
 ) {
   try {
-    console.log("changePlan");
+    console.log("PATCH /change-plan");
 
     const { subscriptionPlan } = req.body;
 
@@ -48,15 +47,17 @@ export async function changePlan(
         cards = await stripe.customers.listSources(account?.stripeId, {
           object: "card",
         });
-        if (get(cards, "data").length === 0) res.status(402).send();
-        if (get(subscriptions, "data", []).length === 0) {
+        if (get(cards, "data").length === 0) {
+          res.status(402).send();
+          return;
+        } else if (get(subscriptions, "data", []).length === 0) {
           await stripe.subscriptions.create({
             customer: account?.stripeId,
             items: [{ price: config.stripe.products.kalygoPremiumPlan.price }],
             trial_period_days: 14, // UNIX timestamp of when first default payment source will be charged
           });
         } else {
-          throw "Existing subscription exists";
+          throw new Error("Existing subscription exists");
         }
         break;
       default:

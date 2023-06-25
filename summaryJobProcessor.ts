@@ -53,11 +53,14 @@ const streamToString = (stream: any) =>
 
 summarizationJobQueue.process(async function (job, done) {
   console.log("processing JOB...", job.data);
-  const { bucket, key, language, email } = job.data;
-  console.log(bucket, key, language, email);
+  const { bucket, key, language, email, originalName } = job.data;
+  console.log(bucket, key, language, email, originalName);
 
-  if (!bucket || !key || !language || !email) {
-    console.log("Invalid Data", !bucket || !key || !language || !email);
+  if (!bucket || !key || !language || !email || !originalName) {
+    console.log(
+      "Invalid Data",
+      !bucket || !key || !language || !email || !originalName
+    );
 
     done(new Error("Invalid Data"));
     return;
@@ -173,6 +176,7 @@ summarizationJobQueue.process(async function (job, done) {
     data: {
       requesterId: account!.id,
       content: finalAnswer.join("\n\n"),
+      originalFileName: originalName,
       originalCharCount: text.length,
       condensedCharCount: finalAnswer.reduce(
         (acc, element) => acc + element!.length,
@@ -193,7 +197,7 @@ summarizationJobQueue.process(async function (job, done) {
     await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
   } catch (e) {}
 
-  done();
+  done(null, { summaryId: summaryRecord.id });
 
   // // or give an error if error
   // done(new Error('error transcoding'));

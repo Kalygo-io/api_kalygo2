@@ -33,9 +33,11 @@ model Summary {
   id                 Int       @id @default(autoincrement())
   requester          Account   @relation(fields: [requesterId], references: [id])
   requesterId        Int
+  originalFileName   String    @default("")
   content            String
   originalCharCount  Int
   condensedCharCount Int
+  processedCharCount Int       @default(0)
   createdAt          DateTime? @default(now())
   updatedAt          DateTime? @updatedAt
 }

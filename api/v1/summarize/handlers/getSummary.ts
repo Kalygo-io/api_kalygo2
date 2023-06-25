@@ -35,7 +35,11 @@ export async function getSummary(
     console.log("account", account);
     console.log("summary", summary);
 
-    res.status(200).json(summary || []);
+    if (summary) {
+      res.status(200).json(summary || []);
+    } else {
+      res.status(404).send();
+    }
   } catch (e) {
     next(e);
   }

@@ -52,152 +52,156 @@ const streamToString = (stream: any) =>
   });
 
 summarizationJobQueue.process(async function (job, done) {
-  console.log("processing JOB...", job.data);
-  const { bucket, key, language, email, originalName } = job.data;
-  console.log(bucket, key, language, email, originalName);
+  try {
+    console.log("processing JOB...", job.data);
+    const { bucket, key, language, email, originalName } = job.data;
+    console.log(bucket, key, language, email, originalName);
 
-  if (!bucket || !key || !language || !email || !originalName) {
-    console.log(
-      "Invalid Data",
-      !bucket || !key || !language || !email || !originalName
-    );
+    if (!bucket || !key || !language || !email || !originalName) {
+      console.log(
+        "Invalid Data",
+        !bucket || !key || !language || !email || !originalName
+      );
 
-    done(new Error("Invalid Data"));
-    return;
-  }
-
-  const account = await prisma.account.findFirst({
-    where: {
-      email: email,
-    },
-  });
-
-  console.log("account", account);
-
-  if (!account?.stripeId) {
-    done(new Error("402"));
-    return;
-  }
-
-  // download file from S3
-  const command = new GetObjectCommand({
-    Bucket: bucket,
-    Key: key,
-  });
-
-  const { Body } = await s3.send(command);
-  const text = (await streamToString(Body)) as string;
-
-  const tokenCount: number = enc.encode(text).length;
-  const apiCost = (tokenCount / 1000) * 0.007;
-  const markup = 1.4; // 40%
-  const quote: number = Number.parseFloat(
-    (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2)
-  );
-
-  await stripe.charges.create({
-    amount: quote * 100,
-    currency: "usd",
-    description: `Summarization for ${bucket}/${key}`,
-    customer: account?.stripeId,
-  });
-
-  console.log("splitting text...");
-
-  let parts = [text];
-
-  while (!isPartsValid(parts)) {
-    let newParts = [];
-
-    for (let i = 0; i < parts.length; i++) {
-      const prompt = PROMPT_PREFIX(language) + parts[i];
-
-      if (enc.encode(prompt).length > 4000) {
-        let middle = Math.floor(prompt.length / 2);
-        // let before = prompt.lastIndexOf(" ", middle);
-        // let after = prompt.indexOf(" ", middle + 1);
-        let before = middle;
-        let after = middle + 1;
-
-        if (middle - before < after - middle) {
-          middle = before;
-        } else middle = after;
-
-        const s1 = prompt.substring(0, middle);
-        const s2 = prompt.substring(middle + 1);
-
-        newParts.push(s1, s2);
-      } else newParts.push(parts[i]);
+      done(new Error("Invalid Data"));
+      return;
     }
 
-    parts = newParts;
-  }
-
-  console.log("splitting text DONE");
-
-  let finalAnswer = [];
-  let tokenAccum: number = 0;
-  console.log("parts.length", parts.length);
-
-  for (let i = 0; i < parts.length; i++) {
-    const prompt = `${PROMPT_PREFIX(language)} ${parts[i]}`;
-
-    tokenAccum += enc.encode(prompt).length;
-
-    console.log("part", i);
-    console.log("token length of part", enc.encode(prompt).length);
-    console.log("tokenAccum", tokenAccum);
-
-    if (tokenAccum > 4000) {
-      await sleep(60000);
-      tokenAccum = 0;
-    }
-
-    const completion = await OpenAI.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      temperature: 0,
+    const account = await prisma.account.findFirst({
+      where: {
+        email: email,
+      },
     });
 
-    finalAnswer.push(completion.data?.choices[0]?.message?.content);
+    console.log("account", account);
 
-    // console.log("i", i, "parts.length", parts.length);
-    // console.log("progress", Math.floor((i / parts.length) * 100));
+    if (!account?.stripeId) {
+      done(new Error("402"));
+      return;
+    }
 
-    job.progress(Math.floor((i / parts.length) * 100));
-  }
+    // download file from S3
+    const command = new GetObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    });
 
-  const summaryRecord = await prisma.summary.create({
-    data: {
-      requesterId: account!.id,
-      content: finalAnswer.join("\n\n"),
-      originalFileName: originalName,
-      originalCharCount: text.length,
-      condensedCharCount: finalAnswer.reduce(
-        (acc, element) => acc + element!.length,
-        0
-      ),
-    },
-  });
+    const { Body } = await s3.send(command);
+    const text = (await streamToString(Body)) as string;
 
-  // Send an email
-
-  job.progress(100);
-
-  try {
-    const emailConfig = summaryJobComplete_SES_Config(
-      email,
-      `${process.env.FRONTEND_HOSTNAME}/dashboard/summary?summary-id=${summaryRecord.id}`
+    const tokenCount: number = enc.encode(text).length;
+    const apiCost = (tokenCount / 1000) * 0.007;
+    const markup = 1.4; // 40%
+    const quote: number = Number.parseFloat(
+      (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2)
     );
-    await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
-  } catch (e) {}
 
-  done(null, { summaryId: summaryRecord.id });
+    await stripe.charges.create({
+      amount: quote * 100,
+      currency: "usd",
+      description: `Summarization for ${bucket}/${key}`,
+      customer: account?.stripeId,
+    });
+
+    console.log("splitting text...");
+
+    let parts = [text];
+
+    while (!isPartsValid(parts)) {
+      let newParts = [];
+
+      for (let i = 0; i < parts.length; i++) {
+        const prompt = PROMPT_PREFIX(language) + parts[i];
+
+        if (enc.encode(prompt).length > 4000) {
+          let middle = Math.floor(prompt.length / 2);
+          // let before = prompt.lastIndexOf(" ", middle);
+          // let after = prompt.indexOf(" ", middle + 1);
+          let before = middle;
+          let after = middle + 1;
+
+          if (middle - before < after - middle) {
+            middle = before;
+          } else middle = after;
+
+          const s1 = prompt.substring(0, middle);
+          const s2 = prompt.substring(middle + 1);
+
+          newParts.push(s1, s2);
+        } else newParts.push(parts[i]);
+      }
+
+      parts = newParts;
+    }
+
+    console.log("splitting text DONE");
+
+    let finalAnswer = [];
+    let tokenAccum: number = 0;
+    console.log("parts.length", parts.length);
+
+    for (let i = 0; i < parts.length; i++) {
+      const prompt = `${PROMPT_PREFIX(language)} ${parts[i]}`;
+
+      tokenAccum += enc.encode(prompt).length;
+
+      console.log("part", i);
+      console.log("token length of part", enc.encode(prompt).length);
+      console.log("tokenAccum", tokenAccum);
+
+      if (tokenAccum > 4000) {
+        await sleep(60000);
+        tokenAccum = 0;
+      }
+
+      const completion = await OpenAI.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        temperature: 0,
+      });
+
+      finalAnswer.push(completion.data?.choices[0]?.message?.content);
+
+      // console.log("i", i, "parts.length", parts.length);
+      // console.log("progress", Math.floor((i / parts.length) * 100));
+
+      job.progress(Math.floor((i / parts.length) * 100));
+    }
+
+    const summaryRecord = await prisma.summary.create({
+      data: {
+        requesterId: account!.id,
+        content: finalAnswer.join("\n\n"),
+        originalFileName: originalName,
+        originalCharCount: text.length,
+        condensedCharCount: finalAnswer.reduce(
+          (acc, element) => acc + element!.length,
+          0
+        ),
+      },
+    });
+
+    // Send an email
+
+    job.progress(100);
+
+    try {
+      const emailConfig = summaryJobComplete_SES_Config(
+        email,
+        `${process.env.FRONTEND_HOSTNAME}/dashboard/summary?summary-id=${summaryRecord.id}`
+      );
+      await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
+    } catch (e) {}
+
+    done(null, { summaryId: summaryRecord.id });
+  } catch (e) {
+    done(new Error(e ? e.toString() : "Unknown Error"));
+  }
 
   // // or give an error if error
   // done(new Error('error transcoding'));

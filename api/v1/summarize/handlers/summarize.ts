@@ -27,14 +27,19 @@ export async function summarize(
     for (let i of req.body.files) {
       console.log("<- i ->", i);
 
-      summarizationJobQueue.add({
-        bucket: "kalygo-documents",
-        key: i.key,
-        originalName: i.originalName,
-        language: language,
-        // @ts-ignore
-        email: req.user.email,
-      });
+      summarizationJobQueue.add(
+        {
+          bucket: "kalygo-documents",
+          key: i.key,
+          originalName: i.originalName,
+          language: language,
+          // @ts-ignore
+          email: req.user.email,
+        },
+        {
+          timeout: 300000,
+        }
+      );
     }
 
     res.status(200).send();

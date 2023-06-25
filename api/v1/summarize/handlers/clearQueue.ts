@@ -8,8 +8,8 @@ export async function clearQueue(
   next: NextFunction
 ) {
   try {
-    console.log("GET clearQueue");
-    await summarizationJobQueue.clean(0);
+    console.log("POST clearQueue");
+    await summarizationJobQueue.removeJobs("*");
     res.status(200).send();
   } catch (e) {
     next(e);

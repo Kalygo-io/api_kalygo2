@@ -11,8 +11,8 @@ datasource db {
 }
 
 model Account {
-  id                     Int              @id @default(autoincrement())
-  email                  String           @unique
+  id                     Int                  @id @default(autoincrement())
+  email                  String               @unique
   firstName              String?
   lastName               String?
   alias                  String?
@@ -20,13 +20,15 @@ model Account {
   passwordHash           String?
   resetPasswordToken     String?
   emailVerificationToken String?
-  emailVerified          Boolean          @default(false)
-  stripeId               String           @default("")
-  Summary                Summary[]
-  createdAt              DateTime?        @default(now())
-  updatedAt              DateTime?        @updatedAt
-  subscriptionPlan       SubscriptionPlan @default(FREE)
+  emailVerified          Boolean              @default(false)
+  stripeId               String               @default("")
+  Summaries              Summary[]
+  createdAt              DateTime?            @default(now())
+  updatedAt              DateTime?            @updatedAt
+  subscriptionPlan       SubscriptionPlan     @default(FREE)
   Logins                 Login[]
+  SummaryCredits         SummaryCredits?
+  VectorSearchCredits    VectorSearchCredits?
 }
 
 model Summary {
@@ -40,6 +42,20 @@ model Summary {
   processedCharCount Int       @default(0)
   createdAt          DateTime? @default(now())
   updatedAt          DateTime? @updatedAt
+}
+
+model SummaryCredits {
+  id        Int     @id @default(autoincrement())
+  account   Account @relation(fields: [accountId], references: [id])
+  accountId Int     @unique
+  amount    Int
+}
+
+model VectorSearchCredits {
+  id        Int     @id @default(autoincrement())
+  account   Account @relation(fields: [accountId], references: [id])
+  accountId Int     @unique
+  amount    Int
 }
 
 model Feedback {

@@ -16,7 +16,8 @@
     "stripe:createProduct": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/createProduct.ts",
     "stripe:createPrice": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/createPrice.ts",
     "stripe:createSubscription": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/createSubscription.ts",
-    "summaryJobProcessor": "ts-node -r tsconfig-paths/register summaryJobProcessor.ts"
+    "summaryJobProcessor": "ts-node -r tsconfig-paths/register summaryJobProcessor.ts",
+    "credits:giveSummaryCredits": "ts-node -r tsconfig-paths/register scripts/giveSummaryCredits.ts"
   },
   "repository": {
     "type": "git",
@@ -42,6 +43,7 @@
     "@aws-sdk/client-ses": "^3.332.0",
     "@dqbd/tiktoken": "^1.0.7",
     "@prisma/client": "^4.14.0",
+    "@types/express-serve-static-core": "^4.17.35",
     "argon2": "^0.30.3",
     "bull": "^4.10.4",
     "chromadb": "^1.5.2",

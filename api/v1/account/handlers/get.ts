@@ -2,6 +2,7 @@ import prisma from "@db/prisma_client";
 import { stripe } from "@/clients/stripe_client";
 import pick from "lodash.pick";
 import { Request, Response, NextFunction } from "express";
+import get from "lodash.get";
 
 export async function getAccount(
   req: Request,
@@ -18,6 +19,10 @@ export async function getAccount(
       where: {
         // @ts-ignore
         email: req.user.email,
+      },
+      include: {
+        SummaryCredits: true,
+        VectorSearchCredits: true,
       },
     });
 
@@ -39,6 +44,8 @@ export async function getAccount(
           "subscriptionPlan",
         ]),
         subscriptions: subscriptions,
+        summaryCredits: get(account, "SummaryCredits.amount", 0),
+        vectorSearchCredits: get(account, "VectorSearchCredits.amount", 0),
       });
     } else {
       res.status(404).send();

@@ -18,4 +18,4 @@ docker run --name kalygo-redis-queue -p 6379:6379 -d redis
 
 ### 2 tried pushing via a merge or directly calling the .git hook
 
-`./.git/hooks/post-merge` or `git merge <BRANCH_WITH_BULL_LIBRARY_CHANGES>` 
+`./.git/hooks/post-merge` or `git merge <BRANCH_WITH_BULL_LIBRARY_CHANGES>`

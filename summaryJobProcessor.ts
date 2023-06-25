@@ -199,8 +199,8 @@ summarizationJobQueue.process(async function (job, done) {
     } catch (e) {}
 
     done(null, { summaryId: summaryRecord.id });
-  } catch (e) {
-    done(new Error(e ? e.toString() : "Unknown Error"));
+  } catch (e: any) {
+    done(new Error(e ? e.message : "Something went wrong"));
   }
 
   // // or give an error if error

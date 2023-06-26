@@ -12,10 +12,10 @@ export async function viewQueue(
 
     let activeJobs = await summarizationJobQueue.getJobs([]);
 
-    activeJobs = activeJobs.filter((i) => {
-      // @ts-ignore
-      return i?.data?.email === req?.user?.email;
-    });
+    // activeJobs = activeJobs.filter((i) => {
+    //   // @ts-ignore
+    //   return i?.data?.email === req?.user?.email;
+    // });
 
     res.status(200).send({
       activeJobs,

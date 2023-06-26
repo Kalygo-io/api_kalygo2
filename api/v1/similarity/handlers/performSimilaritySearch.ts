@@ -52,12 +52,9 @@ export async function performSimilaritySearch(
 
     const query = req.body.query;
 
-    // console.log("query", query);
-
-    let intResults: any = text.match(/[^\.!\?]+[\.!\?]+/g);
-
+    // let intResults: any = text.match(/[^\.!\?]+[\.!\?]+/g);
+    let intResults: any = text.split(/[ ,]+/);
     // console.log("intResults", intResults);
-
     intResults = intResults?.slice(0, 2048);
 
     let chunks = intResults?.map((i: string, idx: number) => {
@@ -101,32 +98,11 @@ export async function performSimilaritySearch(
       queryTexts: [query],
     });
 
-    // console.log(results);
-
-    // const vectorStore = await HNSWLib.fromTexts(
-    //   chunks,
-    //   metadata,
-    //   new OpenAIEmbeddings()
-    // );
-
-    // const vectorStore = await FaissStore.fromTexts(
-    //   chunks,
-    //   metadata,
-    //   new OpenAIEmbeddings()
-    // );
-
-    // const results = await vectorStore.similaritySearchWithScore(query);
-
-    // console.log("___ --- ___ --- ___");
-
     try {
       await client.deleteCollection({
         name: hashIdOfText,
       });
     } catch (e) {}
-
-    // console.log(results);
-    // res.status(200).send();
 
     res.status(200).json({
       results: results,

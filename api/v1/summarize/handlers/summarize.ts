@@ -37,7 +37,7 @@ export async function summarize(
           email: req.user.email,
         },
         {
-          timeout: 300000,
+          timeout: 600000,
         }
       );
     }

@@ -3,7 +3,7 @@ import prisma from "@/db/prisma_client";
 import { stripe } from "@/clients/stripe_client";
 import { OpenAI } from "@/clients/openai_client";
 
-import { s3Client, s3, GetObjectCommand } from "@/clients/s3_client";
+import { s3, GetObjectCommand } from "@/clients/s3_client";
 
 import { encoding_for_model } from "@dqbd/tiktoken";
 import { summaryJobComplete_SES_Config } from "./emails/summaryJobComplete";
@@ -189,7 +189,7 @@ summarizationJobQueue.process(async function (job, done) {
       data: {
         requesterId: account!.id,
         content: finalAnswer.join("\n\n"),
-        originalFileName: originalName,
+        filename: originalName,
         originalCharCount: text.length,
         condensedCharCount: finalAnswer.reduce(
           (acc, element) => acc + element!.length,

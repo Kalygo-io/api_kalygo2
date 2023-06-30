@@ -7,6 +7,7 @@ import version from "./version";
 import summarize from "./summarize";
 import account from "./account";
 import similaritySearch from "./similarity";
+import mailingList from "./mailingList";
 
 const router = express.Router();
 
@@ -15,6 +16,7 @@ router.use(version);
 router.use(i18n);
 
 router.use("/auth", auth);
+router.use("/mailingList", mailingList);
 router.use("/account", account);
 router.use("/feedback", feedback);
 

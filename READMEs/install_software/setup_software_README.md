@@ -8,6 +8,7 @@ sudo vi /etc/nginx/nginx.conf
 nginx -v
 sudo systemctl start nginx.service
 sudo systemctl status nginx.service
+sudo nginx -t
 ```
 
 you can now access your nginx server via the EIP - http://184.73.125.247/

@@ -1,0 +1,30 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "elasticloadbalancing:CreateTargetGroup",
+      "Resource": "arn:aws:elasticloadbalancing:us-east-1:333427308013:targetgroup/kalygo-api-target-group/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "elasticloadbalancing:RegisterTargets",
+      "Resource": "arn:aws:elasticloadbalancing:us-east-1:333427308013:targetgroup/kalygo-api-target-group/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "ec2:AuthorizeSecurityGroupIngress",
+      "Resource": "arn:aws:ec2:us-east-1:333427308013:security-group/sg-03436e5356638a1ba"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "elasticloadbalancing:CreateLoadBalancer",
+      "Resource": "arn:aws:elasticloadbalancing:us-east-1:333427308013:loadbalancer/app/kalygo-api/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "elasticloadbalancing:CreateListener",
+      "Resource": "arn:aws:elasticloadbalancing:us-east-1:333427308013:loadbalancer/app/kalygo-api/*"
+    }
+  ]
+}

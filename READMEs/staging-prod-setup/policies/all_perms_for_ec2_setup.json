@@ -1,0 +1,85 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "ec2:CreateKeyPair",
+      "Resource": "arn:aws:ec2:<AWS_REGION>:<ACCOUNT_ID>:key-pair/<DESIRED_KEY_PAIR_NAME_HERE>"
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["sts:*", "ec2:CreateVpc", "ec2:DeleteTags", "ec2:CreateTags"],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "ec2:CreateSubnet",
+      "Resource": [
+        "arn:aws:ec2:<AWS_REGION>:<ACCOUNT_ID>:subnet/*",
+        "arn:aws:ec2:<AWS_REGION>:<ACCOUNT_ID>:vpc/<VPC_FOR_SERVER(S)_HERE"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["ec2:CreateSecurityGroup"],
+      "Resource": [
+        "arn:aws:ec2:<AWS_REGION>:<AWS_REGION>:security-group/*",
+        "arn:aws:ec2:<AWS_REGION>:<AWS_REGION>:vpc/<VPC_ID>"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["ec2:RunInstances"],
+      "Resource": [
+        "arn:aws:ec2:us-east-1:333427308013:instance/*",
+        "arn:aws:ec2:us-east-1:333427308013:key-pair/Kalygo_server",
+        "arn:aws:ec2:us-east-1:333427308013:network-interface/*",
+        "arn:aws:ec2:us-east-1:333427308013:security-group/sg-08f67194018a52053",
+        "arn:aws:ec2:us-east-1:333427308013:subnet/subnet-031c4e39ef0f77db8",
+        "arn:aws:ec2:us-east-1:333427308013:volume/*",
+        "arn:aws:ec2:us-east-1::image/ami-06b09bfacae1453cb"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "ec2:AvailabilityZone": ["<AZ_IN_REGION>"]
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["ec2:AllocateAddress"],
+      "Resource": "arn:aws:ec2:us-east-1:333427308013:elastic-ip/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["ec2:AssociateAddress"],
+      "Resource": [
+        "arn:aws:ec2:us-east-1:333427308013:elastic-ip/eipalloc-01cbbe3e5845a4cc6",
+        "arn:aws:ec2:us-east-1:333427308013:instance/i-02ca7250acf7b159e"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["ec2:CreateInternetGateway"],
+      "Resource": ["arn:aws:ec2:us-east-1:333427308013:internet-gateway/*"]
+    },
+    {
+      "Effect": "Allow",
+      "Action": "ec2:AttachInternetGateway",
+      "Resource": [
+        "arn:aws:ec2:us-east-1:333427308013:internet-gateway/igw-0e3bdbad7d72b7a3a",
+        "arn:aws:ec2:us-east-1:333427308013:vpc/vpc-0d5be98ca00e10f9b"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": "ec2:CreateRoute",
+      "Resource": "arn:aws:ec2:us-east-1:333427308013:route-table/rtb-0069eb414ef4604b9"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "ec2:AuthorizeSecurityGroupIngress",
+      "Resource": "arn:aws:ec2:us-east-1:333427308013:security-group/sg-08f67194018a52053"
+    }
+  ]
+}

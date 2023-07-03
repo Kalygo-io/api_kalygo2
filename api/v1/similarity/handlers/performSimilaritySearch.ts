@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { get_encoding, encoding_for_model } from "@dqbd/tiktoken";
 import * as fs from "fs";
 import crypto from "crypto";
-import { ChromaClient } from "chromadb";
 import prisma from "@/db/prisma_client";
+import { chromaClient } from "@/clients/chroma_client";
 
 const enc = encoding_for_model("text-embedding-ada-002");
 
@@ -13,8 +13,6 @@ import { OpenAIEmbeddingFunction } from "chromadb";
 const embedder = new OpenAIEmbeddingFunction({
   openai_api_key: process.env.OPENAI_API_KEY!,
 });
-
-const client = new ChromaClient();
 
 export async function performSimilaritySearch(
   req: Request,
@@ -77,12 +75,12 @@ export async function performSimilaritySearch(
     console.log("hashIdOfText", hashIdOfText);
 
     try {
-      await client.deleteCollection({
+      await chromaClient.deleteCollection({
         name: hashIdOfText,
       });
     } catch (e) {}
 
-    const test_collection = await client.createCollection({
+    const test_collection = await chromaClient.createCollection({
       name: hashIdOfText,
       embeddingFunction: embedder,
     });
@@ -99,7 +97,7 @@ export async function performSimilaritySearch(
     });
 
     try {
-      await client.deleteCollection({
+      await chromaClient.deleteCollection({
         name: hashIdOfText,
       });
     } catch (e) {}

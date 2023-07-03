@@ -43,8 +43,7 @@ export async function logIn(
         res
           .status(200)
           .cookie("jwt", token, {
-            // sameSite: "strict",
-            sameSite: "lax",
+            sameSite: "strict",
             path: "/",
             expires: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 1),
             httpOnly: true,

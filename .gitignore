@@ -13,10 +13,15 @@ ecosystem.config.js
 kalygo*.sql
 
 inventory
+inventory.staging
+inventory.prod
 ansible.cfg
 
 cicd.yml
-
+cicd.staging.yml
+cicd.production.yml
 cicd_example.yml
 
-ecosystem.config.js.bk
+# ecosystem.config.js.bk
+ecosystem.config.prod.js
+ecosystem.config.staging.js

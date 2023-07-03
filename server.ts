@@ -41,6 +41,9 @@ app.set("views", "./views");
 app.set("view engine", "pug");
 
 app.use(requestLogger);
+
+console.log("*>*>*>", process.env.FRONTEND_HOSTNAME);
+
 app.use(
   cors({
     origin:

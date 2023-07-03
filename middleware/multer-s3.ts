@@ -9,6 +9,7 @@ const multerS3Middleware = multer({
     bucket: process.env.S3_DOCUMENTS_BUCKET!,
     metadata: function (req: Request, file: any, cb: any) {
       console.log("--- multerS3 metadata ---");
+      console.log("DEBUG S3_DOCUMENTS_BUCKET", process.env.S3_DOCUMENTS_BUCKET);
       cb(null, { fieldName: file.fieldname });
     },
     key: function (req: Request, file: any, cb: any) {

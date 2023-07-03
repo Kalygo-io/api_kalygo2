@@ -20,6 +20,12 @@ export async function summarize(
       case "es":
         language = "Spanish";
         break;
+      case "fr":
+        language = "French";
+        break;
+      case "pt":
+        language = "Portuguese";
+        break;
       default:
         language = "English";
     }
@@ -29,7 +35,7 @@ export async function summarize(
 
       summarizationJobQueue.add(
         {
-          bucket: "kalygo-documents",
+          bucket: process.env.S3_DOCUMENTS_BUCKET,
           key: i.key,
           originalName: i.originalName,
           language: language,

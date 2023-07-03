@@ -6,7 +6,7 @@ import { s3Client } from "@/clients/s3_client";
 const multerS3Middleware = multer({
   storage: multerS3({
     s3: s3Client,
-    bucket: "kalygo-documents",
+    bucket: process.env.S3_DOCUMENTS_BUCKET!,
     metadata: function (req: Request, file: any, cb: any) {
       console.log("--- multerS3 metadata ---");
       cb(null, { fieldName: file.fieldname });

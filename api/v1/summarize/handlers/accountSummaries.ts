@@ -28,8 +28,8 @@ export async function accountSummaries(
       },
     });
 
-    console.log("account", account);
-    console.log("accountSummaries", summaries);
+    // console.log("account", account);
+    // console.log("accountSummaries", summaries);
 
     res.status(200).json(summaries || []);
   } catch (e) {

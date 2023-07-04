@@ -1,4 +1,5 @@
 import { similaritySearch } from "./similaritySearch";
 import { similaritySearchWithQueue } from "./similaritySearchWithQueue";
+import { getVectorSearch } from "./getVectorSearch";
 
-export { similaritySearch, similaritySearchWithQueue };
+export { getVectorSearch, similaritySearch, similaritySearchWithQueue };

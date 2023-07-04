@@ -1,4 +1,8 @@
-import { similaritySearch, similaritySearchWithQueue } from "./handlers";
+import {
+  similaritySearch,
+  similaritySearchWithQueue,
+  getVectorSearch,
+} from "./handlers";
 
 import { Router } from "express";
 
@@ -13,6 +17,8 @@ const router = Router();
 //   .post([multerS3Middleware.array("documents", 3)], upload);
 
 // router.route("/summarize").post([authenticateToken], summarize);
+
+router.route("/vector-search/:id").get([authenticateToken], getVectorSearch);
 
 router
   .route("/similarity-search")

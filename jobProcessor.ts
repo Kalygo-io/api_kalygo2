@@ -1,11 +1,12 @@
 import { jobQueue } from "@/clients/bull_client";
 import { QueueJobTypes } from "@/types/JobTypes";
-import { summaryJobLogic } from "@/jobHandlers/summary";
-import { vectorSearchJobLogic } from "@/jobHandlers/vectorSearch";
+import { summaryJobLogic } from "@/jobHandlers/summaryJobLogic";
+import { vectorSearchJobLogic } from "@/jobHandlers/vectorSearchLogic";
 
 jobQueue.process(async function (job, done) {
   try {
     console.log("processing JOB...", job.data);
+    console.log(process.env.S3_DOCUMENT_BUCKET);
 
     const { jobType, params } = job.data;
 

@@ -8,6 +8,7 @@ import { encoding_for_model } from "@dqbd/tiktoken";
 import { summaryJobComplete_SES_Config } from "@/emails/summaryJobComplete";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { sesClient } from "@/clients/ses_client";
+import { streamToString } from "@/utils/streamToString";
 
 const enc = encoding_for_model("gpt-3.5-turbo");
 
@@ -36,14 +37,6 @@ const PROMPT_PREFIX = (
   - In cases where accuracy is not possible please provide a disclaimer
         
   Here is the ORIGINAL_TEXT:`;
-
-const streamToString = (stream: any) =>
-  new Promise((resolve, reject) => {
-    const chunks: any[] = [];
-    stream.on("data", (chunk: any) => chunks.push(chunk));
-    stream.on("error", reject);
-    stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
-  });
 
 export async function summaryJobLogic(
   params: {
@@ -206,7 +199,7 @@ export async function summaryJobLogic(
     console.log("about to send an email...");
 
     // Send an email
-    job.progress(100);
+    job.progress(99);
 
     try {
       const emailConfig = summaryJobComplete_SES_Config(
@@ -217,6 +210,8 @@ export async function summaryJobLogic(
     } catch (e) {}
 
     done(null, { summaryId: summaryRecord.id });
+
+    job.progress(100);
   } catch (e: any) {
     done(new Error(e ? e.message : "Something went wrong"));
   }

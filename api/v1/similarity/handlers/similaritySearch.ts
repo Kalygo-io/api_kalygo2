@@ -14,7 +14,7 @@ const embedder = new OpenAIEmbeddingFunction({
   openai_api_key: process.env.OPENAI_API_KEY!,
 });
 
-export async function performSimilaritySearch(
+export async function similaritySearch(
   req: Request,
   res: Response,
   next: NextFunction

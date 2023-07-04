@@ -16,7 +16,7 @@
     "stripe:createProduct": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/createProduct.ts",
     "stripe:createPrice": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/createPrice.ts",
     "stripe:createSubscription": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/createSubscription.ts",
-    "summaryJobProcessor": "ts-node -r tsconfig-paths/register summaryJobProcessor.ts",
+    "jobProcessor": "ts-node -r tsconfig-paths/register jobProcessor.ts",
     "credits:giveSummaryCredits": "ts-node -r tsconfig-paths/register scripts/giveSummaryCredits.ts"
   },
   "repository": {

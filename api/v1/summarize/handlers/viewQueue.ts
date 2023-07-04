@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { summarizationJobQueue } from "@/clients/bull_client";
+import { jobQueue } from "@/clients/bull_client";
 import { encoding_for_model } from "@dqbd/tiktoken";
 
 export async function viewQueue(
@@ -10,11 +10,13 @@ export async function viewQueue(
   try {
     console.log("GET viewQueue");
 
-    let activeJobs = await summarizationJobQueue.getJobs([]);
+    let activeJobs = await jobQueue.getJobs(["active"]);
+
+    console.log("activeJobs", activeJobs);
 
     activeJobs = activeJobs.filter((i) => {
       // @ts-ignore
-      return i?.data?.email === req?.user?.email;
+      return i?.data?.params?.email === req?.user?.email;
     });
 
     res.status(200).send({

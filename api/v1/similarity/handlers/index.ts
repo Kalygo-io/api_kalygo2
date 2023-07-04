@@ -1,3 +1,4 @@
-import { performSimilaritySearch } from "./performSimilaritySearch";
+import { similaritySearch } from "./similaritySearch";
+import { similaritySearchWithQueue } from "./similaritySearchWithQueue";
 
-export { performSimilaritySearch };
+export { similaritySearch, similaritySearchWithQueue };

@@ -1,4 +1,4 @@
-import { performSimilaritySearch } from "./handlers";
+import { similaritySearch, similaritySearchWithQueue } from "./handlers";
 
 import { Router } from "express";
 
@@ -18,7 +18,14 @@ router
   .route("/similarity-search")
   .post(
     [authenticateToken, uploadToDiskMiddleware.single("file")],
-    performSimilaritySearch
+    similaritySearch
+  );
+
+router
+  .route("/similarity-search-with-queue")
+  .post(
+    [authenticateToken, multerS3Middleware.single("file")],
+    similaritySearchWithQueue
   );
 
 export default router;

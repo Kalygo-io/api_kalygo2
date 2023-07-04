@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { summarizationJobQueue } from "@/clients/bull_client";
+import { jobQueue } from "@/clients/bull_client";
 import { encoding_for_model } from "@dqbd/tiktoken";
 
 export async function clearQueue(
@@ -9,7 +9,7 @@ export async function clearQueue(
 ) {
   try {
     console.log("POST clearQueue");
-    await summarizationJobQueue.removeJobs("*");
+    await jobQueue.removeJobs("*");
     res.status(200).send();
   } catch (e) {
     next(e);

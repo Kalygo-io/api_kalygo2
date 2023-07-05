@@ -27,3 +27,5 @@ ecosystem.config.prod.js
 ecosystem.config.staging.js
 
 db_backups
+
+version.json

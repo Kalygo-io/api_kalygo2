@@ -4,25 +4,27 @@ import { summaryJobLogic } from "@/jobHandlers/summaryJobLogic";
 import { vectorSearchJobLogic } from "@/jobHandlers/vectorSearchLogic";
 
 jobQueue.process(async function (job, done) {
-  try {
-    console.log("processing JOB...", job.data);
-    console.log(process.env.S3_DOCUMENT_BUCKET);
+  // try {
+  console.log("processing JOB.*.*.", job.data);
+  //   console.log(process.env.S3_DOCUMENT_BUCKET);
 
-    const { jobType, params } = job.data;
+  //   const { jobType, params } = job.data;
 
-    switch (jobType) {
-      case QueueJobTypes.Summary:
-        console.log("QueueJobTypes.Summary");
-        await summaryJobLogic(params, job, done);
-        break;
-      case QueueJobTypes.VectorSearch:
-        console.log("QueueJobTypes.VectorSearch");
-        await vectorSearchJobLogic(params, job, done);
-        break;
-    }
-  } catch (e: any) {
-    done(new Error(e ? e.message : "Something went wrong"));
-  }
+  //   switch (jobType) {
+  //     case QueueJobTypes.Summary:
+  //       console.log("QueueJobTypes.Summary");
+  //       await summaryJobLogic(params, job, done);
+  //       break;
+  //     case QueueJobTypes.VectorSearch:
+  //       console.log("QueueJobTypes.VectorSearch");
+  //       await vectorSearchJobLogic(params, job, done);
+  //       break;
+  //   }
+  // } catch (e: any) {
+  //   done(new Error(e ? e.message : "Something went wrong"));
+  // }
+
+  done();
 
   // // or give an error if error
   // done(new Error('error transcoding'));

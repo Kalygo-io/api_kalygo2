@@ -207,6 +207,7 @@ export async function summaryJobLogic(
         `${process.env.FRONTEND_HOSTNAME}/dashboard/summary?summary-id=${summaryRecord.id}`
       );
       await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
+      console.log("email sent");
     } catch (e) {}
 
     done(null, { summaryId: summaryRecord.id });

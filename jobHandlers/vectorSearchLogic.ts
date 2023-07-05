@@ -29,6 +29,8 @@ export async function vectorSearchJobLogic(
   done: (err?: Error | null, result?: any) => void
 ) {
   try {
+    job.progress(10);
+
     console.log("processing JOB with params.*!.*!.", params);
     const { query, bucket, key, email, originalName } = params;
     console.log(query, bucket, key, email, originalName);
@@ -45,9 +47,13 @@ export async function vectorSearchJobLogic(
       where: {
         email: email,
       },
+      include: {
+        SummaryCredits: true,
+        VectorSearchCredits: true,
+      },
     });
 
-    console.log("account", account);
+    console.log("account -> w/ credits info ->", account);
 
     // vvv vvv $0.0004 per 1000 tokens for embeddings with
     // https://platform.openai.com/docs/guides/embeddings/what-are-embeddings
@@ -61,7 +67,7 @@ export async function vectorSearchJobLogic(
     const { Body } = await s3.send(command);
     const text = (await streamToString(Body)) as string;
 
-    console.log("text", text);
+    // console.log("text", text);
 
     const tokenCount = enc.encode(text).length;
     const apiCost = (tokenCount / 1000) * 0.0004; // text-embedding-ada-002
@@ -70,12 +76,24 @@ export async function vectorSearchJobLogic(
       (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2)
     );
 
-    await stripe.charges.create({
-      amount: quote * 100,
-      currency: "usd",
-      description: `Vector Search for ${bucket}/${key}`,
-      customer: account?.stripeId,
-    });
+    const vectorSearchCredits = account?.VectorSearchCredits?.amount;
+    if (vectorSearchCredits && vectorSearchCredits > 0) {
+      await prisma.vectorSearchCredits.updateMany({
+        where: {
+          accountId: account.id,
+        },
+        data: {
+          amount: vectorSearchCredits - 1,
+        },
+      });
+    } else {
+      await stripe.charges.create({
+        amount: quote * 100,
+        currency: "usd",
+        description: `Vector Search for ${bucket}/${key}`,
+        customer: account?.stripeId,
+      });
+    }
     // ^^^ ^^^
 
     // let intResults: any = text.match(/[^\.!\?]+[\.!\?]+/g);
@@ -152,6 +170,7 @@ export async function vectorSearchJobLogic(
         `${process.env.FRONTEND_HOSTNAME}/dashboard/vector-search-result?vector-search-id=${vectorSearchRecord.id}` // TODO
       );
       await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
+      console.log("email sent");
     } catch (e) {}
 
     job.progress(99);

@@ -2,6 +2,9 @@ import {
   similaritySearch,
   similaritySearchWithQueue,
   getVectorSearch,
+  downloadOriginalFile,
+  downloadOriginalFileAsAttachment,
+  getVectorSearches,
 } from "./handlers";
 
 import { Router } from "express";
@@ -12,13 +15,16 @@ import { uploadToDiskMiddleware } from "@/middleware/multer-disk";
 
 const router = Router();
 
-// router
-//   .route("/upload")
-//   .post([multerS3Middleware.array("documents", 3)], upload);
+router
+  .route("/vector-search/download-original-file/:id")
+  .get([authenticateToken], downloadOriginalFile);
 
-// router.route("/summarize").post([authenticateToken], summarize);
+router
+  .route("/vector-search/download-original-file-as-attachment/:id")
+  .get([authenticateToken], downloadOriginalFileAsAttachment);
 
 router.route("/vector-search/:id").get([authenticateToken], getVectorSearch);
+router.route("/vector-searches").get([authenticateToken], getVectorSearches);
 
 router
   .route("/similarity-search")

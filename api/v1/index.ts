@@ -8,6 +8,7 @@ import summarize from "./summarize";
 import account from "./account";
 import similaritySearch from "./similarity";
 import mailingList from "./mailingList";
+import download from "./download";
 
 const router = express.Router();
 
@@ -20,6 +21,7 @@ router.use("/mailingList", mailingList);
 router.use("/account", account);
 router.use("/feedback", feedback);
 
+router.use(download);
 router.use(summarize);
 router.use(similaritySearch);
 

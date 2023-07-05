@@ -28,12 +28,28 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
     const passwordHash = await argon2.hash(password);
     const emailVerificationToken = v4();
 
-    const result = await prisma.account.create({
+    const account = await prisma.account.create({
       data: {
         email,
         passwordHash,
         emailVerificationToken,
         stripeId: customer.id,
+      },
+    });
+
+    // FREE CREDITS
+
+    const summaryCredits = await prisma.summaryCredits.create({
+      data: {
+        accountId: account!.id,
+        amount: 2,
+      },
+    });
+
+    const vectorSearchCredits = await prisma.vectorSearchCredits.create({
+      data: {
+        accountId: account!.id,
+        amount: 2,
       },
     });
 

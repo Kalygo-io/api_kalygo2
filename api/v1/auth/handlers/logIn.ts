@@ -23,6 +23,7 @@ export async function logIn(
       where: {
         email,
         emailVerified: true,
+        markAsDeleted: false,
       },
     });
 

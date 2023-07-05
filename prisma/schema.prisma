@@ -21,6 +21,7 @@ model Account {
   resetPasswordToken     String?
   emailVerificationToken String?
   emailVerified          Boolean              @default(false)
+  markAsDeleted          Boolean              @default(false)
   stripeId               String               @default("")
   Summaries              Summary[]
   VectorSearches         VectorSearch[]

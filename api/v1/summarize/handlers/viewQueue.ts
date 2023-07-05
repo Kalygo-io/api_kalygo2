@@ -10,7 +10,12 @@ export async function viewQueue(
   try {
     console.log("GET viewQueue");
 
-    let activeJobs = await jobQueue.getJobs(["active", "waiting", "completed"]);
+    let activeJobs = await jobQueue.getJobs([
+      "active",
+      "waiting",
+      "completed",
+      "failed",
+    ]);
 
     console.log("activeJobs", activeJobs);
 

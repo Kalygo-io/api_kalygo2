@@ -19,9 +19,13 @@ ansible.cfg
 
 cicd.yml
 cicd.staging.yml
-cicd.production.yml
+cicd.prod.yml
 cicd_example.yml
 
 # ecosystem.config.js.bk
 ecosystem.config.prod.js
 ecosystem.config.staging.js
+
+db_backups
+
+version.json

@@ -28,7 +28,7 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
     const passwordHash = await argon2.hash(password);
     const emailVerificationToken = v4();
 
-    const result = await prisma.account.create({
+    const account = await prisma.account.create({
       data: {
         email,
         passwordHash,
@@ -37,12 +37,28 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
       },
     });
 
-      const emailConfig = generateVerifyEmail_SES_Config(
-        email,
-        `${process.env.FRONTEND_HOSTNAME}/verify-email?email=${email}&email-verification-token=${emailVerificationToken}`
-        // `${process.env.FRONTEND_HOSTNAME}/verify-email`
-      );
-      await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
+    // FREE CREDITS
+
+    const summaryCredits = await prisma.summaryCredits.create({
+      data: {
+        accountId: account!.id,
+        amount: 2,
+      },
+    });
+
+    const vectorSearchCredits = await prisma.vectorSearchCredits.create({
+      data: {
+        accountId: account!.id,
+        amount: 2,
+      },
+    });
+
+    const emailConfig = generateVerifyEmail_SES_Config(
+      email,
+      `${process.env.FRONTEND_HOSTNAME}/verify-email?email=${email}&email-verification-token=${emailVerificationToken}`
+      // `${process.env.FRONTEND_HOSTNAME}/verify-email`
+    );
+    await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
 
       res.status(200).send();
   } catch (e) {

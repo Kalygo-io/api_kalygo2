@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import prisma from "@/db/prisma_client";
 
-export async function accountSummaries(
+export async function getVectorSearches(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    console.log("GET account-summaries");
+    console.log("GET getVectorSearches");
 
     const account = await prisma.account.findFirst({
       where: {
@@ -16,7 +16,9 @@ export async function accountSummaries(
       },
     });
 
-    const summaries = await prisma.summary.findMany({
+    console.log("account", account);
+
+    const vectorSearches = await prisma.vectorSearch.findMany({
       orderBy: [
         {
           createdAt: "desc",
@@ -28,11 +30,11 @@ export async function accountSummaries(
       },
     });
 
-    // console.log("account", account);
-    // console.log("accountSummaries", summaries);
+    console.log("account", account);
+    console.log("vectorSearches", vectorSearches);
 
-    res.status(200).json(summaries || []);
+    res.status(200).json(vectorSearches || []);
   } catch (e) {
     next(e);
   }
-} 
+}

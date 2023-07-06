@@ -8,14 +8,10 @@ export async function deleteAccount(
   next: NextFunction
 ) {
   try {
-    const account = await prisma.account.findFirst({
-      where: {
-        // @ts-ignore
-        email: req.user.email,
+    const account = await prisma.account.update({
+      data: {
+        markAsDeleted: true,
       },
-    });
-    await stripe.customers.del(account?.stripeId);
-    await prisma.account.delete({
       where: {
         // @ts-ignore
         email: req.user.email,

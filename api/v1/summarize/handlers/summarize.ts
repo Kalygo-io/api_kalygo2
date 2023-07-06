@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { summarizationJobQueue } from "@/clients/bull_client";
+import { jobQueue } from "@/clients/bull_client";
 import { encoding_for_model } from "@dqbd/tiktoken";
+import { QueueJobTypes } from "@/types/JobTypes";
 
 export async function summarize(
   req: Request,
@@ -33,14 +34,17 @@ export async function summarize(
     for (let i of req.body.files) {
       console.log("<- i ->", i);
 
-      summarizationJobQueue.add(
+      jobQueue.add(
         {
-          bucket: process.env.S3_DOCUMENTS_BUCKET,
-          key: i.key,
-          originalName: i.originalName,
-          language: language,
-          // @ts-ignore
-          email: req.user.email,
+          jobType: QueueJobTypes.Summary,
+          params: {
+            bucket: process.env.S3_DOCUMENTS_BUCKET,
+            key: i.key,
+            originalName: i.originalName,
+            language: language,
+            // @ts-ignore
+            email: req.user.email,
+          },
         },
         {
           timeout: 600000,

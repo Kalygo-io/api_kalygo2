@@ -22,7 +22,8 @@ export async function logIn(
     const account = await prisma.account.findFirst({
       where: {
         email,
-        emailVerified: false,
+        emailVerified: true,
+        markAsDeleted: false,
       },
     });
 

@@ -42,7 +42,7 @@
     "@aws-sdk/client-s3": "^3.338.0",
     "@aws-sdk/client-ses": "^3.332.0",
     "@dqbd/tiktoken": "^1.0.7",
-    "@prisma/client": "^4.14.0",
+    "@prisma/client": "^4.16.2",
     "@types/express-serve-static-core": "^4.17.35",
     "argon2": "^0.30.3",
     "bull": "^4.10.4",

@@ -10,6 +10,7 @@ import {
   verifyAccount,
   mockReceiveVerificationToken,
   subscriptionSignUp,
+  isAdmin,
 } from "./handlers";
 
 import { Router } from "express";
@@ -29,6 +30,7 @@ router
   .post(mockReceiveVerificationToken);
 router.route("/verify-account").post(verifyAccount);
 router.route("/reset-password").post(resetPassword);
+router.route("/is-admin").get(isAdmin);
 // router.route("/accounts").delete(clearAccounts);
 
 export default router;

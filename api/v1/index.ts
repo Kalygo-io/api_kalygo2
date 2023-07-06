@@ -8,6 +8,7 @@ import summarize from "./summarize";
 import account from "./account";
 import similaritySearch from "./similarity";
 import mailingList from "./mailingList";
+import getSaasStats from "./saasStats";
 
 const router = express.Router();
 
@@ -22,5 +23,6 @@ router.use("/feedback", feedback);
 
 router.use(summarize);
 router.use(similaritySearch);
+router.use(getSaasStats);
 
-export default router;
+export default router; 

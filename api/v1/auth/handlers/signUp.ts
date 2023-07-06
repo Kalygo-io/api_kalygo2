@@ -62,6 +62,7 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
 
       res.status(200).send();
   } catch (e) {
+    console.log("BIG ERROR WITH SIGNUP");
     next(e);
   }
 }

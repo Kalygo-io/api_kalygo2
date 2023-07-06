@@ -30,7 +30,8 @@ model Account {
   subscriptionPlan       SubscriptionPlan     @default(FREE)
   Logins                 Login[]
   SummaryCredits         SummaryCredits?
-  VectorSearchCredits    VectorSearchCredits?
+  VectorSearchCredits    VectorSearchCredits?  
+  OpenAiCharges          OpenAiCharges[]
 }
 
 model Summary {
@@ -83,6 +84,14 @@ model Login {
   account   Account   @relation(fields: [accountId], references: [id])
   accountId Int
   createdAt DateTime? @default(now())
+}
+
+model OpenAiCharges {
+  id        Int       @id @default(autoincrement())
+  account   Account   @relation(fields: [accountId], references: [id])
+  accountId Int
+  createdAt DateTime? @default(now())
+  amount    Int
 }
 
 enum SubscriptionPlan {

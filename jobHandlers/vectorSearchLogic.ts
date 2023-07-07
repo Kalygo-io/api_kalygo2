@@ -32,7 +32,7 @@ export async function vectorSearchJobLogic(
     job.progress(10);
 
     console.log("processing JOB with params.*!.*!.", params);
-    const { query, bucket, key, email, originalName } = params;
+    const { query, bucket, key, email, originalName, language } = params;
     console.log(query, bucket, key, email, originalName);
     if (!query || !bucket || !key || !email || !originalName) {
       console.log("Invalid Data?");
@@ -167,7 +167,8 @@ export async function vectorSearchJobLogic(
     try {
       const emailConfig = vectorSearchJobComplete_SES_Config(
         email,
-        `${process.env.FRONTEND_HOSTNAME}/dashboard/vector-search-result?vector-search-id=${vectorSearchRecord.id}` // TODO
+        `${process.env.FRONTEND_HOSTNAME}/dashboard/vector-search-result?vector-search-id=${vectorSearchRecord.id}`, // TODO
+        language
       );
       await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
       console.log("email sent");

@@ -37,7 +37,7 @@ export async function resetPassword(
         },
       });
 
-      const emailConfig = generatePasswordUpdated_SES_Config(email);
+      const emailConfig = generatePasswordUpdated_SES_Config(email, req);
       await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
 
       res.status(200).clearCookie("jwt").send();

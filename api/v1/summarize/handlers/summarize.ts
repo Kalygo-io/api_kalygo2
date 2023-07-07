@@ -11,25 +11,7 @@ export async function summarize(
   try {
     console.log("POST summarize");
     console.log("req.body", req.body);
-
     let language: string = req?.i18n?.language?.substring(0, 2) || "en";
-
-    switch (language) {
-      case "en":
-        language = "English";
-        break;
-      case "es":
-        language = "Spanish";
-        break;
-      case "fr":
-        language = "French";
-        break;
-      case "pt":
-        language = "Portuguese";
-        break;
-      default:
-        language = "English";
-    }
 
     for (let i of req.body.files) {
       console.log("<- i ->", i);

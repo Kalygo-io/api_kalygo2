@@ -14,7 +14,7 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
 
     const count = await prisma.account.count();
 
-    if (count > 200) {
+    if (count > 400) {
       throw new Error("RATE_LIMIT");
     }
 
@@ -55,7 +55,8 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
 
     const emailConfig = generateVerifyEmail_SES_Config(
       email,
-      `${process.env.FRONTEND_HOSTNAME}/verify-email?email=${email}&email-verification-token=${emailVerificationToken}`
+      `${process.env.FRONTEND_HOSTNAME}/verify-email?email=${email}&email-verification-token=${emailVerificationToken}`,
+      req
       // `${process.env.FRONTEND_HOSTNAME}/verify-email`
     );
     await sesClient.send(new SendTemplatedEmailCommand(emailConfig));

@@ -9,15 +9,17 @@ import { requestLogger } from "./middleware/loggers";
 import HttpBackend from "i18next-http-backend";
 
 import i18next from "i18next";
-// import Backend from "i18next-fs-backend";
+import Backend from "i18next-fs-backend";
 import i18nextMiddleware from "i18next-http-middleware";
 
 i18next
-  .use(HttpBackend)
+  .use(Backend)
+  // .use(HttpBackend)
   // .use(languageDetector)
   .use(i18nextMiddleware.LanguageDetector)
   .init({
-    ns: ["general", "fruits"],
+    preload: ["en", "es"],
+    ns: ["general", "fruits", "common", "emails"],
     // debug: true,
     // detection: {
     //   order: ['customDetector']
@@ -27,12 +29,12 @@ i18next
       loadPath: __dirname + "/locales/{{lng}}/{{ns}}.json",
       // loadPath: "http://localhost:4000" + "/locales/{{lng}}/{{ns}}.json",
       // eslint-disable-next-line no-path-concat
-      // addPath: __dirname + "/locales/{{lng}}/{{ns}}.missing.json",
+      addPath: __dirname + "/locales/{{lng}}/{{ns}}.missing.json",
     },
     fallbackLng: "en",
     // nonExplicitSupportedLngs: true,
-    supportedLngs: ["en", "es", "de"],
-    // load: "languageOnly",
+    supportedLngs: ["en", "es"],
+    load: "languageOnly",
   });
 
 const app = express();

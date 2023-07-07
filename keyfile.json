@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "kalygotranslation2",
+  "private_key_id": "ed3b53ea5aec400ceb7421bfabd6f04cbcd5e095",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDEKIabguYjbz0h\nUpKdZ9MQP8skqPZbWOTaKzCMyfH073I45z1sLK23AoEWKZnnUzEiY0JkF+Asdf6x\n7RTz0ja4mnhLdouXXyOlHAcLi0/kbP6s2BCJsVt/vRD3yZvNSODJUhbSZQ6XQNAS\nca6Crh4NHod9HWvTwnGvYcFZCIeHY06HMswC7bWnK5mpvtubb1bNCXVlX4cOoN9i\njFg5bk5DiPdBwzoixCpDMKcp/DWYIqWclUCsr4eUS9uy5Y20bLeqgeUTjR88HkJx\nfPgnOJe1KjhG58EraO7s4PU7i1Q9OBV3KacL7r/o8H8RUiD0H0NCL45e9+uJu/5k\nyQRNZxxTAgMBAAECggEALoWJ/yHZYPgF4HxL52bzSLxIeoZT/zAi/pcVqZ5Pcw7C\n4Tn+eERUYr4GTXJKXPF/Cq/N1B1RflnxsNMQkA8ACWIhO4x+6MSYmJUAGr3MkdlD\nwUxxB6b3k2EMwCehettY7IY6gWWUQ00MzAMIJ1gSKnxeF889fnh0K+scRvhd5D6/\ng6WJQsx1FBEpnGhME8T51b8CXVdKe/GmXtCAWg5Y6EGMCarqxefKkLqTw3KD1QN0\nDnoTPTzx0ZlR8qkipfHWaiYzvfVNNVGJ8dTB3UAiUi5z3W8ft2K2KPNWZJde1QHJ\nsRxT7uz2xmpJQs9rsJe/UfSWyVxIrb0N4xzLWIzoSQKBgQDywy3g9adnU/PzbDQp\nKGakNrrwLZPtifhqdFrKORnGwFP/QAOtp8OHTW1HYvqeOOrovU/W0udrB+QuUgUa\nGquj7ig+RpUH7qJDHxL0NPxgYPzvwUyawqZN6F6BZgDHK99E3eIUdzi4u7mfr3hO\naPTSXgo2hqWC/iAPf8Yf0g0sVQKBgQDO2sfQesIdwvcfnj3Bc+wpLcmzcdfB+3DM\nSDCt1Fe1cEqW8WkJ7Bh+lbBTgak9QOQVUc3s1b5PiC+va8uYS6B+HlbSCG053Sj/\nnMAHcBX6lKVaHTurHp6qPyLaNy6Ogs0zLQ1Q4EuquMioYsdI8wmiIFBaCVH++C/H\nKkZU1mVOBwKBgCVnsYACGeMv6lzNhVP6J6aR0EgFnc9x/NbaSsrx9WjMZaTkxixR\ntyz33yiqtZb/iiKGWPDu2j2Bn8ULWkHlbiD6JzVBRuFMAbB57z+1klV/XDnM/PKz\nn1BNx5IEl4YY2nQQBC/HFvRP6JAUR2M9hMuNNeGk6Ye/hE0fEPYCNYlpAoGAa3p5\nv/VIzzXyOVd7Nv0IhAzqdHZ+aKhA36PSxz9Bo2CJIQymSyWFRKB6UalZSh5hZEJx\nANG+ZIyaWkdkLel9pooVCmSefCZRmx7TGApBIUYC9GOkETGDt2m+ritl4V5NSH3s\nIU2pgzcn63YHnfvJ0ZeAqIeXNye1i4KHsKUFVhkCgYB+PsFvcEPwB1N341XZZSML\nLVAhgfomKMA8M4S8XPrPAiB3zqPpKPjPhNXZQfUnvXSH9hOi345wP8pSqvgZaN8N\nGTcQ45rF3vFy/2KDiotY6Yf1p74DQU3Hu5KCtyKIEBSOyrc/eCB2X7ZSbnWjx9Ak\n617+G7558I8jFcBwogMxgA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "kalygotranslation@kalygotranslation2.iam.gserviceaccount.com",
+  "client_id": "109918605546872404279",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/kalygotranslation%40kalygotranslation2.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

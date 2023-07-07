@@ -17,7 +17,7 @@ router.get(
   async function (req: Request, res: Response, next: NextFunction) {
     try {
       const responseBody: ResponseBodyDto = {
-        message: req.t("general:hello"),
+        message: req.t("common:hello"),
         language: req.i18n.language,
         languages: req.i18n.languages,
       };

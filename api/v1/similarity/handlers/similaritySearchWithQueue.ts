@@ -12,6 +12,7 @@ export async function similaritySearchWithQueue(
     console.log(req.body.files);
     console.log(req.file);
 
+    let language: string = req?.i18n?.language?.substring(0, 2) || "en";
     const query = req.body.query;
 
     jobQueue.add(
@@ -25,6 +26,7 @@ export async function similaritySearchWithQueue(
           bucket: process.env.S3_DOCUMENTS_BUCKET,
           // @ts-ignore
           email: req.user.email,
+          language: language,
         },
       },
       {

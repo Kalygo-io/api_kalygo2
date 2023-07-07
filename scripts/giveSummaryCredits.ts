@@ -11,9 +11,11 @@ async function giveSummaryCredits() {
     },
   });
 
-  const summaryCredits = await prisma.summaryCredits.create({
-    data: {
+  const summaryCredits = await prisma.summaryCredits.update({
+    where: {
       accountId: account!.id,
+    },
+    data: {
       amount: 7,
     },
   });

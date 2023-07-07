@@ -1,6 +1,7 @@
 export function generateVerifyEmail_SES_Config(
   email: string,
-  VERIFY_LINK: string
+  VERIFY_LINK: string,
+  req: any
 ) {
   return {
     Destination: {
@@ -10,14 +11,16 @@ export function generateVerifyEmail_SES_Config(
     Source: "Kalygo <noreply@kalygo.io>",
     Template: "CMD_GENERIC_EMAIL",
     TemplateData: `
-              { 
-                  \"SUBJECT\":\"Verify Email\", 
-                  \"MESSAGE_AS_TEXT\":\"Verify Email\",
-                  \"GREETING\":\"Welcome to Kalygo\",
-                  \"MESSAGE\":\"Verification Link: ${VERIFY_LINK}\",
-                  \"ENDING\":\": )\"
-              }
-          `,
+      { 
+        \"SUBJECT\":\"${req.t("emails:signup.subject")}\", 
+        \"MESSAGE_AS_TEXT\":\"${req.t("emails:signup.message-as-text")}\",
+        \"GREETING\":\"${req.t("emails:signup.greeting")}\",
+        \"MESSAGE\":\"${req.t("emails:signup.message", {
+          verification_link: VERIFY_LINK,
+        })}\",
+        \"ENDING\":\": )\"
+      }
+    `,
     ReplyToAddresses: ["no-reply@kalygo.io"],
     ConfigurationSetName: "kalygo_config_set",
     Tags: [

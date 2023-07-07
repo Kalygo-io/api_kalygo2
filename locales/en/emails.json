@@ -1,0 +1,37 @@
+{
+  "signup": {
+    "subject": "Verify Email",
+    "message-as-text": "Verify Email",
+    "greeting": "Welcome to Kalygo",
+    "message": "Verification Link: {{verification_link}}",
+    "ending": ""
+  },
+  "resetPassword": {
+    "subject": "Reset Password Token",
+    "message-as-text": "Reset Password Token",
+    "greeting": "{{token}}",
+    "message": "Reset Link: {{reset_link}}",
+    "ending": ""
+  },
+  "passwordUpdated": {
+    "subject": "Password Updated",
+    "message-as-text": "Password Updated",
+    "greeting": "",
+    "message": "Your password was recently updated. If this was not you please reach out to support@kalygo.io immediately.",
+    "ending": ""
+  },
+  "summaryJobComplete": {
+    "subject": "Your summary has been generated",
+    "message-as-text": "Your summary has been generated",
+    "greeting": "Your summary has been generated",
+    "message": "View summary:",
+    "ending": ""
+  },
+  "vectorSearchJobComplete": {
+    "subject": "Your vector search results have been generated",
+    "message-as-text": "Your vector search results have been generated",
+    "greeting": "Your vector search results have been generated",
+    "message": "View results:",
+    "ending": ""
+  }
+}

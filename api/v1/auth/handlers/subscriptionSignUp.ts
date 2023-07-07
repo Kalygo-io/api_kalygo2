@@ -68,7 +68,8 @@ export async function subscriptionSignUp(
 
     const emailConfig = generateVerifyEmail_SES_Config(
       email,
-      `${process.env.FRONTEND_HOSTNAME}/verify-email?email=${email}&email-verification-token=${emailVerificationToken}`
+      `${process.env.FRONTEND_HOSTNAME}/verify-email?email=${email}&email-verification-token=${emailVerificationToken}`,
+      req
     );
     await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
 

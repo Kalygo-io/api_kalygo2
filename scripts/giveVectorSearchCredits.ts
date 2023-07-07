@@ -11,9 +11,11 @@ async function giveVectorSearchCredits() {
     },
   });
 
-  const vectorSearchCredits = await prisma.vectorSearchCredits.create({
-    data: {
+  const vectorSearchCredits = await prisma.vectorSearchCredits.update({
+    where: {
       accountId: account!.id,
+    },
+    data: {
       amount: 7,
     },
   });

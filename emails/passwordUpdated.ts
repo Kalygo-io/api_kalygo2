@@ -1,4 +1,4 @@
-export function generatePasswordUpdated_SES_Config(email: string) {
+export function generatePasswordUpdated_SES_Config(email: string, req: any) {
   return {
     Destination: {
       CcAddresses: [],
@@ -7,14 +7,16 @@ export function generatePasswordUpdated_SES_Config(email: string) {
     Source: "Kalygo <noreply@kalygo.io>",
     Template: "CMD_GENERIC_EMAIL",
     TemplateData: `
-              { 
-                  \"SUBJECT\":\"Password Updated\", 
-                  \"MESSAGE_AS_TEXT\":\"Password Updated\",
-                  \"GREETING\":\"\",
-                  \"MESSAGE\":\"Your password was recently updated. If this was not you please reach out to support@kalygo.io immediately.\",
-                  \"ENDING\":\"\"
-              }
-          `,
+      { 
+        \"SUBJECT\":\"${req.t("emails:passwordUpdated.subject")}\", 
+        \"MESSAGE_AS_TEXT\":\"${req.t(
+          "emails:passwordUpdated.message-as-text"
+        )}\",
+        \"GREETING\":\"${req.t("emails:passwordUpdated.greeting")}\",
+        \"MESSAGE\":\"${req.t("emails:passwordUpdated.message")}\",
+        \"ENDING\":\"\"
+      }
+    `,
     ReplyToAddresses: ["no-reply@kalygo.io"],
     ConfigurationSetName: "kalygo_config_set",
     Tags: [

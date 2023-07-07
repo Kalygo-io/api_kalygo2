@@ -39,7 +39,8 @@ export async function requestPasswordReset(
       const emailConfig = generateResetPassword_SES_Config(
         email,
         RESET_LINK,
-        UUID
+        UUID,
+        req
       );
       await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
       res.status(200).send();

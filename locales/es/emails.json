@@ -1,0 +1,37 @@
+{
+  "signup": {
+    "subject": "Verificar correo electrónico",
+    "message-as-text": "Verificar correo electrónico",
+    "greeting": "Bienvenido a Kalygo",
+    "message": "Enlace de verificación: {{verification_link}}",
+    "ending": ""
+  },
+  "resetPassword": {
+    "subject": "Restablecer token de contraseña",
+    "message-as-text": "Restablecer token de contraseña",
+    "greeting": "{{token}}",
+    "message": "Restablecer enlace: {{reset_link}}",
+    "ending": ""
+  },
+  "passwordUpdated": {
+    "subject": "Contraseña actualiza",
+    "message-as-text": "Contraseña actualiza",
+    "greeting": "",
+    "message": "Su contraseña fue actualizada recientemente. Si no fue así, comuníquese con support@kalygo.io de inmediato.",
+    "ending": ""
+  },
+  "summaryJobComplete": {
+    "subject": "Su resumen ha sido generado",
+    "message-as-text": "Su resumen ha sido generado",
+    "greeting": "Su resumen ha sido generado",
+    "message": "Ver resumen:",
+    "ending": ""
+  },
+  "vectorSearchJobComplete": {
+    "subject": "Sus resultados de búsqueda de vectores han sido generados",
+    "message-as-text": "Sus resultados de búsqueda de vectores han sido generados",
+    "greeting": "Sus resultados de búsqueda de vectores han sido generados",
+    "message": "Ver resultados:",
+    "ending": ""
+  }
+}

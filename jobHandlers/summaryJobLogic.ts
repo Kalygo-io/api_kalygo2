@@ -204,7 +204,8 @@ export async function summaryJobLogic(
     try {
       const emailConfig = summaryJobComplete_SES_Config(
         email,
-        `${process.env.FRONTEND_HOSTNAME}/dashboard/summary?summary-id=${summaryRecord.id}`
+        `${process.env.FRONTEND_HOSTNAME}/dashboard/summary?summary-id=${summaryRecord.id}`,
+        language
       );
       await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
       console.log("email sent");

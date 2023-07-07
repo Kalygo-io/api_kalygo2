@@ -1,0 +1,37 @@
+{
+  "signup": {
+    "subject": "Vérifier les courriels",
+    "message-as-text": "Vérifier les courriels",
+    "greeting": "Bienvenue à Kalygo",
+    "message": "Lien de vérification: {{verification_link}}",
+    "ending": ""
+  },
+  "resetPassword": {
+    "subject": "Réinitialiser le jeton de mot de passe",
+    "message-as-text": "Réinitialiser le jeton de mot de passe",
+    "greeting": "{{token}}",
+    "message": "Lien de réinitialisation: {{reset_link}}",
+    "ending": ""
+  },
+  "passwordUpdated": {
+    "subject": "Mot de passe mis à jour",
+    "message-as-text": "Mot de passe mis à jour",
+    "greeting": "",
+    "message": "Votre mot de passe a été récemment mis à jour. Si ce n'était pas vous, veuillez contacter immédiatement support@kalygo.io.",
+    "ending": ""
+  },
+  "summaryJobComplete": {
+    "subject": "Votre résumé a été généré",
+    "message-as-text": "Votre résumé a été généré",
+    "greeting": "Votre résumé a été généré",
+    "message": "Afficher le résumé:",
+    "ending": ""
+  },
+  "vectorSearchJobComplete": {
+    "subject": "Les résultats de votre recherche vectorielle ont été générés",
+    "message-as-text": "Les résultats de votre recherche vectorielle ont été générés",
+    "greeting": "Les résultats de votre recherche vectorielle ont été générés",
+    "message": "Afficher les résultats:",
+    "ending": ""
+  }
+}

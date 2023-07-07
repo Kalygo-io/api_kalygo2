@@ -20,8 +20,15 @@ export async function getSaasStats(
         });
         const totalSummaries = await prisma.summary.count();
         const averageSummariesPerUser = totalSummaries / totalAccounts;
+        const totalOpenAiCharges = await prisma.openAiCharges.aggregate({
+          _sum: {
+              amount: true,
+          },
+      });
+      const totalAiCharges = totalOpenAiCharges._sum.amount || 0;
+      const averageOpenAiChargesPerUser = totalAccounts > 0 ? totalAiCharges / totalAccounts : 0;
         
-        res.status(200).json({totalAccounts, paidAccountsCount, verifiedAccountsCount, totalSummaries, averageSummariesPerUser});
+        res.status(200).json({totalAccounts, paidAccountsCount, verifiedAccountsCount, totalSummaries, averageSummariesPerUser, totalOpenAiCharges, averageOpenAiChargesPerUser});
     } catch (e) {
       next(e);
     }

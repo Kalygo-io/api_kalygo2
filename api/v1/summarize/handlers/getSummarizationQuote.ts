@@ -4,6 +4,7 @@ import { s3Client, s3, GetObjectCommand } from "@/clients/s3_client";
 import { get_encoding, encoding_for_model } from "@dqbd/tiktoken";
 import * as fs from "fs";
 import path from "path";
+import prisma from "@/db/prisma_client";
 const enc = encoding_for_model("gpt-3.5-turbo");
 
 const streamToString = (stream: any) =>
@@ -23,6 +24,7 @@ export async function getSummarizationQuote(
     console.log("POST /get-summarization-quote");
     console.log("req.files", (req.files as any)[0]);
 
+    let openAiCost = 0;
     let quote = 0;
     let files = [];
     for (let i = 0; i < (req.files as any)?.length; i++) {
@@ -44,11 +46,29 @@ export async function getSummarizationQuote(
         (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2)
       );
 
+      openAiCost += apiCost;
+
       files.push({
         key: (req.files as any)[i].key,
         originalName: (req.files as any)[i].originalname,
       });
     }
+
+    const account = await prisma.account.findFirst({
+      where: {
+        // @ts-ignore
+        email: req.user.email,
+      },
+    });
+
+    if (account) {
+      await prisma.openAiCharges.create({
+        data: {
+          amount: Math.round(openAiCost * 100),
+          accountId: account.id,
+        },
+      });
+    }    
 
     res.status(200).json({
       quote: quote.toFixed(2),

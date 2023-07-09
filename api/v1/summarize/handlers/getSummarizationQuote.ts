@@ -4,6 +4,7 @@ import { s3Client, s3, GetObjectCommand } from "@/clients/s3_client";
 import { get_encoding, encoding_for_model } from "@dqbd/tiktoken";
 import * as fs from "fs";
 import path from "path";
+import prisma from "@/db/prisma_client";
 const enc = encoding_for_model("gpt-3.5-turbo");
 
 const streamToString = (stream: any) =>
@@ -23,37 +24,64 @@ export async function getSummarizationQuote(
     console.log("POST /get-summarization-quote");
     console.log("req.files", (req.files as any)[0]);
 
-    let quote = 0;
-    let files = [];
-    for (let i = 0; i < (req.files as any)?.length; i++) {
-      console.log("<- i ->", (req.files as any)[i]);
+    const account = await prisma.account.findFirst({
+      where: {
+        // @ts-ignore
+        email: req.user.email,
+        emailVerified: true,
+      },
+      include: {
+        SummaryCredits: true,
+      },
+    });
 
-      const command = new GetObjectCommand({
-        Bucket: process.env.S3_DOCUMENTS_BUCKET,
-        Key: (req.files as any)[i].key,
+    const accountSummaryCredits = account?.SummaryCredits?.amount;
+    if (accountSummaryCredits && accountSummaryCredits > 0) {
+      let files = [];
+      for (let i = 0; i < (req.files as any)?.length; i++) {
+        files.push({
+          key: (req.files as any)[i].key,
+          originalName: (req.files as any)[i].originalname,
+        });
+      }
+
+      res.status(200).json({
+        quote: `1 credit`,
+        files: files,
       });
+    } else {
+      let quote = 0;
+      let files = [];
+      for (let i = 0; i < (req.files as any)?.length; i++) {
+        console.log("<- i ->", (req.files as any)[i]);
 
-      const { Body } = await s3.send(command);
-      const text = (await streamToString(Body)) as string;
-      const tokenCount = enc.encode(text).length;
+        const command = new GetObjectCommand({
+          Bucket: process.env.S3_DOCUMENTS_BUCKET,
+          Key: (req.files as any)[i].key,
+        });
 
-      const apiCost = (tokenCount / 1000) * 0.002; // gpt-3.5-turbo cost
-      const markup = 1.4; // 40%
+        const { Body } = await s3.send(command);
+        const text = (await streamToString(Body)) as string;
+        const tokenCount = enc.encode(text).length;
 
-      quote += Number.parseFloat(
-        (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2)
-      );
+        const apiCost = (tokenCount / 1000) * 0.002; // gpt-3.5-turbo cost
+        const markup = 1.4; // 40%
 
-      files.push({
-        key: (req.files as any)[i].key,
-        originalName: (req.files as any)[i].originalname,
+        quote += Number.parseFloat(
+          (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2)
+        );
+
+        files.push({
+          key: (req.files as any)[i].key,
+          originalName: (req.files as any)[i].originalname,
+        });
+      }
+
+      res.status(200).json({
+        quote: `$${quote.toFixed(2)}`,
+        files: files,
       });
     }
-
-    res.status(200).json({
-      quote: quote.toFixed(2),
-      files: files,
-    });
   } catch (e) {
     next(e);
   }

@@ -7,6 +7,7 @@ import { deleteStripeCard } from "./deleteStripeCard";
 import { changePlan } from "./changePlan";
 import { deleteAccount } from "./deleteAccount";
 import { cancelSubscription } from "./cancelSubscription";
+import { getAccountPaymentMethods } from "./getAccountPaymentMethods";
 
 export {
   createStripeAccount,
@@ -18,4 +19,5 @@ export {
   deleteStripeCard,
   changePlan,
   cancelSubscription,
+  getAccountPaymentMethods,
 };

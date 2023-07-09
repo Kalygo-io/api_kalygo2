@@ -75,7 +75,7 @@ model VectorSearchCredits {
 
 model Feedback {
   id       Int    @id @default(autoincrement())
-  feedback String @unique
+  feedback String
 }
 
 model Login {

@@ -19,10 +19,10 @@ export async function viewQueue(
 
     console.log("activeJobs", activeJobs);
 
-    // activeJobs = activeJobs.filter((i) => {
-    //   // @ts-ignore
-    //   return i?.data?.params?.email === req?.user?.email;
-    // });
+    activeJobs = activeJobs.filter((i) => {
+      // @ts-ignore
+      return i?.data?.params?.email === req?.user?.email;
+    });
 
     res.status(200).send({
       activeJobs,

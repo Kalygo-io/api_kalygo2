@@ -8,6 +8,7 @@ import {
   changePlan,
   deleteAccount,
   cancelSubscription,
+  getAccountPaymentMethods,
 } from "./handlers";
 
 import { Router } from "express";
@@ -22,6 +23,9 @@ router
 router.route("/add-stripe-card").post(authenticateToken, addStripeCard);
 router.route("/delete-stripe-card").delete(authenticateToken, deleteStripeCard);
 router.route("/get-stripe-cards").get(authenticateToken, getStripeCards);
+router
+  .route("/get-account-payment-methods")
+  .get(authenticateToken, getAccountPaymentMethods);
 
 router
   .route("/cancel-subscription")

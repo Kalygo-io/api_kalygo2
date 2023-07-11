@@ -17,6 +17,7 @@ export async function logIn(
 ) {
   try {
     const { email, password } = req.body;
+    const adminEmails = [ 'jstudyeth@gmail.com', 'tad@cmdlabs.io', 'sebaspindu@gmail.com', 'laurenseff@gmail.com', 'joseph.12082@gmail.com'];
 
     // const account = await Account.findOne({ email, verified: true });
     const account = await prisma.account.findFirst({
@@ -39,7 +40,9 @@ export async function logIn(
         });
         console.log("after recording login");
 
-        const token = generateAccessToken(email);
+        const role = adminEmails.includes(email) ? 'admin' : 'user';
+
+        const token = generateAccessToken(email, role);
 
         res
           .status(200)

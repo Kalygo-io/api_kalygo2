@@ -87,6 +87,7 @@ export async function summaryJobLogic(
 
     const tokenCount: number = enc.encode(text).length;
     const apiCost = (tokenCount / 1000) * 0.007;
+    const OpenAiApiCost = apiCost;
     const markup = 1.4; // 40%
     const quote: number = Number.parseFloat(
       (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2)
@@ -109,6 +110,19 @@ export async function summaryJobLogic(
         description: `Summarization for ${bucket}/${key}`,
         customer: account?.stripeId,
       });
+    }
+
+    try {
+      if (account) {
+        await prisma.openAiCharges.create({
+          data: {
+            accountId: account.id,
+            amount: OpenAiApiCost,
+          },
+        });
+      }
+    } catch (e) {
+      console.log(e);
     }
 
     console.log("splitting text.*.*.");

@@ -32,6 +32,7 @@ model Account {
   SummaryCredits         SummaryCredits?
   VectorSearchCredits    VectorSearchCredits?  
   OpenAiCharges          OpenAiCharges[]
+  role                   Role                 @default(USER)
 }
 
 model Summary {
@@ -91,11 +92,16 @@ model OpenAiCharges {
   account   Account   @relation(fields: [accountId], references: [id])
   accountId Int
   createdAt DateTime? @default(now())
-  amount    Int
+  amount    Float
 }
 
 enum SubscriptionPlan {
   FREE
   STANDARD
   PREMIUM
+}
+
+enum Role {
+  USER
+  ADMIN
 }

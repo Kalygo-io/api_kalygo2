@@ -24,43 +24,41 @@ function isPartsValid(parts: string[]): boolean {
   return true;
 }
 
-export async function customRequestLogic(
+export async function customRequestJobLogic(
   params: {
     bucket: string;
     files: any[];
-    language: string;
     email: string;
-    originalName: string;
+    query: string;
   },
   job: any,
   done: (err?: Error | null, result?: any) => void
 ) {
   try {
     console.log("processing JOB with params...", params);
-    const { files, bucket, language, email, originalName } = params;
-    console.log(bucket, files, language, email, originalName);
-    if (!bucket || !files || !language || !email || !originalName) {
+    const { files, bucket, email, query } = params;
+    console.log(bucket, files, email, query);
+    if (!bucket || !files || !email || !query) {
       done(new Error("Invalid Data"));
       return;
     }
 
-    // const account = await prisma.account.findFirst({
-    //   where: {
-    //     email: email,
-    //     emailVerified: true,
-    //   },
-    //   include: {
-    //     SummaryCredits: true,
-    //     VectorSearchCredits: true,
-    //   },
-    // });
+    const account = await prisma.account.findFirst({
+      where: {
+        email: email,
+        emailVerified: true,
+      },
+      include: {
+        CustomRequestCredits: true,
+      },
+    });
 
     // console.log("account", account);
 
-    // if (!account?.stripeId) {
-    //   done(new Error("402"));
-    //   return;
-    // }
+    if (!account?.stripeId) {
+      done(new Error("402"));
+      return;
+    }
 
     // download file from S3
     // const command = new GetObjectCommand({
@@ -198,6 +196,8 @@ export async function customRequestLogic(
     // } catch (e) {}
 
     // done(null, { summaryId: summaryRecord.id });
+
+    done();
 
     job.progress(100);
   } catch (e: any) {

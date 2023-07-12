@@ -2,7 +2,7 @@ import "dotenv/config";
 import prisma from "@/db/prisma_client";
 
 async function giveVectorSearchCredits() {
-  const email = `tad@cmdlabs.io`;
+  const email = `test@test.com`;
 
   const account = await prisma.account.findFirst({
     where: {

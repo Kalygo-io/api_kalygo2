@@ -19,6 +19,7 @@
     "jobProcessor": "nodemon --watch './jobProcessor' --watch 'jobHandlers' --exec 'ts-node -r tsconfig-paths/register' jobProcessor.ts",
     "credits:giveSummaryCredits": "ts-node -r tsconfig-paths/register scripts/giveSummaryCredits.ts",
     "credits:giveVectorSearchCredits": "ts-node -r tsconfig-paths/register scripts/giveVectorSearchCredits.ts",
+    "credits:customRequestCredits": "ts-node -r tsconfig-paths/register scripts/giveCustomRequestCredits.ts",
     "generateTranslations": "node scripts/generateTranslations"
   },
   "repository": {

@@ -16,7 +16,7 @@
     "stripe:createProduct": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/createProduct.ts",
     "stripe:createPrice": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/createPrice.ts",
     "stripe:createSubscription": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/createSubscription.ts",
-    "jobProcessor": "ts-node -r tsconfig-paths/register jobProcessor.ts",
+    "jobProcessor": "nodemon --watch './jobProcessor' --watch 'jobHandlers' --exec 'ts-node -r tsconfig-paths/register' jobProcessor.ts",
     "credits:giveSummaryCredits": "ts-node -r tsconfig-paths/register scripts/giveSummaryCredits.ts",
     "credits:giveVectorSearchCredits": "ts-node -r tsconfig-paths/register scripts/giveVectorSearchCredits.ts",
     "generateTranslations": "node scripts/generateTranslations"
@@ -69,6 +69,8 @@
     "multer-s3": "^3.0.1",
     "nanoid": "^3.3.6",
     "openai": "^3.2.1",
+    "pdf2json": "^3.0.4",
+    "pdfjs-dist": "^3.8.162",
     "pickleparser": "^0.1.0",
     "pug": "^3.0.2",
     "stripe": "^12.7.0",

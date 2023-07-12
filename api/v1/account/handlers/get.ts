@@ -23,6 +23,7 @@ export async function getAccount(
       include: {
         SummaryCredits: true,
         VectorSearchCredits: true,
+        CustomRequestCredits: true,
       },
     });
 
@@ -46,6 +47,7 @@ export async function getAccount(
         subscriptions: subscriptions,
         summaryCredits: get(account, "SummaryCredits.amount", 0),
         vectorSearchCredits: get(account, "VectorSearchCredits.amount", 0),
+        customRequestCredits: get(account, "CustomRequestCredits.amount", 0),
       });
     } else {
       res.status(404).send();

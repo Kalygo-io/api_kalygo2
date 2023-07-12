@@ -33,5 +33,12 @@
     "greeting": "Your vector search results have been generated",
     "message": "View results:",
     "ending": ""
+  },
+  "customRequestJobComplete": {
+    "subject": "Your custom request results have been generated",
+    "message-as-text": "Your custom request results have been generated",
+    "greeting": "Your custom request results have been generated",
+    "message": "View results:",
+    "ending": ""
   }
 }

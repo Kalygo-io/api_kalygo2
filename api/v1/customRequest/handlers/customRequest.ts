@@ -17,6 +17,8 @@ export async function customRequest(
     console.log("req.body.customPrompt", req.body.customPrompt);
     console.log("req.files", req.files as any);
 
+    let language: string = req?.i18n?.language?.substring(0, 2) || "en";
+
     jobQueue.add(
       {
         jobType: QueueJobTypes.CustomRequest,
@@ -26,6 +28,7 @@ export async function customRequest(
           customPrompt: req.body.customPrompt,
           // @ts-ignore
           email: req.user.email,
+          language: language,
         },
       },
       {

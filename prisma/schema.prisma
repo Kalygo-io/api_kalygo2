@@ -11,8 +11,8 @@ datasource db {
 }
 
 model Account {
-  id                     Int                  @id @default(autoincrement())
-  email                  String               @unique
+  id                     Int                   @id @default(autoincrement())
+  email                  String                @unique
   firstName              String?
   lastName               String?
   alias                  String?
@@ -20,19 +20,20 @@ model Account {
   passwordHash           String?
   resetPasswordToken     String?
   emailVerificationToken String?
-  emailVerified          Boolean              @default(false)
-  markAsDeleted          Boolean              @default(false)
-  stripeId               String               @default("")
+  emailVerified          Boolean               @default(false)
+  markAsDeleted          Boolean               @default(false)
+  stripeId               String                @default("")
+  CustomRequest          CustomRequest[]
   Summaries              Summary[]
   VectorSearches         VectorSearch[]
-  createdAt              DateTime?            @default(now())
-  updatedAt              DateTime?            @updatedAt
-  subscriptionPlan       SubscriptionPlan     @default(FREE)
+  createdAt              DateTime?             @default(now())
+  updatedAt              DateTime?             @updatedAt
+  subscriptionPlan       SubscriptionPlan      @default(FREE)
   Logins                 Login[]
   SummaryCredits         SummaryCredits?
-  VectorSearchCredits    VectorSearchCredits?  
+  VectorSearchCredits    VectorSearchCredits?
+  CustomRequestCredits   CustomRequestCredits?
   OpenAiCharges          OpenAiCharges[]
-  role                   Role                 @default(USER)
 }
 
 model Summary {
@@ -61,6 +62,18 @@ model VectorSearch {
   updatedAt   DateTime? @updatedAt
 }
 
+model CustomRequest {
+  id                 Int       @id @default(autoincrement())
+  requester          Account   @relation(fields: [requesterId], references: [id])
+  requesterId        Int
+  files              Json
+  bucket             String
+  prompt             String
+  completionResponse Json
+  createdAt          DateTime? @default(now())
+  updatedAt          DateTime? @updatedAt
+}
+
 model SummaryCredits {
   id        Int     @id @default(autoincrement())
   account   Account @relation(fields: [accountId], references: [id])
@@ -69,6 +82,13 @@ model SummaryCredits {
 }
 
 model VectorSearchCredits {
+  id        Int     @id @default(autoincrement())
+  account   Account @relation(fields: [accountId], references: [id])
+  accountId Int     @unique
+  amount    Int
+}
+
+model CustomRequestCredits {
   id        Int     @id @default(autoincrement())
   account   Account @relation(fields: [accountId], references: [id])
   accountId Int     @unique

@@ -107,7 +107,7 @@ export async function customRequestJobLogic(
 
     const customRequestCredits = account?.CustomRequestCredits?.amount;
     if (customRequestCredits && customRequestCredits > 0) {
-      await prisma.summaryCredits.updateMany({
+      await prisma.customRequestCredits.updateMany({
         where: {
           accountId: account.id,
         },

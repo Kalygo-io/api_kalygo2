@@ -9,7 +9,7 @@ import { uploadToDiskMiddleware } from "@/middleware/multer-disk";
 const router = Router();
 
 router.route("/clear-queue").post([authenticateToken], clearQueue);
-router.route("/view-summary-queue").get([authenticateToken], viewQueue);
+router.route("/view-queue").get([authenticateToken], viewQueue);
 router
   .route("/remove-job-from-queue")
   .delete([authenticateToken], removeJobFromQueue);

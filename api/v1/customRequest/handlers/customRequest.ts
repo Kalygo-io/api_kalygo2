@@ -14,7 +14,7 @@ export async function customRequest(
   try {
     console.log("POST custom-request");
 
-    console.log("req.body.prompt", req.body.prompt);
+    console.log("req.body.customPrompt", req.body.customPrompt);
     console.log("req.files", req.files as any);
 
     jobQueue.add(
@@ -23,7 +23,7 @@ export async function customRequest(
         params: {
           bucket: process.env.S3_DOCUMENTS_BUCKET,
           files: req.files,
-          query: req.body.prompt,
+          customPrompt: req.body.customPrompt,
           // @ts-ignore
           email: req.user.email,
         },

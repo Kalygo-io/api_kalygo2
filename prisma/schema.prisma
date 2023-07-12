@@ -23,6 +23,7 @@ model Account {
   emailVerified          Boolean               @default(false)
   markAsDeleted          Boolean               @default(false)
   stripeId               String                @default("")
+  CustomRequest          CustomRequest[]
   Summaries              Summary[]
   VectorSearches         VectorSearch[]
   createdAt              DateTime?             @default(now())
@@ -58,6 +59,18 @@ model VectorSearch {
   results     Json
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @updatedAt
+}
+
+model CustomRequest {
+  id                 Int       @id @default(autoincrement())
+  requester          Account   @relation(fields: [requesterId], references: [id])
+  requesterId        Int
+  files              Json
+  bucket             String
+  prompt             String
+  completionResponse Json
+  createdAt          DateTime? @default(now())
+  updatedAt          DateTime? @updatedAt
 }
 
 model SummaryCredits {

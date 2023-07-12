@@ -29,16 +29,16 @@ export async function customRequestJobLogic(
     bucket: string;
     files: any[];
     email: string;
-    query: string;
+    customPrompt: string;
   },
   job: any,
   done: (err?: Error | null, result?: any) => void
 ) {
   try {
     console.log("processing JOB with params...", params);
-    const { files, bucket, email, query } = params;
-    console.log(bucket, files, email, query);
-    if (!bucket || !files || !email || !query) {
+    const { files, bucket, email, customPrompt } = params;
+    console.log(bucket, files, email, customPrompt);
+    if (!bucket || !files || !email || !customPrompt) {
       done(new Error("Invalid Data"));
       return;
     }
@@ -60,73 +60,145 @@ export async function customRequestJobLogic(
       return;
     }
 
-    // download file from S3
-    // const command = new GetObjectCommand({
-    //   Bucket: bucket,
-    //   Key: key,
-    // });
+    const filesToText = [];
+    let totalTokenCount = 0;
+    let totalApiCost = 0;
 
-    // const { Body } = await s3.send(command);
-    // const text = (await streamToString(Body)) as string;
+    for (let file of files) {
+      console.log("file", file);
 
-    // const tokenCount: number = enc.encode(text).length;
-    // const apiCost = (tokenCount / 1000) * 0.007;
+      // download file from S3
+      const command = new GetObjectCommand({
+        Bucket: bucket,
+        Key: file.key,
+      });
+
+      const { Body } = await s3.send(command);
+      const text = (await streamToString(Body)) as string;
+      const tokenCount: number = enc.encode(text).length;
+      totalApiCost += (tokenCount / 1000) * 0.0015; // actual cost on OpenAI site is 0.0015 for 4K context
+      totalTokenCount += tokenCount;
+
+      filesToText.push({
+        text,
+        tokenCount,
+        originalName: file.originalname,
+      });
+    }
+
+    console.log("totalTokenCount", totalTokenCount);
+    console.log("totalApiCost", totalApiCost);
     // const markup = 1.4; // 40%
     // const quote: number = Number.parseFloat(
     //   (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2)
     // );
 
-    // const accountSummaryCredits = account?.SummaryCredits?.amount;
-    // if (accountSummaryCredits && accountSummaryCredits > 0) {
-    //   await prisma.summaryCredits.updateMany({
-    //     where: {
-    //       accountId: account.id,
-    //     },
-    //     data: {
-    //       amount: accountSummaryCredits - 1,
-    //     },
-    //   });
-    // } else {
-    //   await stripe.charges.create({
-    //     amount: quote * 100,
-    //     currency: "usd",
-    //     description: `Summarization for ${bucket}/${key}`,
-    //     customer: account?.stripeId,
-    //   });
-    // }
-
-    // console.log("splitting text.*.*.");
-
-    // let parts = [text];
-
-    // while (!isPartsValid(parts)) {
-    //   console.log("in while...");
-
-    //   let newParts = [];
-
-    //   for (let i = 0; i < parts.length; i++) {
-    //     const prompt = PROMPT_PREFIX(language) + parts[i];
-
-    //     if (enc.encode(prompt).length > 4000) {
-    //       let middle = Math.floor(prompt.length / 2);
-    //       // let before = prompt.lastIndexOf(" ", middle);
-    //       // let after = prompt.indexOf(" ", middle + 1);
-    //       let before = middle;
-    //       let after = middle + 1;
-
-    //       if (middle - before < after - middle) {
-    //         middle = before;
-    //       } else middle = after;
-
-    //       const s1 = prompt.substring(0, middle);
-    //       const s2 = prompt.substring(middle + 1);
-
-    //       newParts.push(s1, s2);
-    //     } else newParts.push(parts[i]);
+    // const customRequestCredits = account?.CustomRequestCredits?.amount;
+    //   if (customRequestCredits && customRequestCredits > 0) {
+    //     await prisma.summaryCredits.updateMany({
+    //       where: {
+    //         accountId: account.id,
+    //       },
+    //       data: {
+    //         amount: customRequestCredits - 1,
+    //       },
+    //     });
+    //   } else {
+    //     await stripe.charges.create({
+    //       amount: quote * 100,
+    //       currency: "usd",
+    //       description: `Custom Request for ${bucket}/${file.key}`,
+    //       customer: account?.stripeId,
+    //     });
     //   }
 
-    //   parts = newParts;
-    // }
+    console.log("splitting text.*.*.");
+
+    let finalAnswerForEachFile: string[][] = [];
+    for (let fileMetadata of filesToText) {
+      let parts = [fileMetadata.text];
+
+      while (!isPartsValid(parts)) {
+        console.log("in while...");
+
+        let newParts = [];
+
+        for (let i = 0; i < parts.length; i++) {
+          const prompt = customPrompt + parts[i];
+
+          if (enc.encode(prompt).length > 4000) {
+            let middle = Math.floor(prompt.length / 2);
+            // let before = prompt.lastIndexOf(" ", middle);
+            // let after = prompt.indexOf(" ", middle + 1);
+            let before = middle;
+            let after = middle + 1;
+
+            if (middle - before < after - middle) {
+              middle = before;
+            } else middle = after;
+
+            const s1 = prompt.substring(0, middle);
+            const s2 = prompt.substring(middle + 1);
+
+            newParts.push(s1, s2);
+          } else newParts.push(parts[i]);
+        }
+
+        parts = newParts;
+      }
+
+      let finalAnswerForCurrentFile: string[] = [];
+      let tokenAccum: number = 0;
+      for (let i = 0; i < parts.length; i++) {
+        const prompt = `${customPrompt} ${parts[i]}`;
+
+        tokenAccum += enc.encode(prompt).length;
+
+        console.log("file", fileMetadata.originalName, "part", i);
+        console.log("token length of part", enc.encode(prompt).length);
+        console.log("tokenAccum", tokenAccum);
+
+        if (tokenAccum > 4000) {
+          await sleep(60000);
+          tokenAccum = 0;
+        }
+
+        console.log("calling OpenAI...");
+
+        console.log("with prompt...");
+        console.log(prompt);
+
+        const completion = await OpenAI.createChatCompletion({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          temperature: 0,
+        });
+
+        console.log(
+          "completion of last OpenAI request",
+          completion.data?.choices[0]?.message?.content
+        );
+
+        finalAnswerForCurrentFile.push(
+          completion.data?.choices[0]?.message?.content || "No Content"
+        );
+
+        // console.log("i", i, "parts.length", parts.length);
+        // console.log("progress", Math.floor((i / parts.length) * 100));
+        // console.log("job.progress()", job.progress());
+
+        // job.progress(
+        //   job.progress() + Math.floor((i / parts.length) * (100 / files.length))
+        // );
+      }
+
+      finalAnswerForEachFile.push(finalAnswerForCurrentFile);
+    }
 
     // console.log("splitting text DONE");
 
@@ -134,51 +206,15 @@ export async function customRequestJobLogic(
     // let tokenAccum: number = 0;
     // console.log("parts.length", parts.length);
 
-    // for (let i = 0; i < parts.length; i++) {
-    //   const prompt = `${PROMPT_PREFIX(language)} ${parts[i]}`;
-
-    //   tokenAccum += enc.encode(prompt).length;
-
-    //   console.log("part", i);
-    //   console.log("token length of part", enc.encode(prompt).length);
-    //   console.log("tokenAccum", tokenAccum);
-
-    //   if (tokenAccum > 4000) {
-    //     await sleep(60000);
-    //     tokenAccum = 0;
-    //   }
-
-    //   const completion = await OpenAI.createChatCompletion({
-    //     model: "gpt-3.5-turbo",
-    //     messages: [
-    //       {
-    //         role: "user",
-    //         content: prompt,
-    //       },
-    //     ],
-    //     temperature: 0,
-    //   });
-
-    //   finalAnswer.push(completion.data?.choices[0]?.message?.content);
-
-    //   // console.log("i", i, "parts.length", parts.length);
-    //   // console.log("progress", Math.floor((i / parts.length) * 100));
-
-    //   job.progress(Math.floor((i / parts.length) * 100));
-    // }
-
-    // const summaryRecord = await prisma.summary.create({
-    //   data: {
-    //     requesterId: account!.id,
-    //     content: finalAnswer.join("\n\n"),
-    //     filename: originalName,
-    //     originalCharCount: text.length,
-    //     condensedCharCount: finalAnswer.reduce(
-    //       (acc, element) => acc + element!.length,
-    //       0
-    //     ),
-    //   },
-    // });
+    const customRequestRecord = await prisma.customRequest.create({
+      data: {
+        requesterId: account!.id,
+        files: files,
+        bucket: bucket,
+        prompt: customPrompt,
+        completionResponse: finalAnswerForEachFile,
+      },
+    });
 
     // console.log("about to send an email...");
 
@@ -195,9 +231,9 @@ export async function customRequestJobLogic(
     //   console.log("email sent");
     // } catch (e) {}
 
-    // done(null, { summaryId: summaryRecord.id });
+    done(null, { customRequestId: customRequestRecord.id });
 
-    done();
+    // done();
 
     job.progress(100);
   } catch (e: any) {

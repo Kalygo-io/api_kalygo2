@@ -1,5 +1,5 @@
 import { authenticateToken, multerS3Middleware } from "@/middleware";
-import { customRequest } from "./handlers";
+import { customRequest, getCustomRequest } from "./handlers";
 
 import { Router } from "express";
 
@@ -11,5 +11,7 @@ router
     [authenticateToken, multerS3Middleware.array("documents")],
     customRequest
   );
+
+router.route("/custom-request/:id").get([authenticateToken], getCustomRequest);
 
 export default router;

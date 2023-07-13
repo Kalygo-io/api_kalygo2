@@ -8,6 +8,7 @@ import summarize from "./summarize";
 import account from "./account";
 import similaritySearch from "./similarity";
 import mailingList from "./mailingList";
+import getSaasStats from "./saasStats";
 import download from "./download";
 import customRequest from "./customRequest";
 import queue from "./queue";
@@ -27,6 +28,7 @@ router.use(customRequest);
 router.use(download);
 router.use(summarize);
 router.use(similaritySearch);
+router.use(getSaasStats);
 router.use(queue);
 
 export default router;

@@ -4,7 +4,7 @@ import { allocateSearchCredits } from "./handlers";
 import { allocateCustomRequestCredits } from "./handlers";
 import { checkAdminFrontend } from "./handlers";
 import { authenticateToken } from "@/middleware";
-import { isAdmin } from "@/middleware/isAdmin";
+import { isAdmin } from "@/middleware";
 
 import { Router } from "express";
 

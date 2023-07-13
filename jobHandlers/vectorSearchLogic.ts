@@ -71,6 +71,7 @@ export async function vectorSearchJobLogic(
 
     const tokenCount = enc.encode(text).length;
     const apiCost = (tokenCount / 1000) * 0.0004; // text-embedding-ada-002
+    const OpenAiApiCost = apiCost;
     const markup = 1.4; // 40%
     const quote = Number.parseFloat(
       (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2)
@@ -93,6 +94,19 @@ export async function vectorSearchJobLogic(
         description: `Vector Search for ${bucket}/${key}`,
         customer: account?.stripeId,
       });
+    }
+    
+    try {
+      if (account) {
+        await prisma.openAiCharges.create({
+          data: {
+            accountId: account.id,
+            amount: OpenAiApiCost,
+          },
+        });
+      }
+    } catch (e) {
+      console.log(e);
     }
     // ^^^ ^^^
 

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import prisma from "@db/prisma_client";
+import prisma from "@/db/prisma_client";
 import argon2 from "argon2";
 import { v4 } from "uuid";
 
@@ -37,6 +37,13 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
       },
     });
 
+    const role = await prisma.role.create({
+      data: {
+        type: "USER",
+        orgId: account.id,
+      },
+    });
+
     // FREE CREDITS
 
     const summaryCredits = await prisma.summaryCredits.create({
@@ -61,8 +68,9 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
     );
     await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
 
-    res.status(200).send();
+      res.status(200).send();
   } catch (e) {
+    console.log("BIG ERROR WITH SIGNUP");
     next(e);
   }
 }

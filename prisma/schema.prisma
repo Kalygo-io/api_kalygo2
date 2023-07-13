@@ -33,6 +33,8 @@ model Account {
   SummaryCredits         SummaryCredits?
   VectorSearchCredits    VectorSearchCredits?
   CustomRequestCredits   CustomRequestCredits?
+  OpenAiCharges          OpenAiCharges[]
+  Roles                  Role[]
 }
 
 model Summary {
@@ -106,8 +108,38 @@ model Login {
   createdAt DateTime? @default(now())
 }
 
+model OpenAiCharges {
+  id        Int       @id @default(autoincrement())
+  account   Account   @relation(fields: [accountId], references: [id])
+  accountId Int
+  createdAt DateTime? @default(now())
+  amount    Float
+}
+
+model Role {
+  id        Int       @id @default(autoincrement())
+  type      RoleTypes @default(USER)
+  account   Account   @relation(fields: [orgId], references: [id])
+  orgId     Int
+  createdAt DateTime? @default(now())
+}
+
+model Orgs {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
 enum SubscriptionPlan {
   FREE
   STANDARD
   PREMIUM
+}
+
+enum RoleTypes {
+  USER
+  ADMIN
+  ORG_ADMIN
+  ORG_MEMBER
 }

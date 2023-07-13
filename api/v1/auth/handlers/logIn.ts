@@ -25,6 +25,9 @@ export async function logIn(
         emailVerified: true,
         markAsDeleted: false,
       },
+      include: {
+        Roles: true,
+      },
     });
 
     if (account) {
@@ -39,7 +42,8 @@ export async function logIn(
         });
         console.log("after recording login");
 
-        const token = generateAccessToken(email);
+        const roles = account.Roles.map(role => role.type);
+        const token = generateAccessToken(email, roles);
 
         res
           .status(200)

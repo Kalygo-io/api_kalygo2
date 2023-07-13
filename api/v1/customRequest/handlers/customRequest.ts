@@ -19,6 +19,18 @@ export async function customRequest(
 
     let language: string = req?.i18n?.language?.substring(0, 2) || "en";
 
+    const userOpenAiCharges = await prisma.openAiCharges.findMany({
+      where: {
+        // @ts-ignore
+        accountId: req.user.id,
+      }
+    });
+    let totalCharges = userOpenAiCharges.reduce((total, charge) => total + charge.amount, 0);
+    if (totalCharges > 5) {
+      res.status(403).json({ error: "You have exceeded the limit" });
+      return;
+    }
+
     jobQueue.add(
       {
         jobType: QueueJobTypes.CustomRequest,

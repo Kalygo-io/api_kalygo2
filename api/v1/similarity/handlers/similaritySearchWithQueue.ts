@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { jobQueue } from "@/clients/bull_client";
 import { QueueJobTypes } from "@/types/JobTypes";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 export async function similaritySearchWithQueue(
   req: Request,
@@ -14,6 +16,18 @@ export async function similaritySearchWithQueue(
 
     let language: string = req?.i18n?.language?.substring(0, 2) || "en";
     const query = req.body.query;
+
+    const userOpenAiCharges = await prisma.openAiCharges.findMany({
+      where: {
+        // @ts-ignore
+        accountId: req.user.id,
+      }
+    });
+    let totalCharges = userOpenAiCharges.reduce((total, charge) => total + charge.amount, 0);
+    if (totalCharges > 5) {
+      res.status(403).json({ error: "You have exceeded the limit" });
+      return;
+    }
 
     jobQueue.add(
       {

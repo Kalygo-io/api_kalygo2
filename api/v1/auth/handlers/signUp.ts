@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import prisma from "@db/prisma_client";
+import prisma from "@/db/prisma_client";
 import argon2 from "argon2";
 import { v4 } from "uuid";
 
@@ -34,6 +34,13 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
         passwordHash,
         emailVerificationToken,
         stripeId: customer.id,
+      },
+    });
+
+    const role = await prisma.role.create({
+      data: {
+        type: "USER",
+        orgId: account.id,
       },
     });
 

@@ -22,6 +22,8 @@ export async function getSaasStats(
         const averageSummariesPerUser = totalSummaries / totalAccounts;
         const totalSearches = await prisma.vectorSearch.count();
         const averageSearchesPerUser = totalSearches / totalAccounts;
+        const totalCustomRequests = await prisma.customRequest.count();
+        const averageCustomRequests = totalCustomRequests / totalAccounts;
         const totalOpenAiCharges = await prisma.openAiCharges.aggregate({
           _sum: {
               amount: true,
@@ -44,7 +46,7 @@ export async function getSaasStats(
       });
     const monthlyActiveUsers = new Set(loginsInLast30DaysData.map(login => login.accountId)).size;
         
-      res.status(200).json({totalAccounts, paidAccountsCount, verifiedAccountsCount, totalSummaries, averageSummariesPerUser, totalOpenAiCharges, averageOpenAiChargesPerUser, monthlyActiveUsers, totalSearches, averageSearchesPerUser});
+      res.status(200).json({totalAccounts, paidAccountsCount, verifiedAccountsCount, totalSummaries, averageSummariesPerUser, totalOpenAiCharges, averageOpenAiChargesPerUser, monthlyActiveUsers, totalSearches, averageSearchesPerUser, totalCustomRequests, averageCustomRequests});
     } catch (e) {
       next(e);
     }

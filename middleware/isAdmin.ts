@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 import { NextFunction, Request, Response } from "express";
 
-export async function isAdmin(
+export default async function isAdmin(
   req: Request,
   res: Response,
   next: NextFunction

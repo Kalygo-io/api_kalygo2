@@ -1,6 +1,3 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
-
 import { Request, Response, NextFunction } from "express";
 
 export async function checkAdminFrontend(

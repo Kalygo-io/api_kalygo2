@@ -119,8 +119,8 @@ model OpenAiCharges {
 model Role {
   id        Int       @id @default(autoincrement())
   type      RoleTypes @default(USER)
-  account   Account   @relation(fields: [orgId], references: [id])
-  orgId     Int
+  account   Account   @relation(fields: [accountId], references: [id])
+  accountId Int
   createdAt DateTime? @default(now())
 }
 

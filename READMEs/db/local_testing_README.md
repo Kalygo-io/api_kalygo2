@@ -51,4 +51,10 @@ psql -h localhost -U username -d database_name
 
 npx prisma migrate dev --name <name_of_migration_here>
 
+## Run pending migrations
 
+npx prisma migrate dev
+
+## Setting up an ADMIN role
+
+INSERT INTO "Role" ("type", "accountId", "createdAt") VALUES ('ADMIN', 105, NOW());

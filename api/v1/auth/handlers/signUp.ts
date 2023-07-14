@@ -40,7 +40,7 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
     const role = await prisma.role.create({
       data: {
         type: "USER",
-        orgId: account.id,
+        accountId: account.id,
       },
     });
 
@@ -68,7 +68,7 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
     );
     await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
 
-      res.status(200).send();
+    res.status(200).send();
   } catch (e) {
     console.log("BIG ERROR WITH SIGNUP");
     next(e);

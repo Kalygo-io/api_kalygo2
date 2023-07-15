@@ -60,6 +60,13 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
       },
     });
 
+    const customRequestCredits = await prisma.customRequestCredits.create({
+      data: {
+        accountId: account!.id,
+        amount: 2,
+      },
+    });
+
     const emailConfig = generateVerifyEmail_SES_Config(
       email,
       `${process.env.FRONTEND_HOSTNAME}/verify-email?email=${email}&email-verification-token=${emailVerificationToken}`,

@@ -12,8 +12,10 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, password } = req.body;
 
-    const count = await prisma.account.count();
+    if (process.env.NODE_ENV === "staging")
+      throw new Error("Sign up not supported in staging");
 
+    const count = await prisma.account.count();
     if (count > 400) {
       throw new Error("RATE_LIMIT");
     }
@@ -46,14 +48,14 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
 
     // FREE CREDITS
 
-    const summaryCredits = await prisma.summaryCredits.create({
+    await prisma.summaryCredits.create({
       data: {
         accountId: account!.id,
         amount: 2,
       },
     });
 
-    const vectorSearchCredits = await prisma.vectorSearchCredits.create({
+    await prisma.vectorSearchCredits.create({
       data: {
         accountId: account!.id,
         amount: 2,
@@ -77,7 +79,6 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
 
     res.status(200).send();
   } catch (e) {
-    console.log("BIG ERROR WITH SIGNUP");
     next(e);
   }
 }

@@ -7,6 +7,7 @@ import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { generateVerifyEmail_SES_Config } from "@emails/verifyEmail";
 import { sesClient } from "@/clients/ses_client";
 import { stripe } from "@/clients/stripe_client";
+import { RoleTypes } from "@/types/RoleTypes";
 
 export async function signUp(req: Request, res: Response, next: NextFunction) {
   try {
@@ -41,7 +42,7 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
 
     const role = await prisma.role.create({
       data: {
-        type: "USER",
+        type: RoleTypes.USER,
         accountId: account.id,
       },
     });

@@ -42,7 +42,10 @@ export async function logIn(
         });
         console.log("after recording login");
 
-        const roles = account.Roles.map(role => role.type);
+        const roles = account.Roles.map((role) => role.type);
+
+        console.log("roles for accessToken", roles);
+
         const token = generateAccessToken(email, roles);
 
         res

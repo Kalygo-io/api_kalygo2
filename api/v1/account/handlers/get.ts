@@ -13,7 +13,7 @@ export async function getAccount(
     console.log("GET account");
 
     // @ts-ignore
-    console.log("req.user", req.user);
+    // console.log("req.user", req.user);
 
     const account = await prisma.account.findFirst({
       where: {

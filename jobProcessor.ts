@@ -1,6 +1,7 @@
 import { jobQueue } from "@/clients/bull_client";
 import { QueueJobTypes } from "@/types/JobTypes";
 import { summaryJobLogic } from "@/jobHandlers/summaryJobLogic";
+import { summaryV2JobLogic } from "@/jobHandlers/summaryV2JobLogic";
 import { vectorSearchJobLogic } from "@/jobHandlers/vectorSearchLogic";
 import { customRequestJobLogic } from "@/jobHandlers/customRequestJobLogic";
 
@@ -15,6 +16,10 @@ jobQueue.process(async function (job, done) {
       case QueueJobTypes.Summary:
         console.log("QueueJobTypes.Summary");
         await summaryJobLogic(params, job, done);
+        break;
+      case QueueJobTypes.SummaryV2:
+        console.log("QueueJobTypes.SummaryV2");
+        await summaryV2JobLogic(params, job, done);
         break;
       case QueueJobTypes.VectorSearch:
         console.log("QueueJobTypes.VectorSearch");

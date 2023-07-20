@@ -10,6 +10,8 @@ import {
   verifyAccount,
   mockReceiveVerificationToken,
   subscriptionSignUp,
+  googleSignUp,
+  googleLogin,
 } from "./handlers";
 
 import { Router } from "express";
@@ -23,6 +25,8 @@ router.route("/sign-up").post(signUp);
 router.route("/subscription-sign-up").post(subscriptionSignUp);
 router.route("/sign-out").delete(authenticateToken, signOut);
 router.route("/request-password-reset").post(requestPasswordReset);
+router.route("/google-sign-up").post(googleSignUp);
+router.route("/google-log-in").post(googleLogin);
 router.route("/mock-request-password-reset").post(mockRequestPasswordReset);
 router
   .route("/mock-receive-verification-token")

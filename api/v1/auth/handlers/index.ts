@@ -7,6 +7,8 @@ import { requestPasswordReset } from "./requestPasswordReset";
 import { verifyAccount } from "./verifyAccount";
 import { mockReceiveVerificationToken } from "./mockReceiveVerificationToken";
 import { isAuthed } from "./isAuthed";
+import { googleSignUp } from "./googleSignUp";
+import { googleLogin } from "./googleLogIn";
 
 import { subscriptionSignUp } from "./subscriptionSignUp";
 
@@ -24,4 +26,6 @@ export {
   isAuthed,
   signOut,
   subscriptionSignUp,
+  googleSignUp,
+  googleLogin,
 };

@@ -1,0 +1,60 @@
+---
+
+- hosts: all
+  remote_user: ec2-user
+  tasks:
+    - name: git pull
+      git:
+        repo: 'https://github.com/Kalygo-io/api_kalygo2.git'
+        dest: /home/ec2-user/src/api_kalygo2
+        update: yes
+        force: yes
+        version: google-auth-branch
+      register: git_finished
+
+    - name: make version of code published on API
+      shell: sed 's/$COMMIT_HASH/'"$(git rev-parse --short HEAD)"'/' ./version.json.tmp > ./version.json
+      args:
+        chdir: /home/ec2-user/src/api_kalygo2
+      register: version_published
+
+    - name: NODE | Install npm deps
+      shell: npm i
+      register: npm_finished
+      failed_when: '"ERR!" in npm_finished.stderr'
+      args:
+        chdir: /home/ec2-user/src/api_kalygo2
+
+    - name: npx prisma migrate deploy
+      shell: npx prisma migrate deploy
+      args:
+        chdir: /home/ec2-user/src/api_kalygo2
+      environment:
+        PATH: "/home/ec2-user/.nvm/versions/node/v18.12.0/bin:{{ ansible_env.PATH }}"
+        DATABASE_URL: "postgresql://kalygo:p3dens24%23@localhost:5432/kalygo?schema=public"
+
+    - name: npx prisma generate
+      shell: npx prisma generate
+      args:
+        chdir: /home/ec2-user/src/api_kalygo2
+      environment:
+        PATH: "/home/ec2-user/.nvm/versions/node/v18.12.0/bin:{{ ansible_env.PATH }}"
+
+    - name: npm run build
+      shell: npm run build
+      args:
+        chdir: /home/ec2-user/src/api_kalygo2
+      environment:
+        PATH: "/home/ec2-user/.nvm/versions/node/v18.12.0/bin:{{ ansible_env.PATH }}"
+
+    - name: Copying pm2 config to remote
+      copy:
+        src: ./ecosystem.config.staging.js
+        dest: /home/ec2-user/src/api_kalygo2/ecosystem.config.js
+
+    - name: pm2 restart
+      shell: pm2 restart ecosystem.config.js --env staging
+      args:
+        chdir: /home/ec2-user/src/api_kalygo2
+      environment:
+        PATH: "/home/ec2-user/.nvm/versions/node/v18.12.0/bin:{{ ansible_env.PATH }}"

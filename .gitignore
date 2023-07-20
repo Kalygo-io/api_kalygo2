@@ -18,8 +18,11 @@ inventory.prod
 ansible.cfg
 
 cicd.yml
+cicd.yaml
 cicd.staging.yml
+cicd.staging.yaml
 cicd.prod.yml
+cicd.prod.yaml
 cicd_example.yml
 
 # ecosystem.config.js.bk

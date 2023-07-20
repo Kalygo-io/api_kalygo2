@@ -36,6 +36,7 @@ model Account {
   CustomRequestCredits   CustomRequestCredits?
   OpenAiCharges          OpenAiCharges[]
   Roles                  Role[]
+  SummaryV2              SummaryV2[]
 }
 
 model Summary {
@@ -49,6 +50,27 @@ model Summary {
   processedCharCount Int       @default(0)
   createdAt          DateTime? @default(now())
   updatedAt          DateTime? @updatedAt
+}
+
+model SummaryV2 {
+  id                 Int       @id @default(autoincrement())
+  requester          Account   @relation(fields: [requesterId], references: [id])
+  requesterId        Int
+  Files              File[]
+  prompt             String
+  completionResponse Json
+  createdAt          DateTime? @default(now())
+  updatedAt          DateTime? @updatedAt
+}
+
+model File {
+  id        Int       @id @default(autoincrement())
+  summary   SummaryV2 @relation(fields: [summaryId], references: [id])
+  summaryId Int
+  bucket    String
+  key       String
+  hash      String?
+  createdAt DateTime? @default(now())
 }
 
 model VectorSearch {

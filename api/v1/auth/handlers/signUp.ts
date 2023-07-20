@@ -63,12 +63,12 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
       },
     });
 
-    // const customRequestCredits = await prisma.customRequestCredits.create({
-    //   data: {
-    //     accountId: account!.id,
-    //     amount: 2,
-    //   },
-    // });
+    await prisma.customRequestCredits.create({
+      data: {
+        accountId: account!.id,
+        amount: 2,
+      },
+    });
 
     const emailConfig = generateVerifyEmail_SES_Config(
       email,

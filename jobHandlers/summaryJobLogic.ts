@@ -86,7 +86,7 @@ export async function summaryJobLogic(
     const text = (await streamToString(Body)) as string;
 
     const tokenCount: number = enc.encode(text).length;
-    const apiCost = (tokenCount / 1000) * 0.007;
+    const apiCost = (tokenCount / 1000) * 0.004; // actual cost on OpenAI site is 0.0015/1000 tokens for 4K input context && 0.002/1000 tokens for 4k output context
     const OpenAiApiCost = apiCost;
     const markup = 1.4; // 40%
     const quote: number = Number.parseFloat(

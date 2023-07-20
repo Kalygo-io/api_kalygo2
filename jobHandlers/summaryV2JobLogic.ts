@@ -11,6 +11,7 @@ import { sesClient } from "@/clients/ses_client";
 import { streamToString } from "@/utils/streamToString";
 import { convertPDFToTxtFile } from "./helpers/customRequestJob/pdf2txt";
 import { customRequestJobComplete_SES_Config } from "@/emails/customRequestJobComplete";
+import { generateCustomSummarizationPrompt } from "./helpers/summaryV2Job/generateCustomSummarizationPrompt";
 
 const enc = encoding_for_model("gpt-3.5-turbo");
 
@@ -26,12 +27,12 @@ function isPartsValid(parts: string[]): boolean {
   return true;
 }
 
-export async function customRequestJobLogic(
+export async function summaryV2JobLogic(
   params: {
     bucket: string;
     files: any[];
     email: string;
-    customPrompt: string;
+    customizations: Record<string, string>;
     language: string;
   },
   job: any,
@@ -39,12 +40,19 @@ export async function customRequestJobLogic(
 ) {
   try {
     console.log("processing JOB with params...", params);
-    const { files, bucket, email, customPrompt, language } = params;
-    console.log(bucket, files, email, customPrompt, language);
-    if (!bucket || !files || !email || !customPrompt || !language) {
+    const { files, bucket, email, customizations, language } = params;
+    console.log(bucket, files, email, customizations, language);
+    if (!bucket || !files || !email || !customizations || !language) {
       done(new Error("Invalid Data"));
       return;
     }
+
+    const customPrompt = generateCustomSummarizationPrompt({
+      format: customizations.format,
+      type: customizations.type,
+      length: customizations.length,
+      language: customizations.language,
+    });
 
     const account = await prisma.account.findFirst({
       where: {
@@ -52,7 +60,7 @@ export async function customRequestJobLogic(
         emailVerified: true,
       },
       include: {
-        CustomRequestCredits: true,
+        SummaryCredits: true,
       },
     });
 
@@ -105,21 +113,21 @@ export async function customRequestJobLogic(
       (totalApiCost * markup > 0.5 ? totalApiCost * markup : 0.5).toFixed(2)
     );
 
-    const customRequestCredits = account?.CustomRequestCredits?.amount;
-    if (customRequestCredits && customRequestCredits > 0) {
+    const summaryCredits = account?.SummaryCredits?.amount;
+    if (summaryCredits && summaryCredits > 0) {
       await prisma.customRequestCredits.updateMany({
         where: {
           accountId: account.id,
         },
         data: {
-          amount: customRequestCredits - 1,
+          amount: summaryCredits - 1,
         },
       });
     } else {
       await stripe.charges.create({
         amount: quote * 100,
         currency: "usd",
-        description: `Custom Request`,
+        description: `SummaryV2`,
         customer: account?.stripeId,
       });
     }
@@ -141,7 +149,7 @@ export async function customRequestJobLogic(
         let newParts = [];
 
         for (let i = 0; i < parts.length; i++) {
-          const promptWithDataChunk = customPrompt + parts[i];
+          const promptWithDataChunk = customPrompt + parts[i]; // replace with customized prompt
 
           if (enc.encode(promptWithDataChunk).length > 4000) {
             let middle = Math.floor(promptWithDataChunk.length / 2);
@@ -165,7 +173,7 @@ export async function customRequestJobLogic(
       let finalAnswerForCurrentFile: any = [];
       let tokenAccum: number = 0;
       for (let i = 0; i < parts.length; i++) {
-        const prompt = `${customPrompt} ${parts[i]}`;
+        const prompt = `${customPrompt} ${parts[i]}`; // replace with customized prompt
 
         tokenAccum += enc.encode(prompt).length;
 
@@ -231,11 +239,11 @@ export async function customRequestJobLogic(
     // let tokenAccum: number = 0;
     // console.log("parts.length", parts.length);
 
-    const customRequestRecord = await prisma.customRequest.create({
+    const summaryV2Record = await prisma.summaryV2.create({
       data: {
         requesterId: account!.id,
-        files: files,
-        bucket: bucket,
+        // files: files,
+        // bucket: bucket,
         prompt: customPrompt,
         completionResponse: finalAnswerForEachFile,
       },
@@ -247,16 +255,16 @@ export async function customRequestJobLogic(
     // job.progress(99);
 
     try {
-      const emailConfig = customRequestJobComplete_SES_Config(
+      const emailConfig = summaryJobComplete_SES_Config(
         email,
-        `${process.env.FRONTEND_HOSTNAME}/dashboard/custom-request-result?custom-request-id=${customRequestRecord.id}`,
+        `${process.env.FRONTEND_HOSTNAME}/dashboard/summary-v2?summary-v2-id=${summaryV2Record.id}`,
         language
       );
       await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
       console.log("email sent");
     } catch (e) {}
 
-    done(null, { customRequestId: customRequestRecord.id });
+    done(null, { summaryV2Id: summaryV2Record.id });
 
     // done();
 

@@ -1,8 +1,10 @@
 import {
   summarize,
+  summarizeV2,
   getSummarizationQuote,
   accountSummaries,
   getSummary,
+  getSummaryV2,
 } from "./handlers";
 
 import { Router } from "express";
@@ -18,6 +20,12 @@ const router = Router();
 //   .post([multerS3Middleware.array("documents", 3)], upload);
 
 router.route("/summarize").post([authenticateToken], summarize);
+router
+  .route("/summarize-v2")
+  .post(
+    [authenticateToken, multerS3Middleware.array("documents")],
+    summarizeV2
+  );
 
 // router
 //   .route("/summarize")
@@ -26,6 +34,7 @@ router.route("/summarize").post([authenticateToken], summarize);
 router.route("/account-summaries").get([authenticateToken], accountSummaries);
 
 router.route("/get-summary/:id").get([authenticateToken], getSummary);
+router.route("/get-summary-v2/:id").get([authenticateToken], getSummaryV2);
 
 // router.route("/get-summarization-quote").post(
 // [authenticateToken, uploadToDiskMiddleware.array("documents", 3)],
@@ -40,4 +49,4 @@ router
     getSummarizationQuote
   );
 
-export default router;  
+export default router;

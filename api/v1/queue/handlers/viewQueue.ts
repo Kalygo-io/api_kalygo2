@@ -17,7 +17,7 @@ export async function viewQueue(
       "failed",
     ]);
 
-    console.log("activeJobs", activeJobs);
+    // console.log("activeJobs", activeJobs);
 
     activeJobs = activeJobs.filter((i) => {
       // @ts-ignore

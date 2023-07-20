@@ -20,10 +20,13 @@ export async function similaritySearch(
   next: NextFunction
 ) {
   try {
-    const result = await prisma.account.findFirst({
+    const account = await prisma.account.findFirst({
       where: {
         // @ts-ignore
         email: req.user.email,
+      },
+      include: {
+        VectorSearchCredits: true,
       },
     });
 
@@ -40,12 +43,24 @@ export async function similaritySearch(
       (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2)
     );
 
-    await stripe.charges.create({
-      amount: quote * 100,
-      currency: "usd",
-      description: `Vector Search for ${req.file?.path}`,
-      customer: result?.stripeId,
-    });
+    const vectorSearchCredits = account?.VectorSearchCredits?.amount;
+    if (vectorSearchCredits && vectorSearchCredits > 0) {
+      await prisma.vectorSearchCredits.updateMany({
+        where: {
+          accountId: account.id,
+        },
+        data: {
+          amount: vectorSearchCredits - 1,
+        },
+      });
+    } else {
+      await stripe.charges.create({
+        amount: quote * 100,
+        currency: "usd",
+        description: `Vector Search for ${req.file?.path}`,
+        customer: account?.stripeId,
+      });
+    }
     // ^^^ ^^^
 
     const query = req.body.query;

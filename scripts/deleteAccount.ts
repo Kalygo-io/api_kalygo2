@@ -30,6 +30,12 @@ async function deleteAccount() {
     },
   });
 
+  await prisma.login.deleteMany({
+    where: {
+      accountId: account!.id,
+    },
+  });
+
   await prisma.role.deleteMany({
     where: {
       accountId: account!.id,

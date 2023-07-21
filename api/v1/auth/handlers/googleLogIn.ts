@@ -14,13 +14,18 @@ export async function googleLogin(
       throw new Error("No auth header");
     }
     const token = authHeader?.split(" ")[1];
-    const ticket = await OAuthClient.verifyIdToken({
-      idToken: token,
-    });
-    const payload = ticket.getPayload();
-    const email = payload?.email;
+    const tokenInfo = await OAuthClient.getTokenInfo(token);
+    const email = tokenInfo?.email;
+    const emailVerified = tokenInfo?.email_verified;
 
-    if (email) {
+    // const token = authHeader?.split(" ")[1];
+    // const ticket = await OAuthClient.verifyIdToken({
+    //   idToken: token,
+    // });
+    // const payload = ticket.getPayload();
+    // const email = payload?.email;
+
+    if (email && emailVerified) {
       const user = await prisma.account.findUnique({
         where: {
           email: email,

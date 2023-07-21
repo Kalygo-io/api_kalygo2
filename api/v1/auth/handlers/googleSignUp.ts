@@ -16,16 +16,13 @@ export async function googleSignUp(
       throw new Error("No auth header");
     }
     const token = authHeader?.split(" ")[1];
-    const ticket = await OAuthClient.verifyIdToken({
-      idToken: token,
-    });
-    const payload = ticket.getPayload();
+    const tokenInfo = await OAuthClient.getTokenInfo(token);
+    const email = tokenInfo?.email;
+    const emailVerified = tokenInfo?.email_verified;
+    // const firstName = tokenInfo?.given_name;
+    // const lastName = tokenInfo?.family_name;
 
-    const email = payload?.email;
-    const firstName = payload?.given_name;
-    const lastName = payload?.family_name;
-
-    if (email) {
+    if (email && emailVerified) {
       // if there is no user in the DB associated with the gmail of google sign in
       const customer: any = await stripe.customers.create({
         // @ts-ignore
@@ -36,8 +33,8 @@ export async function googleSignUp(
         data: {
           email,
           stripeId: customer.id,
-          firstName: firstName,
-          lastName: lastName,
+          // firstName: firstName,
+          // lastName: lastName,
           isGoogleAccount: true,
           emailVerified: true,
         },
@@ -80,7 +77,7 @@ export async function googleSignUp(
         })
         .send();
     } else {
-      throw new Error("Email not provided");
+      throw new Error("Invalid Email");
     }
   } catch (e) {
     next(e);

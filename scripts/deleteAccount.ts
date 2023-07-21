@@ -2,7 +2,7 @@ import "dotenv/config";
 import prisma from "@/db/prisma_client";
 
 async function deleteAccount() {
-  const email = "thaddadavis@gmail.com";
+  const email = "tad@cmdlabs.io";
   // const email = "ceemmmdee@gmail.com";
 
   const account = await prisma.account.findFirst({
@@ -27,6 +27,30 @@ async function deleteAccount() {
   await prisma.customRequestCredits.deleteMany({
     where: {
       accountId: account!.id,
+    },
+  });
+
+  await prisma.summary.deleteMany({
+    where: {
+      requesterId: account!.id,
+    },
+  });
+
+  await prisma.vectorSearch.deleteMany({
+    where: {
+      requesterId: account!.id,
+    },
+  });
+
+  await prisma.customRequest.deleteMany({
+    where: {
+      requesterId: account!.id,
+    },
+  });
+
+  await prisma.summaryV2.deleteMany({
+    where: {
+      requesterId: account!.id,
     },
   });
 

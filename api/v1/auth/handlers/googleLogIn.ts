@@ -35,7 +35,7 @@ export async function googleLogin(
         },
       });
 
-      if (user && user.isGoogleAccount) {
+      if (user) {
         const roles = user.Roles.map((role) => role.type);
         const jwt = generateAccessToken(email, roles);
         res
@@ -52,7 +52,7 @@ export async function googleLogin(
         res.status(404).send();
       }
     } else {
-      throw new Error("Email not provided");
+      throw new Error("Invalid Email");
     }
   } catch (e) {
     next(e);

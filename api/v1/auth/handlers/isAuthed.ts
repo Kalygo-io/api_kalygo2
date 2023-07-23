@@ -13,6 +13,7 @@ export async function isAuthed(
     const result = await prisma.account.findFirst({
       where: {
         email,
+        emailVerified: true,
       },
     });
 

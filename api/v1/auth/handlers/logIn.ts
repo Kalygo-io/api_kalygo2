@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { generateAccessToken } from "../../../../utils/index";
+import { generateAccessToken } from "@/utils";
 import prisma from "@db/prisma_client";
 const argon2 = require("argon2");
 
@@ -16,6 +16,8 @@ export async function logIn(
   next: NextFunction
 ) {
   try {
+    console.log("POST /v1/auth/log-in");
+
     const { email, password } = req.body;
 
     // const account = await Account.findOne({ email, verified: true });
@@ -29,6 +31,8 @@ export async function logIn(
         Roles: true,
       },
     });
+
+    console.log("account", account);
 
     if (account) {
       const { passwordHash } = account;

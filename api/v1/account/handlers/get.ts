@@ -37,6 +37,12 @@ export async function getAccount(
     }
 
     if (account) {
+      console.log("account", account);
+      console.log(
+        "account VectorSearchCredits",
+        get(account, "VectorSearchCredits.amount", 0)
+      );
+
       res.status(200).json({
         ...pick(account, [
           "email",

@@ -178,6 +178,10 @@ export async function similaritySearch(
       });
     } catch (e) {}
 
+    try {
+      fs.unlink(`${req.file?.path}`, () => {});
+    } catch (e) {}
+
     res.status(200).json({
       results: results,
     });

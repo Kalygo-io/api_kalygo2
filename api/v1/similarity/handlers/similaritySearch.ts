@@ -90,6 +90,7 @@ export async function similaritySearch(
 
     // let intResults: any = text.match(/[^\.!\?]+[\.!\?]+/g);
     // let intResults: any = textConcat.split(/[ ,]+/);
+
     let intResults: {
       textChunk: string;
       page: number;

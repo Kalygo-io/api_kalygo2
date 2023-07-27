@@ -31,6 +31,7 @@ export function convertPDFToTxtWithMetadata(file: any): Promise<any> {
               var textContent = page.getTextContent();
               return textContent.then(function (text: any) {
                 // return content promise
+
                 return {
                   page: page._pageIndex + 1,
                   text: text.items

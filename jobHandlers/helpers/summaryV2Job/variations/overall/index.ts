@@ -117,6 +117,7 @@ export async function summarizeFilesOverall(
   console.log("splitting text.*.*.");
 
   let finalAnswerForEachFile: any[] = [];
+  let totalTokenAccum = 0;
   for (let fIndex = 0; fIndex < filesToText.length; fIndex++) {
     console.log(
       "*** file to be processed ***",
@@ -126,7 +127,7 @@ export async function summarizeFilesOverall(
     let parts = [filesToText[fIndex].text];
     let summaryForFile = ""; // ***
     let tokenAccum: number = 0;
-    let tokenAccumWithoutPrefix: number = 0;
+    let tokensWithoutPrefixInFile: number = 0;
     const totalTokenCountInFile: number = enc.encode(parts[0]).length;
 
     while (parts.length > 0) {
@@ -169,7 +170,8 @@ export async function summarizeFilesOverall(
       console.log("totalTokenCount", totalTokenCount);
 
       tokenAccum += enc.encode(finalPrompt).length;
-      tokenAccumWithoutPrefix += enc.encode(parts[0]).length;
+      tokensWithoutPrefixInFile = enc.encode(parts[0]).length;
+      totalTokenAccum += enc.encode(parts[0]).length;
       if (tokenAccum > 4000) {
         await sleep(60000);
         tokenAccum = 0;
@@ -197,10 +199,18 @@ export async function summarizeFilesOverall(
       console.log("*** parts.length ***", parts.length);
 
       // vvv vvv vvv
+      // console.log(
+      //   "progress",
+      //   job.progress() +
+      //     Math.floor(
+      //       (tokensWithoutPrefixInFile / totalTokenCountInFile) * (90 / files.length)
+      //     )
+      // );
+
       job.progress(
         job.progress() +
           Math.floor(
-            (tokenAccumWithoutPrefix / totalTokenCountInFile) *
+            (tokensWithoutPrefixInFile / totalTokenCountInFile) *
               (90 / files.length)
           )
       );

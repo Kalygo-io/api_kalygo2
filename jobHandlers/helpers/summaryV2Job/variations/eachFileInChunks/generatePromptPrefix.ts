@@ -1,12 +1,11 @@
-export function generateCustomSummarizationPrompt(customizations: {
+export function generatePromptPrefix(customizations: {
   format: string;
-  type: string;
   length: string;
   language: string;
-}) {
-  const { format, type, length, language } = customizations;
+}): string {
+  const { format, length, language } = customizations;
 
-  return `Please provide a detailed summary of the following ORIGINAL_TEXT
+  return `Please provide a detailed summary of the following ORIGINAL_TEXT. This original text is either a complete standalone piece of data or is a chunk of a larger amount of data.
                     
         The summary should be:
         
@@ -26,9 +25,10 @@ export function generateCustomSummarizationPrompt(customizations: {
         - Grammatically correct
         - Have professional punctuation
         - Be accurate
-        - In cases where accuracy is not possible please provide a disclaimer
+        - In cases where accuracy is not possible provide a disclaimer
         - Be returned as valid markdown syntax
         - The markdown should be well structured
               
-        Here is the ORIGINAL_TEXT:`;
+        Here is the ORIGINAL_TEXT:
+  `;
 }

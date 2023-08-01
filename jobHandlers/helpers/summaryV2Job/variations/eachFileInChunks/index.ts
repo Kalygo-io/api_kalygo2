@@ -36,7 +36,8 @@ export async function summarizeEachFileInChunks(
   done: (err?: Error | null | undefined, result?: any) => void,
   model: "gpt-3.5-turbo" | "gpt-4" = "gpt-3.5-turbo"
 ) {
-  console.log("summarizeEachFileInChunks"); // for console debugging...
+  // -v-v- ENTRY POINT - EACH FILE IN CHUNKS -v-v-
+  console.log("Summarize Each File In Chunks"); // for console debugging...
   // -v-v- CHECK IF CALLER HAS AN ACCOUNT -v-v-
   const account = await prisma.account.findFirst({
     where: {
@@ -151,9 +152,9 @@ export async function summarizeEachFileInChunks(
       console.log(
         `calling OpenAI to summarize part ${i} of file ${originalNameOfFile}...`
       );
-
+      // -v-v- CALL THE A.I. MODEL -v-v-
       const completion = await OpenAI.createChatCompletion({
-        model: "gpt-3.5-turbo",
+        model,
         messages: [
           {
             role: "user",
@@ -162,13 +163,11 @@ export async function summarizeEachFileInChunks(
         ],
         temperature: 0,
       });
-
       // prettier-ignore
       console.log(`snippet of last OpenAI completion - '${completion.data?.choices[0]?.message?.content?.slice(0,16)}'`);
-
-      const outputTokenCount = enc.encode(
-        completion.data?.choices[0]?.message?.content || "ERROR: No Content"
-      ).length;
+      // prettier-ignore
+      // -v-v- TRACK THE OUTPUT TOKENS -v-v-
+      const outputTokenCount = enc.encode(completion.data?.choices[0]?.message?.content || "ERROR: No Content").length;
       outputTokens += outputTokenCount; // track output tokens
       tpmAccum += outputTokenCount; // accumulate output tokens
 
@@ -270,7 +269,6 @@ export async function summarizeEachFileInChunks(
   }
 
   job.progress(100);
-
   console.log("DONE");
   done(null, { summaryV2Id: summaryV2Record.id });
 }

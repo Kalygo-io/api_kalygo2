@@ -7,13 +7,11 @@ export function generatePromptPrefix(
   summarySoFar: string
 ): string {
   const { format, length, language } = customizations;
-  return `Provide a detailed summary of the following ORIGINAL_TEXT. This original text is either a complete standalone piece of data or a chunk of a larger amount of data.
+  return `Provide a detailed SUMMARY of the following ORIGINAL_TEXT. This original text is either a complete standalone piece of data or a chunk of a larger amount of data.
         
-        If the ORIGINAL_TEXT is part of a larger amount of data, then the summary of the processed data so far is:
-        
-        ${summarySoFar}
+        If the ORIGINAL_TEXT is part of a larger amount of data, then the SUMMARY_SO_FAR of the processed data of the rest of the larger amount of data is: ${summarySoFar}
   
-        The summary should be:
+        The SUMMARY should be:
         
         - Written in ${language}
         - ${
@@ -38,6 +36,7 @@ export function generatePromptPrefix(
         - In cases where accuracy is not possible provide a disclaimer
         - Be returned as valid markdown syntax
         - The markdown should be well structured
+        - generated in a way that incorporates the SUMMARY_SO_FAR to generate a SUMMARY that synthesizes and communicates clearly an accurate and thorough understanding of the overall data to a human reader
 
         Here is the ORIGINAL_TEXT:
     `;

@@ -28,6 +28,8 @@ export function generatePromptPrefix(customizations: {
         - In cases where accuracy is not possible provide a disclaimer
         - Be returned as valid markdown syntax
         - The markdown should be well structured
+        - If a valid URL is present highlight it as a link with valid markdown
+        - Highlight all valid phone numbers, email addresses, and social media handles
               
         Here is the ORIGINAL_TEXT:
   `;

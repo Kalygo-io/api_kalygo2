@@ -19,7 +19,6 @@ function isNextPartValid(
   modelContextLimit: number,
   enc: Tiktoken
 ): boolean {
-  // customPrompt + " " + part
   if (enc.encode(part).length > modelContextLimit) return false;
   return true;
 }
@@ -74,7 +73,7 @@ export async function summarizeEachFileOverall(
     let text;
     if (files[fIndex].mimetype === "application/pdf") {
       // -v-v- IF PDF, THEN CONVERT TO TEXT -v-v-
-      let pdfByteArray = await Body?.transformToByteArray();
+      const pdfByteArray = await Body?.transformToByteArray();
       text = await convertPDFToTxtFile(pdfByteArray);
     } else {
       // -v-v- IF TEXT, THEN SIMPLY DOWNLOAD IT -v-v-
@@ -117,7 +116,6 @@ export async function summarizeEachFileOverall(
         },
         summaryForFile // ***
       );
-
       // -v-v- LOGIC IS TO CHECK THAT THE PROMPT_PREFIX PLUS THE_CHUNK IS WITHIN THE MODEL INPUT TOKEN LIMIT -v-v-
       while (
         !isNextPartValid(
@@ -180,12 +178,11 @@ export async function summarizeEachFileOverall(
       const completionText = completion.data?.choices[0]?.message?.content || "No Content"
       // prettier-ignore
       console.log(`snippet of last OpenAI completion - '${completionText.slice(0,16)}'`);
-      // prettier-ignore
       // -v-v- TRACK THE OUTPUT TOKENS -v-v-
       const outputTokenCount = enc.encode(completionText).length;
       outputTokens += outputTokenCount; // track output tokens
       tpmAccum += outputTokenCount; // accumulate output tokens
-      // -v-v- STORING THE COMPLETION SO IT CAN BE INCORPORATE INTO THE NEXT PROMPT -v-v-
+      // -v-v- STORING THE COMPLETION SO IT CAN BE INCORPORATED INTO THE NEXT PROMPT -v-v-
       summaryForFile = completionText;
       // -v-v- UPDATE PROGRESS BAR -v-v-
       // prettier-ignore
@@ -233,7 +230,7 @@ export async function summarizeEachFileOverall(
       const finalBulletPointsCompletionText =
         completion.data?.choices[0]?.message?.content || "ERROR: No Content";
       // prettier-ignore
-      console.log("snippet of completion of final bullet points generation request", finalBulletPointsCompletionText);
+      console.log("snippet of completion of final bullet points generation request", finalBulletPointsCompletionText.slice(0, 16));
       summaryForFile = finalBulletPointsCompletionText;
     }
 
@@ -256,6 +253,7 @@ export async function summarizeEachFileOverall(
     });
   }
   // -v-v- SAVE THE FINAL ANSWER TO DB -v-v-
+  console.log("saving to db...");
   const summaryV2Record = await prisma.summaryV2.create({
     data: {
       requesterId: account!.id,

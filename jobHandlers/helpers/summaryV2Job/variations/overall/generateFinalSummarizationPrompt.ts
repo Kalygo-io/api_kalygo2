@@ -24,7 +24,7 @@ export function generateFinalSummarizationPrompt(
         }
         - ${
           length === "short"
-            ? "concise and short in length"
+            ? "very concise and very short in length"
             : length === "medium"
             ? "of medium-sized length"
             : "detailed in providing the human reader with an accurate understanding of the source material"

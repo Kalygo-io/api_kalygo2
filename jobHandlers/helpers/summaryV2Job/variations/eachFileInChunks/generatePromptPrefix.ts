@@ -17,7 +17,7 @@ export function generatePromptPrefix(customizations: {
         }
         - ${
           length === "short"
-            ? "concise and short in length"
+            ? "very concise and very short in length"
             : length === "medium"
             ? "of medium-sized length"
             : "concise but very detailed in it's attempt to provide the human reader with a quick and accurate understanding of the source material"

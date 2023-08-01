@@ -261,7 +261,7 @@ export async function summarizeEachFileInChunks(
   } else {
     console.log("charging card via Stripe...");
     await stripe.charges.create({
-      amount: amountToChargeCaller * 100, // '* 100' is because Stripe goes by pennies
+      amount: Math.floor(amountToChargeCaller * 100), // '* 100' is because Stripe goes by pennies
       currency: "usd",
       description: `SummaryV2`,
       customer: account?.stripeId,

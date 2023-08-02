@@ -5,6 +5,7 @@ import {
   accountSummaries,
   getSummary,
   getSummaryV2,
+  getSummariesV2,
 } from "./handlers";
 
 import { Router } from "express";
@@ -32,6 +33,7 @@ router
 //   .post([authenticateToken, uploadToDiskMiddleware.single("file")], summarize);
 
 router.route("/account-summaries").get([authenticateToken], accountSummaries);
+router.route("/summaries-v2").get([authenticateToken], getSummariesV2);
 
 router.route("/get-summary/:id").get([authenticateToken], getSummary);
 router.route("/get-summary-v2/:id").get([authenticateToken], getSummaryV2);

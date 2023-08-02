@@ -9,6 +9,7 @@ const enc = encoding_for_model("text-embedding-ada-002");
 
 import { stripe } from "@/clients/stripe_client";
 import { OpenAIEmbeddingFunction } from "chromadb";
+import { convertPDFToTxtWithMetadata } from "@/jobHandlers/helpers/customRequestJob/pdf_2_txt_with_metadata";
 
 const embedder = new OpenAIEmbeddingFunction({
   openai_api_key: process.env.OPENAI_API_KEY!,
@@ -32,11 +33,32 @@ export async function similaritySearch(
 
     // vvv vvv $0.0004 per 1000 tokens for embeddings with
     // https://platform.openai.com/docs/guides/embeddings/what-are-embeddings
-    const text = fs.readFileSync(`${req.file?.path}`, "utf8");
 
-    console.log("text", text);
+    let textWithMetadata;
+    let textConcat;
+    if (req.file?.mimetype === "application/pdf") {
+      const rawPDFData = fs.readFileSync(`${req.file?.path}`);
+      textWithMetadata = await convertPDFToTxtWithMetadata(
+        new Uint16Array(rawPDFData)
+      );
+      textConcat = textWithMetadata.reduce(
+        (accum: string, val: Record<string, any>) => {
+          return accum + val.text;
+        },
+        ""
+      );
+    } else {
+      const rawTextData = fs.readFileSync(`${req.file?.path}`, "utf8");
+      textWithMetadata = [
+        {
+          text: rawTextData,
+          page: 0,
+        },
+      ];
+      textConcat = rawTextData;
+    }
 
-    const tokenCount = enc.encode(text).length;
+    const tokenCount: number = enc.encode(textConcat).length;
     const apiCost = (tokenCount / 1000) * 0.0004; // text-embedding-ada-002
     const markup = 1.4; // 40%
     const quote = Number.parseFloat(
@@ -64,27 +86,67 @@ export async function similaritySearch(
     // ^^^ ^^^
 
     const query = req.body.query;
+    console.log("--- query ---", query);
 
     // let intResults: any = text.match(/[^\.!\?]+[\.!\?]+/g);
-    let intResults: any = text.split(/[ ,]+/);
-    // console.log("intResults", intResults);
-    intResults = intResults?.slice(0, 2048);
+    // let intResults: any = textConcat.split(/[ ,]+/);
 
-    let chunks = intResults?.map((i: string, idx: number) => {
-      return i;
-    });
-    let metadata = intResults?.map((i: string, idx: number) => {
-      return {
-        index: idx,
-        lineNumber: idx,
-      };
-    });
-    let ids: any = intResults?.map((i: string, idx: number) => {
-      return `id${idx}`;
-    });
+    let intResults: {
+      textChunk: string;
+      page: number;
+    }[] = [];
+
+    for (let i = 0; i < textWithMetadata.length; i++) {
+      let pageChunks: any[] = textWithMetadata[i].text.split(/[ ,]+/);
+
+      for (let j = 0; j < pageChunks.length; j++) {
+        intResults.push({
+          textChunk: pageChunks[j],
+          page: textWithMetadata[i].page,
+        });
+      }
+    }
+
+    intResults = intResults?.slice(0, 2048);
+    let chunks = intResults?.map(
+      (
+        i: {
+          textChunk: string;
+          page: number;
+        },
+        idx: number
+      ) => {
+        return i.textChunk;
+      }
+    );
+    let metadata = intResults?.map(
+      (
+        i: {
+          textChunk: string;
+          page: number;
+        },
+        idx: number
+      ) => {
+        return {
+          index: idx,
+          pageNumber: i.page,
+        };
+      }
+    );
+    let ids: any = intResults?.map(
+      (
+        i: {
+          textChunk: string;
+          page: number;
+        },
+        idx: number
+      ) => {
+        return `id${idx}`;
+      }
+    );
 
     const shasum = crypto.createHash("sha1");
-    shasum.update(text);
+    shasum.update(textConcat);
     const hashIdOfText = shasum.digest("hex");
 
     console.log("hashIdOfText", hashIdOfText);
@@ -115,6 +177,10 @@ export async function similaritySearch(
       await chromaClient.deleteCollection({
         name: hashIdOfText,
       });
+    } catch (e) {}
+
+    try {
+      fs.unlink(`${req.file?.path}`, () => {});
     } catch (e) {}
 
     res.status(200).json({

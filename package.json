@@ -1,6 +1,6 @@
 {
   "name": "api_kalygo2",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Kalygo API 2.0",
   "main": "dist/index.js",
   "scripts": {
@@ -21,7 +21,9 @@
     "credits:giveVectorSearchCredits": "ts-node -r tsconfig-paths/register scripts/giveVectorSearchCredits.ts",
     "credits:customRequestCredits": "ts-node -r tsconfig-paths/register scripts/giveCustomRequestCredits.ts",
     "generateTranslations": "node scripts/generateTranslations",
-    "deleteAccount": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/deleteAccount"
+    "deleteAccount": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/deleteAccount",
+    "splitBySpace": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/splitBySpace",
+    "encodeText": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/encodeText"
   },
   "repository": {
     "type": "git",

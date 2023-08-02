@@ -12,6 +12,8 @@ import {
   subscriptionSignUp,
   googleSignUp,
   googleLogin,
+  twitterOauth,
+  redirectToTwitterOauth,
 } from "./handlers";
 
 import { Router } from "express";
@@ -27,6 +29,8 @@ router.route("/sign-out").delete(authenticateToken, signOut);
 router.route("/request-password-reset").post(requestPasswordReset);
 router.route("/google-sign-up").post(googleSignUp);
 router.route("/google-log-in").post(googleLogin);
+router.get('/oauth/twitter', twitterOauth);
+router.get('/oauth/twitter/redirect', redirectToTwitterOauth);
 router.route("/mock-request-password-reset").post(mockRequestPasswordReset);
 router
   .route("/mock-receive-verification-token")

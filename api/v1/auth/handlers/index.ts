@@ -9,6 +9,8 @@ import { mockReceiveVerificationToken } from "./mockReceiveVerificationToken";
 import { isAuthed } from "./isAuthed";
 import { googleSignUp } from "./googleSignUp";
 import { googleLogin } from "./googleLogIn";
+import { twitterOauth } from "./twitterAuth";
+import { redirectToTwitterOauth } from "./twitterAuth";
 
 import { subscriptionSignUp } from "./subscriptionSignUp";
 
@@ -28,4 +30,6 @@ export {
   subscriptionSignUp,
   googleSignUp,
   googleLogin,
+  twitterOauth,
+  redirectToTwitterOauth,
 };

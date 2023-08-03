@@ -37,7 +37,7 @@ export async function summarizeEachFileOverall(
   bucket: string,
   job: any,
   done: (err?: Error | null | undefined, result?: any) => void,
-  model: "gpt-3.5-turbo" | "gpt-4" = "gpt-4"
+  model: "gpt-3.5-turbo" | "gpt-4" = "gpt-3.5-turbo"
 ) {
   try {
     job.progress(0);
@@ -172,28 +172,10 @@ export async function summarizeEachFileOverall(
         }
         // -v-v- CALL THE A.I. MODEL -v-v-
         console.log("call the A.I. model"); // for console debugging...
-        // const completion = await OpenAI.createChatCompletion({
-        //   model,
-        //   messages: [
-        //     {
-        //       role: "user",
-        //       content: nextPrompt,
-        //     },
-        //   ],
-        //   temperature: 0,
-        // });
-        const client = axios.create({
-          baseURL: "https://api.openai.com",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          },
-        });
-
         let completion;
         try {
-          completion = await client.post("/v1/chat/completions", {
-            model: model,
+          completion = await OpenAI.createChatCompletion({
+            model,
             messages: [
               {
                 role: "user",
@@ -206,8 +188,8 @@ export async function summarizeEachFileOverall(
           console.log("retry");
           await sleep(tpmDelay * 2);
           try {
-            completion = await client.post("/v1/chat/completions", {
-              model: model,
+            completion = await OpenAI.createChatCompletion({
+              model,
               messages: [
                 {
                   role: "user",
@@ -219,8 +201,8 @@ export async function summarizeEachFileOverall(
           } catch (e) {
             console.log("retry");
             await sleep(tpmDelay * 3);
-            completion = await client.post("/v1/chat/completions", {
-              model: model,
+            completion = await OpenAI.createChatCompletion({
+              model,
               messages: [
                 {
                   role: "user",

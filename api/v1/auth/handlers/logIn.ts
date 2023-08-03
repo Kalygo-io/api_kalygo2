@@ -37,7 +37,7 @@ export async function logIn(
     if (account) {
       const { passwordHash } = account;
 
-      if (await argon2.verify(passwordHash, password)) {
+      if (passwordHash && (await argon2.verify(passwordHash, password))) {
         console.log("before recording login");
         await prisma.login.create({
           data: {

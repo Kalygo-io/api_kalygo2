@@ -11,6 +11,7 @@ import { sesClient } from "@/clients/ses_client";
 import { generatePromptPrefix } from "./generatePromptPrefix";
 import { sleep } from "@/utils/sleep";
 import CONFIG from "@/config";
+// import { cleanInput } from "@/utils/cleanInput";
 
 function arePartsValidForModelInputLimit(
   parts: string[],
@@ -36,6 +37,7 @@ export async function summarizeEachFileInChunks(
   done: (err?: Error | null | undefined, result?: any) => void,
   model: "gpt-3.5-turbo" | "gpt-4" = "gpt-3.5-turbo"
 ) {
+  job.progress(0);
   // -v-v- ENTRY POINT - EACH FILE IN CHUNKS -v-v-
   console.log("Summarize Each File In Chunks"); // for console debugging...
   // -v-v- CHECK IF CALLER HAS AN ACCOUNT -v-v-
@@ -75,9 +77,11 @@ export async function summarizeEachFileInChunks(
       // -v-v- IF PDF, THEN CONVERT TO TEXT -v-v-
       let pdfByteArray = await Body?.transformToByteArray();
       text = await convertPDFToTxtFile(pdfByteArray);
+      // text = cleanInput(text);
     } else {
       // -v-v- IF TEXT, THEN SIMPLY DOWNLOAD IT -v-v-
       text = (await streamToString(Body)) as string;
+      // text = cleanInput(text);
     }
     // -v-v- BUILD AN ARRAY OF THE TEXT-BASED VERSIONS OF EACH FILE -v-v-
     filesToText.push({
@@ -145,7 +149,7 @@ export async function summarizeEachFileInChunks(
       // -v-v- WE NOW HAVE EXCEEDED THE TOKENS / MINUTE LIMIT SO WILL PAUSE FOR 1 MINUTE -v-v-
       // prettier-ignore
       if (tpmAccum > CONFIG.models[model].tpm - CONFIG.tpmBuffer) { // tpmBuffer is to control how close to the rate limit you want to get
-        await sleep(60000);
+        await sleep(80000);
         tpmAccum = 0;
       }
 

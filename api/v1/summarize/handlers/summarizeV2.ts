@@ -49,7 +49,8 @@ export async function summarizeV2(
         },
       },
       {
-        timeout: 600000,
+        // timeout: 600000,
+        timeout: 1000 * 60 * 60,
       }
     );
 

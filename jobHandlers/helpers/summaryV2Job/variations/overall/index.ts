@@ -36,6 +36,7 @@ export async function summarizeFilesOverall(
   done: (err?: Error | null | undefined, result?: any) => void,
   model: "gpt-3.5-turbo" | "gpt-4" = "gpt-3.5-turbo"
 ) {
+  job.progress(0);
   // -v-v- ENTRY POINT - EACH FILE OVERALL -v-v-
   console.log("All Files Overall"); // for console debugging...
   // -v-v- CHECK IF CALLER HAS AN ACCOUNT -v-v-

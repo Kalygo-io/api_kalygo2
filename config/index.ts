@@ -11,6 +11,9 @@ export default {
     maxAccounts: 300,
   },
   tpmBuffer: 100,
+  queue: {
+    timeout: 1000 * 60 * 60,
+  },
   models: {
     "gpt-3.5-turbo": {
       context: 4000,

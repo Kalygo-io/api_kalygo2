@@ -3,7 +3,7 @@ import * as http from "http";
 
 export default json({
   inflate: true,
-  limit: "100kb",
+  limit: "30mb",
   type: "application/json",
   verify: (
     req: http.IncomingMessage,

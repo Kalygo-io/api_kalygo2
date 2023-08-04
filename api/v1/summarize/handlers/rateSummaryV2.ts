@@ -24,15 +24,15 @@ export async function rateSummaryV2(
         emailVerified: true,
       },
       include: {
-        SummaryCredits: true,
         Ratings: true,
+        SummaryV2: true,
       },
     });
 
     // -v-v- GUARD IF NO ACCOUNT FOUND -v-v-
     if (
-      !account?.Ratings?.find((el) => {
-        return el.accountId === account.id;
+      !account?.SummaryV2?.find((el) => {
+        return el.id === Number.parseInt(summaryV2Id);
       })
     ) {
       res.status(401).send();

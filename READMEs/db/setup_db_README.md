@@ -33,7 +33,7 @@ sudo cp /var/lib/pgsql/data/postgresql.conf /var/lib/pgsql/data/postgresql.conf.
 
 pg_dump -U username my_DB > my-backup_file.sql
 
-## Testing loggin in as kalygo
+## Testing logging in as kalygo
 
 - sudo nano /var/lib/pgsql/data/pg_hba.conf
 - sudo vi /var/lib/pgsql/data/pg_hba.conf

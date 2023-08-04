@@ -49,19 +49,19 @@ export async function googleSignUp(
       await prisma.summaryCredits.create({
         data: {
           accountId: account!.id,
-          amount: 2,
+          amount: 1,
         },
       });
       await prisma.vectorSearchCredits.create({
         data: {
           accountId: account!.id,
-          amount: 2,
+          amount: 1,
         },
       });
       await prisma.customRequestCredits.create({
         data: {
           accountId: account!.id,
-          amount: 2,
+          amount: 1,
         },
       });
 

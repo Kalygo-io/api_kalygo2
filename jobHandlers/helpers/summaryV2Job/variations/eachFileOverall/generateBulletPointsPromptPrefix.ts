@@ -27,7 +27,6 @@ export function generateBulletPointsPromptPrefix(
           - Be returned as valid markdown syntax
           - The markdown should be well structured
           - If a valid URL is present highlight it as a link with valid markdown
-          - Italicize all valid phone numbers, email addresses, and social media handles
                 
           Here is the ORIGINAL_TEXT:
 

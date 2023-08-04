@@ -23,6 +23,8 @@ export async function summarizeEachFileInChunks(
   done: (err?: Error | null | undefined, result?: any) => void
 ) {
   try {
+    const start = Date.now();
+
     const { format, length, language, model } = customizations;
     job.progress(0);
     // -v-v- ENTRY POINT - EACH FILE IN CHUNKS -v-v-
@@ -224,6 +226,9 @@ export async function summarizeEachFileInChunks(
     }
     job.progress(100);
     p("DONE");
+
+    const end = Date.now();
+    console.log(`Execution time: ${end - start} ms`);
     done(null, { summaryV2Id: summaryV2Record.id });
   } catch (e) {
     p("ERROR", (e as Error).toString());

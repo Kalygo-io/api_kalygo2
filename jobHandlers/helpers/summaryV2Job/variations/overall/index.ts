@@ -35,6 +35,7 @@ export async function summarizeFilesOverall(
   done: (err?: Error | null | undefined, result?: any) => void
 ) {
   try {
+    const start = Date.now();
     const { format, length, language, model } = customizations;
 
     job.progress(0);
@@ -404,9 +405,12 @@ export async function summarizeFilesOverall(
       });
     }
 
-    done(null, { summaryV2Id: summaryV2Record.id });
-    p("DONE");
     job.progress(100);
+
+    p("DONE");
+    const end = Date.now();
+    console.log(`Execution time: ${end - start} ms`);
+    done(null, { summaryV2Id: summaryV2Record.id });
   } catch (e) {
     p("ERROR", (e as Error).toString());
     done(e as Error, null);

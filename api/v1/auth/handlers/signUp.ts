@@ -52,21 +52,21 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
     await prisma.summaryCredits.create({
       data: {
         accountId: account!.id,
-        amount: 2,
+        amount: 1,
       },
     });
 
     await prisma.vectorSearchCredits.create({
       data: {
         accountId: account!.id,
-        amount: 2,
+        amount: 1,
       },
     });
 
     await prisma.customRequestCredits.create({
       data: {
         accountId: account!.id,
-        amount: 2,
+        amount: 1,
       },
     });
 

@@ -6,6 +6,7 @@ import {
   getSummary,
   getSummaryV2,
   getSummariesV2,
+  rateSummaryV2,
 } from "./handlers";
 
 import { Router } from "express";
@@ -37,6 +38,7 @@ router.route("/summaries-v2").get([authenticateToken], getSummariesV2);
 
 router.route("/get-summary/:id").get([authenticateToken], getSummary);
 router.route("/get-summary-v2/:id").get([authenticateToken], getSummaryV2);
+router.route("/rate-summary-v2/:id").post([authenticateToken], rateSummaryV2);
 
 // router.route("/get-summarization-quote").post(
 // [authenticateToken, uploadToDiskMiddleware.array("documents", 3)],

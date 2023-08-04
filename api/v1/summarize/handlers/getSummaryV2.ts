@@ -30,13 +30,16 @@ export async function getSummaryV2(
         requesterId: account?.id,
         id: parseInt(req.params.id),
       },
+      include: {
+        Ratings: true,
+      },
     });
 
     console.log("account", account);
     console.log("summary", summary);
 
     if (summary) {
-      res.status(200).json(summary || []);
+      res.status(200).json(summary || null);
     } else {
       res.status(404).send();
     }

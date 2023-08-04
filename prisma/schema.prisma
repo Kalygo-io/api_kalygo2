@@ -37,6 +37,7 @@ model Account {
   OpenAiCharges          OpenAiCharges[]
   Roles                  Role[]
   SummaryV2              SummaryV2[]
+  Ratings                Rating[]
 }
 
 model Summary {
@@ -57,10 +58,32 @@ model SummaryV2 {
   requester          Account   @relation(fields: [requesterId], references: [id])
   requesterId        Int
   Files              File[]
+  Ratings            Rating[]
   prompt             String
   completionResponse Json
   createdAt          DateTime? @default(now())
   updatedAt          DateTime? @updatedAt
+}
+
+enum RatingType {
+  SummaryV2
+  CustomRequest
+}
+
+model Rating {
+  id              Int            @id @default(autoincrement())
+  ratingType      RatingType     @default(SummaryV2)
+  rating          Int
+  ratingMax       Int
+  SummaryV2       SummaryV2?     @relation(fields: [summaryV2Id], references: [id])
+  summaryV2Id     Int?
+  CustomRequest   CustomRequest? @relation(fields: [customRequestId], references: [id])
+  customRequestId Int?
+  Account         Account?       @relation(fields: [accountId], references: [id])
+  accountId       Int?
+
+  @@unique([accountId, summaryV2Id])
+  @@unique([accountId, customRequestId])
 }
 
 model File {
@@ -96,6 +119,7 @@ model CustomRequest {
   completionResponse Json
   createdAt          DateTime? @default(now())
   updatedAt          DateTime? @updatedAt
+  Rating             Rating[]
 }
 
 model SummaryCredits {

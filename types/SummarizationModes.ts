@@ -1,4 +1,4 @@
-export enum SummarizationTypes {
+export enum SummarizationModes {
   EachFileInChunks = "EachFileInChunks",
   EachFileOverall = "EachFileOverall",
   Overall = "Overall",

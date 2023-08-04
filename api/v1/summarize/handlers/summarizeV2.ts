@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { jobQueue } from "@/clients/bull_client";
-import { encoding_for_model } from "@dqbd/tiktoken";
 import { QueueJobTypes } from "@/types/JobTypes";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
@@ -14,7 +13,7 @@ export async function summarizeV2(
     console.log("POST summarizeV2");
     console.log("req.files", req.files);
     console.log("req.body", req.body);
-    let language: string = req?.i18n?.language?.substring(0, 2) || "en";
+    let locale: string = req?.i18n?.language?.substring(0, 2) || "en";
 
     const userOpenAiCharges = await prisma.openAiCharges.findMany({
       where: {
@@ -39,18 +38,18 @@ export async function summarizeV2(
           files: req.files,
           customizations: {
             format: req.body.format,
-            type: req.body.type,
+            mode: req.body.mode,
             length: req.body.length,
             language: req.body.language,
+            model: req.body.model,
           },
           // @ts-ignore
           email: req.user.email,
-          language: language,
+          locale,
         },
       },
       {
-        // timeout: 600000,
-        timeout: 1000 * 60 * 60,
+        timeout: 1000 * 60 * 60, // 1 hour before being marked as timed out
       }
     );
 

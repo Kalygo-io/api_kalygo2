@@ -1,71 +1,84 @@
-import { SummarizationTypes } from "@/types/SummarizationTypes";
+import { SummarizationModes } from "@/types/SummarizationModes";
 
 import { summarizeEachFileOverall } from "@/jobHandlers/helpers/summaryV2Job/variations/eachFileOverall";
 import { summarizeEachFileInChunks } from "@/jobHandlers/helpers/summaryV2Job/variations/eachFileInChunks";
 import { summarizeFilesOverall } from "@/jobHandlers/helpers/summaryV2Job/variations/overall";
+import { SummaryV2Customizations } from "@/types/SummaryV2Customizations";
 
 export async function summaryV2JobLogic(
   params: {
     bucket: string;
     files: any[];
     email: string;
-    customizations: Record<string, string>;
+    customizations: SummaryV2Customizations;
     language: string;
+    locale: string;
   },
   job: any,
   done: (err?: Error | null, result?: any) => void
 ) {
   try {
     console.log("processing JOB with params...", params);
-    const { files, bucket, email, customizations, language } = params;
-    console.log(bucket, files, email, customizations, language);
-    if (!bucket || !files || !email || !customizations || !language) {
+    const { files, bucket, email, customizations, locale } = params;
+    console.log(bucket, files, email, customizations, locale);
+    if (!bucket || !files || !email || !customizations || !locale) {
       done(new Error("Invalid Data"));
       return;
     }
 
-    const summarizationType = customizations.type;
+    // prettier-ignore
+    const { mode, format, length, language, model } = customizations;
+    const summarizationType = mode;
 
     switch (summarizationType) {
-      case SummarizationTypes.EachFileInChunks:
+      case SummarizationModes.EachFileInChunks:
         summarizeEachFileInChunks(
           {
-            format: customizations.format,
-            length: customizations.length,
-            language: customizations.language,
+            format,
+            length,
+            language,
+            model,
+            mode,
           },
           email,
           files,
           bucket,
           job,
+          locale,
           done
         );
         break;
-      case SummarizationTypes.EachFileOverall:
+      case SummarizationModes.EachFileOverall:
         summarizeEachFileOverall(
           {
-            format: customizations.format,
-            length: customizations.length,
-            language: customizations.language,
+            format,
+            length,
+            language,
+            model,
+            mode,
           },
           email,
           files,
           bucket,
           job,
+          locale,
           done
         );
         break;
-      case SummarizationTypes.Overall:
+      case SummarizationModes.Overall:
         summarizeFilesOverall(
           {
-            format: customizations.format,
-            length: customizations.length,
-            language: customizations.language,
+            format,
+            length,
+            language,
+            model,
+            mode,
           },
           email,
           files,
           bucket,
           job,
+          locale,
           done
         );
         break;
@@ -75,11 +88,4 @@ export async function summaryV2JobLogic(
   } catch (e: any) {
     done(new Error(e ? e.message : "Something went wrong"));
   }
-
-  // // or give an error if error
-  // done(new Error('error transcoding'));
-  // // or pass it a result
-  // done(null, { framerate: 29.5 /* etc... */ });
-  // // If the job throws an unhandled exception it is also handled correctly
-  // throw new Error('some unexpected error');
 }

@@ -12,7 +12,7 @@ export default {
   },
   tpmBuffer: 100,
   queue: {
-    timeout: 1000 * 60 * 60,
+    timeout: 1000 * 60 * 60, // 1hr
   },
   models: {
     "gpt-3.5-turbo": {

@@ -1,7 +1,6 @@
 import prisma from "@/db/prisma_client";
 import { Tiktoken, encoding_for_model } from "@dqbd/tiktoken";
 import { stripe } from "@/clients/stripe_client";
-import { OpenAI } from "@/clients/openai_client";
 import { summaryJobComplete_SES_Config } from "@/emails/summaryJobComplete";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { sesClient } from "@/clients/ses_client";
@@ -12,6 +11,7 @@ import { SummaryV2Customizations } from "@/types/SummaryV2Customizations";
 import { convertFilesToTextFormat } from "@/utils/convertFilesToTextFormat";
 import { areChunksValidForModelContext } from "@/utils/areChunksValidForModelContext";
 import { p } from "@/utils/p";
+import { generateOpenAiUserChatCompletion } from "../../shared/generateOpenAiUserChatCompletion";
 
 export async function summarizeEachFileInChunks(
   customizations: SummaryV2Customizations,
@@ -24,7 +24,6 @@ export async function summarizeEachFileInChunks(
 ) {
   try {
     const start = Date.now();
-
     const { format, length, language, model } = customizations;
     job.progress(0);
     // -v-v- ENTRY POINT - EACH FILE IN CHUNKS -v-v-
@@ -63,7 +62,8 @@ export async function summarizeEachFileInChunks(
     // -v-v- LOOP OVER THE TEXT-BASED VERSIONS OF EACH FILE -v-v-
     let finalAnswerForEachFile: any[] = [];
     let tpmAccum: number = 0; // for tracking TPM ie: tokens / minute
-    for (let fIndex = 0; fIndex < filesToText.length; fIndex++) {
+    // prettier-ignore
+    for (let fIndex = 0; fIndex < filesToText.length; fIndex++) { // processing ONE of the files at a time...
       const originalNameOfFile = filesToText[fIndex].originalName;
       // prettier-ignore
       p("*** file to be processed ***", originalNameOfFile);
@@ -102,7 +102,6 @@ export async function summarizeEachFileInChunks(
       let summarizedChunksOfCurrentFile: any = [];
       for (let i = 0; i < chunks.length; i++) {
         const prompt = `${promptPrefix} ${chunks[i]}`;
-
         const promptTokenCount = enc.encode(prompt).length;
         inputTokens += promptTokenCount; // track input tokens
         tpmAccum += promptTokenCount; // accumulate input tokens
@@ -114,33 +113,22 @@ export async function summarizeEachFileInChunks(
           await sleep(80000);
           tpmAccum = 0;
         }
-        p(
-          `calling OpenAI to summarize part ${i} of file ${originalNameOfFile}...`
-        );
-        // -v-v- CALL THE A.I. MODEL -v-v-
-        const completion = await OpenAI.createChatCompletion({
-          model,
-          messages: [
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
-          temperature: 0,
-        });
         // prettier-ignore
-        p(`snippet of last OpenAI completion - '${completion.data?.choices[0]?.message?.content?.slice(0,16)}'`);
+        p(`calling OpenAI to summarize part ${i} of file ${originalNameOfFile}...`);
+        // -v-v- CALL THE A.I. MODEL -v-v-
+        const completion = await generateOpenAiUserChatCompletion(model, prompt)
+        const completionText: string = completion.data?.choices[0]?.message?.content || "ERROR: No Content"
+        // prettier-ignore
+        p(`snippet of last OpenAI completion - '${completionText.slice(0,16)}'`);
         // prettier-ignore
         // -v-v- TRACK THE OUTPUT TOKENS -v-v-
-        const outputTokenCount = enc.encode(completion.data?.choices[0]?.message?.content || "ERROR: No Content").length;
+        const outputTokenCount = enc.encode(completionText).length;
         outputTokens += outputTokenCount; // track output tokens
         tpmAccum += outputTokenCount; // accumulate output tokens
         // -v-v- STORE THE COMPLETION OF EACH CHUNK OF THE FILE -v-v-
         summarizedChunksOfCurrentFile.push({
           part: i,
-          completionResponse:
-            completion.data?.choices[0]?.message?.content ||
-            "ERROR: No Content",
+          completionResponse: completionText
         });
         p("job.progress()", job.progress()); // for console debugging
         p("i", i, "chunks.length", chunks.length); // for console debugging
@@ -195,7 +183,6 @@ export async function summarizeEachFileInChunks(
     _3rdPartyCharges +=
       (outputTokens / CONFIG.models[model].pricing.input.perTokens) *
       CONFIG.models[model].pricing.output.rate; // ie: OpenAI output token rate for API
-
     // -v-v- SUMMARY OF 3rd PARTY CHARGES -v-v-
     p("_3rdPartyCharges", _3rdPartyCharges);
     // -v-v- MARKUP THE 3rd PARTY CHARGES -v-v-
@@ -226,9 +213,9 @@ export async function summarizeEachFileInChunks(
     }
     job.progress(100);
     p("DONE");
-
     const end = Date.now();
-    console.log(`Execution time: ${end - start} ms`);
+    // prettier-ignore
+    console.log(`Execution time: ${end - start} ms or ${(end - start) / 1000 / 60} minutes`);
     done(null, { summaryV2Id: summaryV2Record.id });
   } catch (e) {
     p("ERROR", (e as Error).toString());

@@ -25,6 +25,8 @@ function isNextPartValid(
   return true;
 }
 
+const tpmDelay = 60000;
+
 export async function summarizeFilesOverall(
   customizations: SummaryV2Customizations,
   email: string,
@@ -40,7 +42,7 @@ export async function summarizeFilesOverall(
 
     job.progress(0);
     // -v-v- ENTRY POINT - EACH FILE OVERALL -v-v-
-    p("All Files Overall"); // for console debugging...
+    p("All Files Overall", model); // for console debugging...
     // -v-v- CHECK IF CALLER HAS AN ACCOUNT -v-v-
     const account = await prisma.account.findFirst({
       where: {
@@ -163,21 +165,51 @@ export async function summarizeFilesOverall(
         // -v-v- WE NOW HAVE EXCEEDED THE TOKENS / MINUTE LIMIT SO WILL PAUSE FOR 1 MINUTE -v-v-
         // prettier-ignore
         if (tpmAccum > CONFIG.models[model].tpm - CONFIG.tpmBuffer) { // tpmBuffer is to control how close to the rate limit you want to get
-          await sleep(60000);
+          await sleep(tpmDelay);
           tpmAccum = 0;
         }
 
         // -v-v- CALL THE A.I. MODEL -v-v-
-        const completion = await OpenAI.createChatCompletion({
-          model,
-          messages: [
-            {
-              role: "user",
-              content: nextPrompt,
-            },
-          ],
-          temperature: 0,
-        });
+        let completion;
+        try {
+          completion = await OpenAI.createChatCompletion({
+            model,
+            messages: [
+              {
+                role: "user",
+                content: nextPrompt,
+              },
+            ],
+            temperature: 0,
+          });
+        } catch (e) {
+          console.log("retry");
+          try {
+            await sleep(tpmDelay * 2);
+            completion = await OpenAI.createChatCompletion({
+              model,
+              messages: [
+                {
+                  role: "user",
+                  content: nextPrompt,
+                },
+              ],
+              temperature: 0,
+            });
+          } catch (e) {
+            await sleep(tpmDelay * 3);
+            completion = await OpenAI.createChatCompletion({
+              model,
+              messages: [
+                {
+                  role: "user",
+                  content: nextPrompt,
+                },
+              ],
+              temperature: 0,
+            });
+          }
+        }
         // prettier-ignore
         const completionText = completion.data?.choices[0]?.message?.content || "No Content"
         // prettier-ignore
@@ -297,20 +329,35 @@ export async function summarizeFilesOverall(
       tpmAccum += enc.encode(finalPrompt).length;
       if (tpmAccum > CONFIG.models[model].tpm - CONFIG.tpmBuffer) {
         // tpmBuffer is to control how close to the rate limit you want to get
-        await sleep(60000);
+        await sleep(tpmDelay);
         tpmAccum = 0;
       }
 
-      const completion = await OpenAI.createChatCompletion({
-        model,
-        messages: [
-          {
-            role: "user",
-            content: finalPrompt,
-          },
-        ],
-        temperature: 0,
-      });
+      let completion;
+      try {
+        completion = await OpenAI.createChatCompletion({
+          model,
+          messages: [
+            {
+              role: "user",
+              content: finalPrompt,
+            },
+          ],
+          temperature: 0,
+        });
+      } catch (e) {
+        await sleep(2 * tpmDelay);
+        completion = await OpenAI.createChatCompletion({
+          model,
+          messages: [
+            {
+              role: "user",
+              content: finalPrompt,
+            },
+          ],
+          temperature: 0,
+        });
+      }
 
       const completionText =
         completion.data?.choices[0]?.message?.content || "No Content";
@@ -409,7 +456,11 @@ export async function summarizeFilesOverall(
 
     p("DONE");
     const end = Date.now();
-    console.log(`Execution time: ${end - start} ms`);
+    console.log(
+      `Execution time: ${end - start} ms or ${
+        (end - start) / 1000 / 60
+      } minutes`
+    );
     done(null, { summaryV2Id: summaryV2Record.id });
   } catch (e) {
     p("ERROR", (e as Error).toString());

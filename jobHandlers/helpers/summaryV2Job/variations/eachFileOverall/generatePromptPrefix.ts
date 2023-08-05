@@ -36,7 +36,9 @@ export function generatePromptPrefix(
         - In cases where accuracy is not possible provide a disclaimer
         - Be returned as valid markdown syntax
         - The markdown should be well structured
-        - generated in a way that incorporates the SUMMARY_SO_FAR to generate a SUMMARY that synthesizes and communicates clearly an accurate and thorough understanding of the overall data to a human reader
+        - Highlight all of the solar incentives and include the page number and line number where in ORIGINAL_TEXT the solar incentive came from including a maximum 3-4 sentence snippet of the original legislative language
+        - Present the bullet point and the snippet of original legislative language next to each other with the snippet indented
+        - Generated in a way that incorporates the SUMMARY_SO_FAR to generate a SUMMARY that synthesizes and communicates clearly an accurate and thorough understanding of the overall data to a human reader
 
         Here is the ORIGINAL_TEXT:
     `;

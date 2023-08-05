@@ -38,8 +38,6 @@ export function generatePromptPrefix(
         - In cases where accuracy is not possible provide a disclaimer
         - Be returned as valid markdown syntax
         - The markdown should be well structured
-        - Focus on presenting detailed information related to solar credits and enery credits from the ORIGINAL_TEXT and included a maximum 3-4 sentence snippet of the original legislative language in the ORIGINAL_TEXT
-        - Present the bullet points and the snippet of original legislative language next to each other with the snippet indented
 
         Here is the ORIGINAL_TEXT:
     `;

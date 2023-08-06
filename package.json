@@ -1,6 +1,6 @@
 {
   "name": "api_kalygo2",
-  "version": "2.2.0",
+  "version": "2.4.0",
   "description": "Kalygo API 2.0",
   "main": "dist/index.js",
   "scripts": {

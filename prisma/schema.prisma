@@ -54,15 +54,18 @@ model Summary {
 }
 
 model SummaryV2 {
-  id                 Int       @id @default(autoincrement())
-  requester          Account   @relation(fields: [requesterId], references: [id])
-  requesterId        Int
-  Files              File[]
-  Ratings            Rating[]
-  prompt             String
-  completionResponse Json
-  createdAt          DateTime? @default(now())
-  updatedAt          DateTime? @updatedAt
+  id          Int         @id @default(autoincrement())
+  requester   Account     @relation(fields: [requesterId], references: [id])
+  requesterId Int
+  Files       File[]
+  Ratings     Rating[]
+  mode        SummaryMode @default(PRIOR_TO_TRACKING_MODE)
+  summary     Json
+  model       String
+  format      String
+  language    String
+  createdAt   DateTime?   @default(now())
+  updatedAt   DateTime?   @updatedAt
 }
 
 enum RatingType {
@@ -189,4 +192,14 @@ enum RoleTypes {
   ADMIN
   ORG_ADMIN
   ORG_MEMBER
+}
+
+enum SummaryMode {
+  PRIOR_TO_TRACKING_MODE
+  OVERALL
+  EACH_FILE_OVERALL
+  EACH_FILE_IN_CHUNKS
+  EACH_FILE_PER_PAGE
+  EACH_FILE_PER_PAGE_THEN_OVERALL
+  EACH_FILE_OVERLAPPING_CHUNKS
 }

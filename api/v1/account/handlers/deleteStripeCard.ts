@@ -1,6 +1,7 @@
 import { stripe } from "@/clients/stripe_client";
 import { Request, Response, NextFunction } from "express";
 import prisma from "@db/prisma_client";
+import { jobQueue } from "@/clients/bull_client";
 import get from "lodash.get";
 
 export async function deleteStripeCard(
@@ -10,6 +11,19 @@ export async function deleteStripeCard(
 ) {
   try {
     console.log("DELETE deleteStripeCard");
+
+    let activeJobs = await jobQueue.getJobs(["active", "waiting", "failed"]);
+    const foundActiveJob = activeJobs.find((val, idx) => {
+      // @ts-ignore
+      return get(val, "data.params.email") === req.user.email;
+    });
+    if (foundActiveJob) {
+      res.status(402).send();
+      return;
+    }
+
+    // @ts-ignore
+    console.log("req.user", req.user);
 
     const account = await prisma.account.findFirst({
       where: {

@@ -1,4 +1,4 @@
-import { SummarizationModes } from "@/types/SummarizationModes";
+import { SummaryMode } from "@prisma/client";
 
 import { summarizeEachFileOverall } from "@/jobHandlers/helpers/summaryV2Job/variations/eachFileOverall";
 import { summarizeEachFileInChunks } from "@/jobHandlers/helpers/summaryV2Job/variations/eachFileInChunks";
@@ -31,7 +31,7 @@ export async function summaryV2JobLogic(
     const summarizationType = mode;
 
     switch (summarizationType) {
-      case SummarizationModes.EachFileInChunks:
+      case SummaryMode.EACH_FILE_IN_CHUNKS:
         summarizeEachFileInChunks(
           {
             format,
@@ -48,7 +48,7 @@ export async function summaryV2JobLogic(
           done
         );
         break;
-      case SummarizationModes.EachFileOverall:
+      case SummaryMode.EACH_FILE_OVERALL:
         summarizeEachFileOverall(
           {
             format,
@@ -65,7 +65,7 @@ export async function summaryV2JobLogic(
           done
         );
         break;
-      case SummarizationModes.Overall:
+      case SummaryMode.OVERALL:
         summarizeFilesOverall(
           {
             format,

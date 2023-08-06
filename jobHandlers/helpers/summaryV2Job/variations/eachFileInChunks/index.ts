@@ -1,6 +1,5 @@
 import prisma from "@/db/prisma_client";
 import { Tiktoken, encoding_for_model } from "@dqbd/tiktoken";
-import { stripe } from "@/clients/stripe_client";
 import { summaryJobComplete_SES_Config } from "@/emails/summaryJobComplete";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { sesClient } from "@/clients/ses_client";
@@ -11,7 +10,13 @@ import { SummaryV2Customizations } from "@/types/SummaryV2Customizations";
 import { convertFilesToTextFormat } from "@/utils/convertFilesToTextFormat";
 import { areChunksValidForModelContext } from "@/utils/areChunksValidForModelContext";
 import { p } from "@/utils/p";
-import { generateOpenAiUserChatCompletion } from "../../shared/generateOpenAiUserChatCompletion";
+import { guard_beforeRunningSummary } from "../../shared/guards/guard_beforeRunningSummary";
+import { makeChunksSmaller } from "./makeChunksSmaller";
+import { checkout } from "../../shared/checkout";
+import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
+import { SummaryMode } from "@prisma/client";
+
+const tpmDelay = 60000;
 
 export async function summarizeEachFileInChunks(
   customizations: SummaryV2Customizations,
@@ -23,28 +28,13 @@ export async function summarizeEachFileInChunks(
   done: (err?: Error | null | undefined, result?: any) => void
 ) {
   try {
-    const start = Date.now();
-    const { format, length, language, model } = customizations;
-    job.progress(0);
-    // -v-v- ENTRY POINT - EACH FILE IN CHUNKS -v-v-
     p("Summarize Each File In Chunks"); // for console debugging...
-    // -v-v- CHECK IF CALLER HAS AN ACCOUNT -v-v-
-    const account = await prisma.account.findFirst({
-      where: {
-        email: email,
-        emailVerified: true,
-      },
-      include: {
-        SummaryCredits: true,
-      },
-    });
-    // -v-v- GUARD IF NO ACCOUNT FOUND -v-v-
-    if (!account?.stripeId) {
-      done(new Error("402"), null);
-      return;
-    }
+    const start = Date.now(); // for timing the job
+    const { format, length, language, model } = customizations; // extract all the customization requests
+    const account = await guard_beforeRunningSummary(email, model);
+    job.progress(0); // reset the job progress to 0% at the start of each job execution
     // -v-v- TRACK I/O TOKENS FOR BILLING -v-v-
-    const enc: Tiktoken = encoding_for_model(model);
+    const encoder: Tiktoken = encoding_for_model(model);
     let inputTokens = 0;
     let outputTokens = 0;
     // -v-v- CONVERT ALL FILES TO TEXT-BASED FORMAT -v-v-
@@ -53,14 +43,12 @@ export async function summarizeEachFileInChunks(
       originalName: string;
     }[] = await convertFilesToTextFormat(files, bucket);
     // -v-v- THIS IS THE PROMPT PREFIX THAT WILL BE APPLIED TO EACH CHUNK OF EACH FILE -v-v-
-    const promptPrefix = generatePromptPrefix({
-      format,
-      length,
-      language,
-    });
+    // prettier-ignore
+    const promptPrefix = generatePromptPrefix({ format, length, language });
     p(".*.*. splitting text .*.*."); // for console debugging...
     // -v-v- LOOP OVER THE TEXT-BASED VERSIONS OF EACH FILE -v-v-
-    let finalAnswerForEachFile: any[] = [];
+    // prettier-ignore
+    let summaryForEachFile: { file: string, summary: { chunk: number; chunkSummary: string }[] }[] = [];
     let tpmAccum: number = 0; // for tracking TPM ie: tokens / minute
     // prettier-ignore
     for (let fIndex = 0; fIndex < filesToText.length; fIndex++) { // processing ONE of the files at a time...
@@ -73,92 +61,70 @@ export async function summarizeEachFileInChunks(
         !areChunksValidForModelContext(
           [`${promptPrefix} ${chunks[0]}`], // check if the file is small enough to be prepended with the PROMPT_PREFIX and not trigger input token limit
           CONFIG.models[model].context,
-          enc
+          encoder
         )
       ) {
-        // -v-v- PROMPT_PREFIX PLUS THE_FILE IS TOO BIG SO MUST BREAK INTO CHUNKS -v-v-
+        // -v-v- PROMPT_PREFIX PLUS THE_FILE IS TOO BIG SO MUST BREAK INTO SMALLER CHUNKS -v-v-
         p("in while loop..."); // for console debugging...
-        let newChunks = [];
-        for (let i = 0; i < chunks.length; i++) {
-          const promptWithDataChunk = `${promptPrefix} ${chunks[i]}`;
-          if (
-            enc.encode(promptWithDataChunk).length >
-            CONFIG.models[model].context
-          ) {
-            let middle = Math.floor(chunks[i].length / 2);
-            let before = middle;
-            let after = middle + 1;
-            if (middle - before < after - middle) {
-              middle = before;
-            } else middle = after;
-            const s1 = chunks[i].substring(0, middle);
-            const s2 = chunks[i].substring(middle + 1);
-            newChunks.push(s1, s2);
-          } else newChunks.push(chunks[i]);
-        }
+        let newChunks = makeChunksSmaller(chunks, promptPrefix, CONFIG.models[model].context, encoder);
         chunks = newChunks;
       }
       // -v-v- WE NOW HAVE THE FILE IN CHUNKS THAT WILL NOT EXCEED THE MODEL CONTEXT LIMIT -v-v-
-      let summarizedChunksOfCurrentFile: any = [];
+      // -v-v- SO WE LOOP OVER THE CHUNKS AND STORE THE SUMMARY OF EACH CHUNK -v-v-
+      let summarizedChunksOfCurrentFile: { chunk: number; chunkSummary: string; }[] = [];
       for (let i = 0; i < chunks.length; i++) {
         const prompt = `${promptPrefix} ${chunks[i]}`;
-        const promptTokenCount = enc.encode(prompt).length;
+        const promptTokenCount = encoder.encode(prompt).length;
         inputTokens += promptTokenCount; // track input tokens
         tpmAccum += promptTokenCount; // accumulate input tokens
-        p(`token length of prompt for part ${i}`, promptTokenCount);
+        p(`token length of prompt for chunk ${i}`, promptTokenCount);
         p("tpmAccum", tpmAccum);
-        // -v-v- WE NOW HAVE EXCEEDED THE TOKENS / MINUTE LIMIT SO WILL PAUSE FOR 1 MINUTE -v-v-
+        // -v-v- IF WE NOW HAVE EXCEEDED THE TOKENS / MINUTE LIMIT WE WILL PAUSE -v-v-
         // prettier-ignore
         if (tpmAccum > CONFIG.models[model].tpm - CONFIG.tpmBuffer) { // tpmBuffer is to control how close to the rate limit you want to get
-          await sleep(80000);
+          await sleep(tpmDelay);
           tpmAccum = 0;
         }
         // prettier-ignore
-        p(`calling OpenAI to summarize part ${i} of file ${originalNameOfFile}...`);
+        p(`calling OpenAI to summarize chunk ${i} of file ${originalNameOfFile}...`);
         // -v-v- CALL THE A.I. MODEL -v-v-
-        const completion = await generateOpenAiUserChatCompletion(model, prompt)
+        const completion = await generateOpenAiUserChatCompletionWithExponentialBackoff(model, prompt, tpmDelay)
         const completionText: string = completion.data?.choices[0]?.message?.content || "ERROR: No Content"
         // prettier-ignore
         p(`snippet of last OpenAI completion - '${completionText.slice(0,16)}'`);
         // prettier-ignore
         // -v-v- TRACK THE OUTPUT TOKENS -v-v-
-        const outputTokenCount = enc.encode(completionText).length;
+        const outputTokenCount = encoder.encode(completionText).length;
         outputTokens += outputTokenCount; // track output tokens
         tpmAccum += outputTokenCount; // accumulate output tokens
         // -v-v- STORE THE COMPLETION OF EACH CHUNK OF THE FILE -v-v-
-        summarizedChunksOfCurrentFile.push({
-          part: i,
-          completionResponse: completionText
-        });
+        // prettier-ignore
+        summarizedChunksOfCurrentFile.push({ chunk: i, chunkSummary: completionText });
         p("job.progress()", job.progress()); // for console debugging
         p("i", i, "chunks.length", chunks.length); // for console debugging
-        p(
-          `this collection of chunks represents ${Math.floor(
-            100 / files.length
-          )}% of the total progress`
-        ); // for console debugging
-        // -v-v- UPDATE THE PROGRESS BAR -v-v-
-        job.progress(
-          job.progress() +
-            Math.floor((1 / chunks.length) * (100 / files.length))
-        );
+        // prettier-ignore
+        p(`this collection of chunks represents ${Math.floor(100 / files.length)}% of the total progress`); // for console debugging
+        // prettier-ignore
+        job.progress(job.progress() + ((1 / chunks.length) * (100 / files.length))); // UPDATE THE PROGRESS BAR
         p("after job.progress() update", job.progress());
       }
       // -v-v- BUILD THE FINAL ANSWER THE CALLER WANTS -v-v-
-      finalAnswerForEachFile.push({
-        file: filesToText[fIndex].originalName,
-        response: summarizedChunksOfCurrentFile,
-      });
+      // prettier-ignore
+      summaryForEachFile.push({ file: filesToText[fIndex].originalName, summary: summarizedChunksOfCurrentFile, });
     }
     // -v-v- SAVE THE FINAL ANSWER TO DB -v-v-
-    p("saving finalAnswerForEachFile to DB...");
+    p("saving completionForEachFile to DB...");
+    const timeFinalSummaryWasGenerated = Date.now(); // to help provide a tts aka time-to-summary quote
+    // prettier-ignore
+    console.log(`Execution time: ${timeFinalSummaryWasGenerated - start} ms or ${(timeFinalSummaryWasGenerated - start) / 1000 / 60} minutes`);
     const summaryV2Record = await prisma.summaryV2.create({
       data: {
         requesterId: account!.id,
-        // files: files,
-        // bucket: bucket,
-        prompt: promptPrefix,
-        completionResponse: finalAnswerForEachFile,
+        summary: summaryForEachFile,
+        model: model,
+        mode: SummaryMode.EACH_FILE_IN_CHUNKS,
+        language: language,
+        format: format,
       },
     });
     // -v-v- SEND AN EMAIL NOTIFICATION -v-v-
@@ -174,43 +140,14 @@ export async function summarizeEachFileInChunks(
     } catch (e) {}
     // -v-v- CHARGE THE CALLER FOR THE FANTASTIC SERVICE -v-v-
     p("*** CHECKOUT ***");
-    p("inputTokens", inputTokens);
-    p("outputTokens", outputTokens);
-    let _3rdPartyCharges = 0;
-    _3rdPartyCharges +=
-      (inputTokens / CONFIG.models[model].pricing.input.perTokens) *
-      CONFIG.models[model].pricing.input.rate; // ie: OpenAI input token rate for API
-    _3rdPartyCharges +=
-      (outputTokens / CONFIG.models[model].pricing.input.perTokens) *
-      CONFIG.models[model].pricing.output.rate; // ie: OpenAI output token rate for API
-    // -v-v- SUMMARY OF 3rd PARTY CHARGES -v-v-
-    p("_3rdPartyCharges", _3rdPartyCharges);
-    // -v-v- MARKUP THE 3rd PARTY CHARGES -v-v-
-    const markup = CONFIG.models[model].pricing.markUp;
-    let amountToChargeCaller = (_3rdPartyCharges * 1.029 + 0.3) * markup; // Stripe charges 2.9% + 30¢ to run the card
-    // prettier-ignore
-    amountToChargeCaller = amountToChargeCaller < 0.5 ? 0.5 : amountToChargeCaller; // Stripe has a minimum charge of 50¢ USD
-    p("amountToChargeCaller", amountToChargeCaller); // for console debugging
-    const summaryCredits = account?.SummaryCredits?.amount;
-    if (summaryCredits && summaryCredits > 0) {
-      p("paid for with free credit...");
-      await prisma.summaryCredits.updateMany({
-        where: {
-          accountId: account.id,
-        },
-        data: {
-          amount: summaryCredits - 1,
-        },
-      });
-    } else {
-      p("charging card via Stripe...");
-      await stripe.charges.create({
-        amount: Math.floor(amountToChargeCaller * 100), // '* 100' is because Stripe goes by pennies
-        currency: "usd",
-        description: `SummaryV2`,
-        customer: account?.stripeId,
-      });
-    }
+    await checkout(
+      inputTokens,
+      outputTokens,
+      CONFIG.models[model].pricing,
+      account,
+      "usd",
+      "SummaryV2"
+    );
     job.progress(100);
     p("DONE");
     const end = Date.now();

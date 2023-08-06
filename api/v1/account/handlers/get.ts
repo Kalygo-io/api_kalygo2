@@ -30,10 +30,13 @@ export async function getAccount(
     let subscriptions = {
       data: [],
     };
+    let stripeCustomer;
     if (account?.stripeId) {
       subscriptions = await stripe.subscriptions.list({
         customer: account?.stripeId,
       });
+
+      stripeCustomer = await stripe.customers.retrieve(account.stripeId);
     }
 
     if (account) {
@@ -51,6 +54,7 @@ export async function getAccount(
           "subscriptionPlan",
         ]),
         subscriptions: subscriptions,
+        stripeDefaultSource: stripeCustomer.default_source,
         summaryCredits: get(account, "SummaryCredits.amount", 0),
         vectorSearchCredits: get(account, "VectorSearchCredits.amount", 0),
         customRequestCredits: get(account, "CustomRequestCredits.amount", 0),

@@ -54,7 +54,7 @@ export async function getAccount(
           "subscriptionPlan",
         ]),
         subscriptions: subscriptions,
-        stripeDefaultSource: stripeCustomer.default_source,
+        stripeDefaultSource: stripeCustomer?.default_source,
         summaryCredits: get(account, "SummaryCredits.amount", 0),
         vectorSearchCredits: get(account, "VectorSearchCredits.amount", 0),
         customRequestCredits: get(account, "CustomRequestCredits.amount", 0),

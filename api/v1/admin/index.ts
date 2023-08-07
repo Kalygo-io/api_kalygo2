@@ -3,17 +3,20 @@ import {
   allocateSummaryCredits,
   allocateSearchCredits,
   allocateCustomRequestCredits,
+  getAccounts,
+  getLogins,
 } from "./handlers";
 import { authenticateToken } from "@/middleware";
 import { isAdmin } from "@/middleware";
 import { Router } from "express";
-import { getAccounts } from "./handlers/getAccounts";
 
 const router = Router();
 
 router.route("/dashboard").get(authenticateToken, isAdmin, getUsageStats);
 
 router.route("/get-accounts").get(authenticateToken, isAdmin, getAccounts);
+
+router.route("/get-logins").get(authenticateToken, isAdmin, getLogins);
 
 router
   .route("/allocate-summary-credits")

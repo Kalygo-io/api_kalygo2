@@ -1,0 +1,2 @@
+- https://github.com/facebookresearch/llama
+- https://github.com/facebookresearch/llama/blob/main/README.md

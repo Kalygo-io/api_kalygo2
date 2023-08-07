@@ -18,15 +18,8 @@ export async function googleLogin(
     const email = tokenInfo?.email;
     const emailVerified = tokenInfo?.email_verified;
 
-    // const token = authHeader?.split(" ")[1];
-    // const ticket = await OAuthClient.verifyIdToken({
-    //   idToken: token,
-    // });
-    // const payload = ticket.getPayload();
-    // const email = payload?.email;
-
     if (email && emailVerified) {
-      const user = await prisma.account.findUnique({
+      const account = await prisma.account.findUnique({
         where: {
           email: email,
         },
@@ -35,8 +28,16 @@ export async function googleLogin(
         },
       });
 
-      if (user) {
-        const roles = user.Roles.map((role) => role.type);
+      if (account) {
+        console.log("before recording login");
+        await prisma.login.create({
+          data: {
+            accountId: account.id,
+          },
+        });
+        console.log("after recording login");
+
+        const roles = account.Roles.map((role) => role.type);
         const jwt = generateAccessToken(email, roles);
         res
           .status(200)

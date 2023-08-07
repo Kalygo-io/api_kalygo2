@@ -9,6 +9,7 @@ import { mockReceiveVerificationToken } from "./mockReceiveVerificationToken";
 import { isAuthed } from "./isAuthed";
 import { googleSignUp } from "./googleSignUp";
 import { googleLogin } from "./googleLogIn";
+import { isAdmin } from "./isAdmin";
 
 import { subscriptionSignUp } from "./subscriptionSignUp";
 
@@ -24,6 +25,7 @@ export {
   verifyAccount,
   // clearAccounts,
   isAuthed,
+  isAdmin,
   signOut,
   subscriptionSignUp,
   googleSignUp,

@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import prisma from "@/db/prisma_client";
 import { generateAccessToken } from "../../../../utils/index";
 import { stripe } from "@/clients/stripe_client";
-import { RoleTypes } from "@/types/RoleTypes";
 import { OAuthClient } from "@/clients/oauth2_client";
+import { RoleTypes } from "@prisma/client";
 
 export async function googleSignUp(
   req: Request,

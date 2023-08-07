@@ -12,6 +12,7 @@ import {
   subscriptionSignUp,
   googleSignUp,
   googleLogin,
+  isAdmin,
 } from "./handlers";
 
 import { Router } from "express";
@@ -20,6 +21,7 @@ import { authenticateToken } from "@middleware/index";
 const router = Router();
 
 router.route("/is-authed").get(authenticateToken, isAuthed);
+router.route("/is-admin").get(authenticateToken, isAdmin);
 router.route("/log-in").post(logIn);
 router.route("/sign-up").post(signUp);
 router.route("/subscription-sign-up").post(subscriptionSignUp);

@@ -7,7 +7,7 @@ import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { generateVerifyEmail_SES_Config } from "@emails/verifyEmail";
 import { sesClient } from "@/clients/ses_client";
 import { stripe } from "@/clients/stripe_client";
-import { RoleTypes } from "@/types/RoleTypes";
+import { RoleTypes } from "@prisma/client";
 
 export async function signUp(req: Request, res: Response, next: NextFunction) {
   try {

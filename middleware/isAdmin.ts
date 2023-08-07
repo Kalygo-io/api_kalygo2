@@ -1,6 +1,4 @@
-import { RoleTypes } from "@/types/RoleTypes";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { RoleTypes } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 
 export default async function isAdmin(

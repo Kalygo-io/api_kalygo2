@@ -1,11 +1,10 @@
 import { allocateSearchCredits } from "./allocateSearchCredits";
 import { allocateSummaryCredits } from "./allocateSummaryCredits";
 import { allocateCustomRequestCredits } from "./allocateCustomRequestCredits";
-import { getSaasStats } from "./getSaasStats";
+import { getUsageStats } from "./getUsageStats";
 import { checkAdminFrontend } from "./checkAdminFrontend";
-import { customRequest } from "../../customRequest/handlers";
 
-export { getSaasStats };
+export { getUsageStats };
 export { allocateSummaryCredits };
 export { allocateSearchCredits };
 export { allocateCustomRequestCredits };

@@ -1,3 +1,4 @@
+import { stripe } from "@/clients/stripe_client";
 import prisma from "@/db/prisma_client";
 import { Request, Response, NextFunction } from "express";
 
@@ -8,11 +9,6 @@ export async function getUsageStats(
 ) {
   try {
     const totalAccounts = await prisma.account.count();
-    const paidAccountsCount = await prisma.account.count({
-      where: {
-        subscriptionPlan: { in: ["STANDARD", "PREMIUM"] },
-      },
-    });
     const verifiedAccountsCount = await prisma.account.count({
       where: {
         emailVerified: true,
@@ -54,9 +50,30 @@ export async function getUsageStats(
       loginsInLast30DaysData.map((login) => login.accountId)
     ).size;
 
+    // vvv Accounts with Card vvv
+    let stripeCustomersWithCard: any[] = [];
+    let response = await stripe.customers.list({
+      limit: 100,
+    });
+    let hasCard = response.data.filter(
+      (i: any, idx: number) => i.default_source
+    );
+    stripeCustomersWithCard = [...hasCard];
+    while (response.has_more) {
+      const lastCustomerInResponse = response.data[response.data.length - 1];
+      response = await stripe.customers.list({
+        limit: 100,
+        starting_after: lastCustomerInResponse.id,
+      });
+
+      hasCard = response.data.filter((i: any, idx: number) => i.default_source);
+
+      stripeCustomersWithCard = [...stripeCustomersWithCard, ...hasCard];
+    }
+
     res.status(200).json({
       totalAccounts,
-      paidAccountsCount,
+      stripeCustomersWithCardCount: stripeCustomersWithCard.length,
       verifiedAccountsCount,
       totalSummariesV1: totalSummariesV1,
       totalSummariesV2: totalSummariesV2,

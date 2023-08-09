@@ -12,6 +12,7 @@ import { Router } from "express";
 import { authenticateToken } from "@middleware/index";
 import { multerS3Middleware } from "@middleware/index";
 import { uploadToDiskMiddleware } from "@/middleware/multer-disk";
+import canCallerPushToQueue from "@/middleware/canCallerPushToQueue";
 
 const router = Router();
 
@@ -29,7 +30,11 @@ router.route("/vector-searches").get([authenticateToken], getVectorSearches);
 router
   .route("/similarity-search")
   .post(
-    [authenticateToken, uploadToDiskMiddleware.single("file")],
+    [
+      authenticateToken,
+      canCallerPushToQueue,
+      uploadToDiskMiddleware.single("file"),
+    ],
     similaritySearch
   );
 

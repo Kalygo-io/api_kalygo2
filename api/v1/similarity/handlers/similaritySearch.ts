@@ -31,12 +31,11 @@ export async function similaritySearch(
       },
     });
 
-    // vvv vvv $0.0004 per 1000 tokens for embeddings with
-    // https://platform.openai.com/docs/guides/embeddings/what-are-embeddings
-
+    // CONVERT DOCUMENT TO TXT
     let textWithMetadata;
     let textConcat;
     if (req.file?.mimetype === "application/pdf") {
+      // TODO - refactor
       const rawPDFData = fs.readFileSync(`${req.file?.path}`);
       textWithMetadata = await convertPDFToTxtWithMetadata(
         new Uint16Array(rawPDFData)
@@ -66,7 +65,7 @@ export async function similaritySearch(
     );
 
     const vectorSearchCredits = account?.VectorSearchCredits?.amount;
-    if (vectorSearchCredits && vectorSearchCredits > 0) {
+    if (account && vectorSearchCredits && vectorSearchCredits > 0) {
       await prisma.vectorSearchCredits.updateMany({
         where: {
           accountId: account.id,
@@ -76,6 +75,7 @@ export async function similaritySearch(
         },
       });
     } else {
+      // TODO - refactor
       await stripe.charges.create({
         amount: quote * 100,
         currency: "usd",
@@ -83,7 +83,6 @@ export async function similaritySearch(
         customer: account?.stripeId,
       });
     }
-    // ^^^ ^^^
 
     const query = req.body.query;
     console.log("--- query ---", query);

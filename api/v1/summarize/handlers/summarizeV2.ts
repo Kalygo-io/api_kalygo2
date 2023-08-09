@@ -16,61 +16,6 @@ export async function summarizeV2(
     console.log("req.body", req.body);
     let locale: string = req?.i18n?.language?.substring(0, 2) || "en";
 
-    const userOpenAiCharges = await prisma.openAiCharges.findMany({
-      where: {
-        // @ts-ignore
-        accountId: req.user.id,
-      },
-    });
-    let totalCharges = userOpenAiCharges.reduce(
-      (total, charge) => total + charge.amount,
-      0
-    );
-    if (totalCharges > 5) {
-      res.status(403).json({ error: "You have exceeded the limit" });
-      return;
-    }
-    const account = await prisma.account.findFirst({
-      where: {
-        // @ts-ignore
-        email: req.user.email,
-        emailVerified: true,
-      },
-      include: {
-        SummaryCredits: true,
-      },
-    });
-    // -v-v- GUARD IF NO ACCOUNT FOUND -v-v-
-    if (!account?.stripeId) {
-      throw new Error("402");
-    }
-    // -v-v- GUARD IF NO CARD ATTACHED TO STRIPE ACCOUNT FOUND -v-v-
-    const stripeCustomer = await stripe.customers.retrieve(account.stripeId);
-    if (
-      (!stripeCustomer.default_source &&
-        req.body.model === "gpt-4" &&
-        account.SummaryCredits?.amount) ||
-      (!stripeCustomer.default_source && !account.SummaryCredits?.amount)
-    ) {
-      throw new Error("402");
-    }
-
-    let activeJobs = await jobQueue.getJobs([
-      "active",
-      "waiting",
-      "completed",
-      "failed",
-    ]);
-
-    activeJobs = activeJobs.filter((i) => {
-      // @ts-ignore
-      return i?.data?.params?.email === req?.user?.email;
-    });
-
-    if (activeJobs.length > 5) {
-      throw new Error("429");
-    }
-
     jobQueue.add(
       {
         jobType: QueueJobTypes.SummaryV2,
@@ -93,7 +38,6 @@ export async function summarizeV2(
         timeout: 1000 * 60 * 60, // 1 hour before being marked as timed out
       }
     );
-
     res.status(200).send();
   } catch (e) {
     next(e);

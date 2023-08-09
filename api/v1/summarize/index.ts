@@ -14,6 +14,7 @@ import { Router } from "express";
 import { authenticateToken } from "@middleware/index";
 import { multerS3Middleware } from "@middleware/index";
 import { uploadToDiskMiddleware } from "@/middleware/multer-disk";
+import canCallerPushToQueue from "@/middleware/canCallerPushToQueue";
 
 const router = Router();
 
@@ -21,11 +22,17 @@ const router = Router();
 //   .route("/upload")
 //   .post([multerS3Middleware.array("documents", 3)], upload);
 
-router.route("/summarize").post([authenticateToken], summarize);
+router
+  .route("/summarize")
+  .post([authenticateToken, canCallerPushToQueue], summarize);
 router
   .route("/summarize-v2")
   .post(
-    [authenticateToken, multerS3Middleware.array("documents")],
+    [
+      authenticateToken,
+      canCallerPushToQueue,
+      multerS3Middleware.array("documents"),
+    ],
     summarizeV2
   );
 

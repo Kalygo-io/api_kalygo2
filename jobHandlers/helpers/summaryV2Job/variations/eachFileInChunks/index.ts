@@ -1,3 +1,4 @@
+import fs from "fs";
 import prisma from "@/db/prisma_client";
 import { Tiktoken, encoding_for_model } from "@dqbd/tiktoken";
 import { summaryJobComplete_SES_Config } from "@/emails/summaryJobComplete";
@@ -27,6 +28,10 @@ export async function summarizeEachFileInChunks(
   locale: string,
   done: (err?: Error | null | undefined, result?: any) => void
 ) {
+  let lastFileBeforeFailing = "";
+  let lastChunkBeforeFailing = 0;
+  let chunks: string[] = [];
+
   try {
     p("Summarize Each File In Chunks"); // for console debugging...
     const start = Date.now(); // for timing the job
@@ -53,10 +58,11 @@ export async function summarizeEachFileInChunks(
     // prettier-ignore
     for (let fIndex = 0; fIndex < filesToText.length; fIndex++) { // processing ONE of the files at a time...
       const originalNameOfFile = filesToText[fIndex].originalName;
+      lastFileBeforeFailing = originalNameOfFile // for debugging
       // prettier-ignore
       p("*** file to be processed ***", originalNameOfFile);
       // -v-v- LOGIC BELOW IS TO BREAK THE DATA IN EACH FILE INTO CHUNKS SO THAT THE PROMPT_PREFIX PLUS THE_CHUNK IS WITHIN THE MODEL INPUT TOKEN LIMIT -v-v-
-      let chunks = [filesToText[fIndex].text];
+      chunks = [filesToText[fIndex].text];
       while (
         !areChunksValidForModelContext(
           [`${promptPrefix} ${chunks[0]}`], // check if the file is small enough to be prepended with the PROMPT_PREFIX and not trigger input token limit
@@ -78,6 +84,8 @@ export async function summarizeEachFileInChunks(
         inputTokens += promptTokenCount; // track input tokens
         tpmAccum += promptTokenCount; // accumulate input tokens
         p(`token length of prompt for chunk ${i}`, promptTokenCount);
+        p("inputTokens", inputTokens);
+        p("outputTokens", outputTokens);
         p("tpmAccum", tpmAccum);
         // -v-v- IF WE NOW HAVE EXCEEDED THE TOKENS / MINUTE LIMIT WE WILL PAUSE -v-v-
         // prettier-ignore
@@ -87,8 +95,9 @@ export async function summarizeEachFileInChunks(
         }
         // prettier-ignore
         p(`calling OpenAI to summarize chunk ${i} of file ${originalNameOfFile}...`);
+        lastChunkBeforeFailing = i
         // -v-v- CALL THE A.I. MODEL -v-v-
-        const completion = await generateOpenAiUserChatCompletionWithExponentialBackoff(model, prompt, tpmDelay)
+        const completion = await generateOpenAiUserChatCompletionWithExponentialBackoff(model, prompt, tpmDelay, `chunk${i}`)
         const completionText: string = completion.data?.choices[0]?.message?.content || "ERROR: No Content"
         // prettier-ignore
         p(`snippet of last OpenAI completion - '${completionText.slice(0,16)}'`);
@@ -156,6 +165,16 @@ export async function summarizeEachFileInChunks(
     done(null, { summaryV2Id: summaryV2Record.id });
   } catch (e) {
     p("ERROR", (e as Error).toString());
-    done(e as Error, null);
+
+    if (process.env.NODE_ENV !== "production")
+      fs.writeFileSync(
+        `${__dirname}/../../../../debug/failed.txt`,
+        chunks.join()
+      );
+
+    done(e as Error, {
+      lastFileBeforeFailing,
+      lastChunkBeforeFailing,
+    });
   }
 }

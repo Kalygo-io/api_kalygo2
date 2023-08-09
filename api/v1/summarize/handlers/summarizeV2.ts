@@ -54,6 +54,23 @@ export async function summarizeV2(
     ) {
       throw new Error("402");
     }
+
+    let activeJobs = await jobQueue.getJobs([
+      "active",
+      "waiting",
+      "completed",
+      "failed",
+    ]);
+
+    activeJobs = activeJobs.filter((i) => {
+      // @ts-ignore
+      return i?.data?.params?.email === req?.user?.email;
+    });
+
+    if (activeJobs.length > 5) {
+      throw new Error("429");
+    }
+
     jobQueue.add(
       {
         jobType: QueueJobTypes.SummaryV2,

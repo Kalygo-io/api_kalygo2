@@ -23,12 +23,40 @@ export async function customRequest(
       where: {
         // @ts-ignore
         accountId: req.user.id,
-      }
+      },
     });
-    let totalCharges = userOpenAiCharges.reduce((total, charge) => total + charge.amount, 0);
+    let totalCharges = userOpenAiCharges.reduce(
+      (total, charge) => total + charge.amount,
+      0
+    );
     if (totalCharges > 5) {
       res.status(403).json({ error: "You have exceeded the limit" });
       return;
+    }
+
+    const account = await prisma.account.findFirst({
+      where: {
+        // @ts-ignore
+        email: req.user.email,
+        emailVerified: true,
+      },
+      include: {
+        CustomRequestCredits: true,
+      },
+    });
+    // -v-v- GUARD IF NO ACCOUNT FOUND -v-v-
+    if (!account?.stripeId) {
+      throw new Error("402");
+    }
+    // -v-v- GUARD IF NO CARD ATTACHED TO STRIPE ACCOUNT FOUND -v-v-
+    const stripeCustomer = await stripe.customers.retrieve(account.stripeId);
+    if (
+      (!stripeCustomer.default_source &&
+        req.body.model === "gpt-4" &&
+        account.CustomRequestCredits?.amount) ||
+      (!stripeCustomer.default_source && !account.CustomRequestCredits?.amount)
+    ) {
+      throw new Error("402");
     }
 
     jobQueue.add(

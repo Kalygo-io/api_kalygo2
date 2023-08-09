@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { jobQueue } from "@/clients/bull_client";
 import { QueueJobTypes } from "@/types/JobTypes";
 import { PrismaClient } from "@prisma/client";
+import { stripe } from "@/clients/stripe_client";
 const prisma = new PrismaClient();
 
 export async function summarizeV2(
@@ -29,7 +30,30 @@ export async function summarizeV2(
       res.status(403).json({ error: "You have exceeded the limit" });
       return;
     }
-
+    const account = await prisma.account.findFirst({
+      where: {
+        // @ts-ignore
+        email: req.user.email,
+        emailVerified: true,
+      },
+      include: {
+        SummaryCredits: true,
+      },
+    });
+    // -v-v- GUARD IF NO ACCOUNT FOUND -v-v-
+    if (!account?.stripeId) {
+      throw new Error("402");
+    }
+    // -v-v- GUARD IF NO CARD ATTACHED TO STRIPE ACCOUNT FOUND -v-v-
+    const stripeCustomer = await stripe.customers.retrieve(account.stripeId);
+    if (
+      (!stripeCustomer.default_source &&
+        req.body.model === "gpt-4" &&
+        account.SummaryCredits?.amount) ||
+      (!stripeCustomer.default_source && !account.SummaryCredits?.amount)
+    ) {
+      throw new Error("402");
+    }
     jobQueue.add(
       {
         jobType: QueueJobTypes.SummaryV2,

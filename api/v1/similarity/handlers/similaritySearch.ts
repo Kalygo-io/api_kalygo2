@@ -98,7 +98,6 @@ export async function similaritySearch(
 
     for (let i = 0; i < textWithMetadata.length; i++) {
       let pageChunks: any[] = textWithMetadata[i].text.split(/[ ,]+/);
-
       for (let j = 0; j < pageChunks.length; j++) {
         intResults.push({
           textChunk: pageChunks[j],

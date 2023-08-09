@@ -15,9 +15,9 @@ function errorMiddleware(
   const message = error.message || "Something went wrong";
   const stack = error.stack || "";
   response.status(status).json({
-    // status,
-    // message,
-    // stack,
+    status,
+    message,
+    stack,
   });
 }
 

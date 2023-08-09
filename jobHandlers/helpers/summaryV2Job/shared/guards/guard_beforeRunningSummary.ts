@@ -22,7 +22,6 @@ export async function guard_beforeRunningSummary(
 
   const stripeCustomer = await stripe.customers.retrieve(account.stripeId);
   const summaryCredits = account?.SummaryCredits?.amount;
-  // if (summaryCredits && summaryCredits > 0) {
   if (
     (!stripeCustomer.default_source && model === "gpt-4" && summaryCredits) ||
     (!stripeCustomer.default_source && !summaryCredits)

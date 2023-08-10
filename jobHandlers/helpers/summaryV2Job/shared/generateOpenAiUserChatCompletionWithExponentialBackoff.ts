@@ -17,11 +17,11 @@ export async function generateOpenAiUserChatCompletionWithExponentialBackoff(
   const promptTokenCount = encoder.encode(prompt).length;
   console.log("promptTokenCount", promptTokenCount);
 
-  if (process.env.NODE_ENV !== "production")
-    fs.writeFileSync(
-      `${__dirname}/../../../../debugQueue/${debugFilename}`,
-      prompt
-    );
+  // if (process.env.NODE_ENV !== "production")
+  //   fs.writeFileSync(
+  //     `${__dirname}/../../../../debugQueue/${debugFilename}`,
+  //     prompt
+  //   );
 
   let completion;
   try {

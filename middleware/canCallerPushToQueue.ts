@@ -60,10 +60,10 @@ export default async function canCallerPushToQueue(
           (account?.CustomRequestCredits &&
             account?.CustomRequestCredits?.amount > 0))))
   ) {
-    console.log("Can CAN push to queue");
+    console.log("CAN push to queue");
     next();
   } else {
-    console.log("Can CANNOT push to queue");
+    console.log("CANNOT push to queue");
     res.status(403).send();
   }
 }

@@ -72,7 +72,7 @@ export async function summarizeFilesOverall(
         let promptPrefix = generatePromptPrefix(
           {
             format: "paragraph",
-            length,
+            length: "long",
             language,
           },
           summaryForFile // ***

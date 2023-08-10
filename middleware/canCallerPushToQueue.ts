@@ -61,6 +61,6 @@ export default async function canCallerPushToQueue(
   ) {
     next();
   } else {
-    res.status(403).send("Access Denied");
+    res.status(403).send();
   }
 }

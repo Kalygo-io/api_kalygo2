@@ -8,6 +8,7 @@ export default async function canCallerPushToQueue(
   res: Response,
   next: NextFunction
 ) {
+  console.log("Can caller push to queue?");
   const account = await prisma.account.findFirst({
     where: {
       // @ts-ignore
@@ -59,8 +60,10 @@ export default async function canCallerPushToQueue(
           (account?.CustomRequestCredits &&
             account?.CustomRequestCredits?.amount > 0))))
   ) {
+    console.log("Can CAN push to queue");
     next();
   } else {
+    console.log("Can CANNOT push to queue");
     res.status(403).send();
   }
 }

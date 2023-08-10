@@ -166,11 +166,16 @@ export async function summarizeEachFileInChunks(
   } catch (e) {
     p("ERROR", (e as Error).toString());
 
-    if (process.env.NODE_ENV !== "production")
-      fs.writeFileSync(
-        `${__dirname}/../../../../debug/failed.txt`,
-        chunks.join()
-      );
+    if (process.env.NODE_ENV !== "production") fs.open;
+    fs.writeFileSync(
+      `${__dirname}/../../../../debugQueue/failed.txt`,
+      chunks.join(),
+      {
+        encoding: "utf8",
+        flag: "w",
+        mode: 0o655,
+      }
+    );
 
     done(e as Error, {
       lastFileBeforeFailing,

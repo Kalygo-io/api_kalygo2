@@ -1,9 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { jobQueue } from "@/clients/bull_client";
 import { QueueJobTypes } from "@/types/JobTypes";
-import { PrismaClient } from "@prisma/client";
-import { stripe } from "@/clients/stripe_client";
-const prisma = new PrismaClient();
 
 export async function summarizeV2(
   req: Request,

@@ -38,6 +38,7 @@ model Account {
   Roles                  Role[]
   SummaryV2              SummaryV2[]
   Ratings                Rating[]
+  SmartSearch            SmartSearch[]
 }
 
 model Summary {
@@ -84,7 +85,10 @@ model Rating {
   customRequestId Int?
   Account         Account?       @relation(fields: [accountId], references: [id])
   accountId       Int?
+  SmartSearch     SmartSearch?   @relation(fields: [smartSearchId], references: [id])
+  smartSearchId   Int?
 
+  @@unique([accountId, smartSearchId])
   @@unique([accountId, summaryV2Id])
   @@unique([accountId, customRequestId])
 }
@@ -110,6 +114,21 @@ model VectorSearch {
   results     Json
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @updatedAt
+}
+
+model SmartSearch {
+  id            Int       @id @default(autoincrement())
+  requester     Account   @relation(fields: [requesterId], references: [id])
+  requesterId   Int
+  filename      String
+  fileHash      String?
+  hashAlgorithm String?
+  bucket        String
+  query         String
+  results       Json
+  createdAt     DateTime? @default(now())
+  updatedAt     DateTime? @updatedAt
+  Rating        Rating[]
 }
 
 model CustomRequest {

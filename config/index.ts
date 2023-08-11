@@ -1,3 +1,11 @@
+/*
+reference OpenAI documentation that defines pricing and rate limits...
+
+https://openai.com/pricing
+https://platform.openai.com/account/rate-limits
+https://platform.openai.com/docs/guides/rate-limits/overview
+*/
+
 export default {
   stripe: {
     products: {
@@ -18,6 +26,7 @@ export default {
     "gpt-3.5-turbo": {
       context: 4000,
       tpm: 90000,
+      rpm: -1, // TODO
       pricing: {
         markUp: 1.5,
         input: {
@@ -33,14 +42,27 @@ export default {
     "gpt-4": {
       context: 8000,
       tpm: 10000,
+      rpm: -1, // TODO
       pricing: {
         markUp: 1.5,
         input: {
-          rate: 0.03, // USD,
+          rate: 0.03, // USD
           perTokens: 1000,
         },
         output: {
-          rate: 0.06, // USD,
+          rate: 0.06, // USD
+          perTokens: 1000,
+        },
+      },
+    },
+    "text-embedding-ada-002": {
+      context: 0,
+      tpm: 1000000,
+      rpm: 3000,
+      pricing: {
+        markUp: 1.5,
+        usage: {
+          rate: 0.0001, // USD
           perTokens: 1000,
         },
       },

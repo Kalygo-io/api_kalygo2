@@ -31,6 +31,7 @@ export async function summarizeFilesOverall(
 ) {
   try {
     p("All Files Overall"); // for console debugging...
+    console.log("Customizations: ", customizations);
     const start = Date.now();
     const { format, length, language, model } = customizations;
     job.progress(0);
@@ -159,10 +160,11 @@ export async function summarizeFilesOverall(
       let finalSummarizationPrompt = generateFinalSummarizationPrompt(
         {
           format: "paragraph",
-          length,
+          length: "long",
           language,
         },
-        chunks[0] // include the summaries of each file for context when prompting the model to synthesize them all
+        chunks[0], // include the summaries of each file for context when prompting the model to synthesize them all
+        summariesOfEachFile.length
       );
       while (
         !isChunkValidForModelContext(
@@ -175,13 +177,19 @@ export async function summarizeFilesOverall(
       }
       // -v-v- WE HAVE NOW BIT OFF AN ACCEPTABLE CHUNK -v-v-
       p("WE HAVE NOW BIT OFF AN ACCEPTABLE CHUNK");
+      p("final Summarization prompt parameters", {
+        format,
+        length,
+        language,
+      });
       const finalPrompt = generateFinalSummarizationPrompt(
         {
           format,
           length,
           language,
         },
-        chunks[0] // ***
+        chunks[0], // ***
+        summariesOfEachFile.length
       );
       p("*** snippet of finalPrompt... ***", finalPrompt.slice(0, 16));
       p("tokens to be sent", enc.encode(finalPrompt).length);
@@ -196,7 +204,7 @@ export async function summarizeFilesOverall(
       let completion =
         await generateOpenAiUserChatCompletionWithExponentialBackoff(
           model,
-          finalSummarizationPrompt,
+          finalPrompt,
           tpmDelay
         );
       const completionText =

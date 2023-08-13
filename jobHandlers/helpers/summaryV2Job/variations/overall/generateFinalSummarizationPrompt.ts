@@ -4,13 +4,18 @@ export function generateFinalSummarizationPrompt(
     length: string;
     language: string;
   },
-  eachSummary: string
+  eachSummary: string,
+  summaryCount: number
 ): string {
   const { format, length, language } = customizations;
 
   return `
-        Provide a detailed overview summary of the following SUMMARIES with each SUMMARY belonging to a file in a collection of files.
-        Each summary will be surrounded by new lines. Provide a summary of the SUMMARIES that meets the following criteria:
+        Provide a detailed overview FINAL_SUMMARY of the following ${
+          summaryCount > 1 ? "SUMMARIES" : "SUMMARY"
+        }.
+        The ${
+          summaryCount > 1 ? "SUMMARIES" : "SUMMARY"
+        } will be surrounded by new lines. Provide a FINAL_SUMMARY that meets the following criteria:
 
         - Written in ${language}
         - ${
@@ -37,7 +42,7 @@ export function generateFinalSummarizationPrompt(
         - The markdown should be well structured
         - Please synthesize an overview of the summaries overall in relation to each other and extract insights that simplifies digesting what they all mean collectively for the human reader.    
 
-        Here are the SUMMARIES:
+        Here ${summaryCount > 1 ? "are the SUMMARIES" : "is the SUMMARY"}:
 
         ${eachSummary}
       `;

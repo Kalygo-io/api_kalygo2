@@ -48,6 +48,18 @@ export default async function canCallerPushToQueue(
     return i?.data?.params?.email === req?.user?.email;
   });
 
+  console.log("DEBUG canCallerPushToQueue middleware...");
+  console.log("totalCharges < 5", totalCharges < 5);
+  console.log("activeJobs.length < 5", activeJobs.length < 5);
+  console.log("stripeCustomer.default_source", stripeCustomer.default_source);
+  console.log(
+    'req.body.model === "gpt-3.5-turbo"',
+    req.body.model === "gpt-3.5-turbo"
+  );
+  console.log("account?.SummaryCredits", account?.SummaryCredits);
+  console.log("account?.VectorSearchCredits", account?.VectorSearchCredits);
+  console.log("account?.CustomRequestCredits", account?.CustomRequestCredits);
+
   if (
     totalCharges < 5 &&
     activeJobs.length < 5 &&

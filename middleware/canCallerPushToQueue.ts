@@ -60,8 +60,15 @@ export default async function canCallerPushToQueue(
   console.log("account?.VectorSearchCredits", account?.VectorSearchCredits);
   console.log("account?.CustomRequestCredits", account?.CustomRequestCredits);
 
+  let ACCOUNT_TOTAL_CHARGES_LIMIT;
+  if (process.env.NODE_ENV === "production") {
+    ACCOUNT_TOTAL_CHARGES_LIMIT = 5;
+  } else {
+    ACCOUNT_TOTAL_CHARGES_LIMIT = 40;
+  }
+
   if (
-    totalCharges < 5 &&
+    totalCharges < ACCOUNT_TOTAL_CHARGES_LIMIT &&
     activeJobs.length < 5 &&
     (stripeCustomer.default_source ||
       (!stripeCustomer.default_source &&

@@ -61,10 +61,10 @@ export default async function canCallerPushToQueue(
   console.log("account?.CustomRequestCredits", account?.CustomRequestCredits);
 
   let ACCOUNT_TOTAL_CHARGES_LIMIT;
-  if (process.env.NODE_ENV === "production") {
-    ACCOUNT_TOTAL_CHARGES_LIMIT = 5;
-  } else {
+  if (process.env.NODE_ENV === "development") {
     ACCOUNT_TOTAL_CHARGES_LIMIT = 40;
+  } else {
+    ACCOUNT_TOTAL_CHARGES_LIMIT = 5;
   }
 
   if (

@@ -39,6 +39,7 @@ model Account {
   SummaryV2              SummaryV2[]
   Ratings                Rating[]
   SmartSearch            SmartSearch[]
+  UsageCredits           UsageCredits?
 }
 
 model Summary {
@@ -67,11 +68,6 @@ model SummaryV2 {
   language    String
   createdAt   DateTime?   @default(now())
   updatedAt   DateTime?   @updatedAt
-}
-
-enum RatingType {
-  SummaryV2
-  CustomRequest
 }
 
 model Rating {
@@ -185,6 +181,15 @@ model OpenAiCharges {
   amount    Float
 }
 
+model UsageCredits {
+  id        Int       @id @default(autoincrement())
+  account   Account   @relation(fields: [accountId], references: [id])
+  accountId Int       @unique
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  amount    Float
+}
+
 model Role {
   id        Int       @id @default(autoincrement())
   type      RoleTypes @default(USER)
@@ -221,4 +226,9 @@ enum SummaryMode {
   EACH_FILE_PER_PAGE
   EACH_FILE_PER_PAGE_THEN_OVERALL
   EACH_FILE_OVERLAPPING_CHUNKS
+}
+
+enum RatingType {
+  SummaryV2
+  CustomRequest
 }

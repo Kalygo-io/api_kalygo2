@@ -74,7 +74,7 @@ export default async function canCallerPushToQueue(
     activeJobs.length < 5 &&
     (stripeCustomer.default_source ||
       (!stripeCustomer.default_source &&
-        req.body.model === "gpt-3.5-turbo" &&
+        // req.body.model === "gpt-3.5-turbo" &&
         ((account?.SummaryCredits && account?.SummaryCredits?.amount > 0) ||
           (account?.VectorSearchCredits &&
             account?.VectorSearchCredits?.amount > 0) ||

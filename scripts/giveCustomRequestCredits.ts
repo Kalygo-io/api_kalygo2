@@ -2,7 +2,8 @@ import "dotenv/config";
 import prisma from "@/db/prisma_client";
 
 async function giveCustomRequestCredits() {
-  const email = `test@test.com`;
+  // const email = `test@test.com`;
+  const email = `tad@cmdlabs.io`;
 
   const account = await prisma.account.findFirst({
     where: {
@@ -11,21 +12,21 @@ async function giveCustomRequestCredits() {
     },
   });
 
-  const customRequestCredits = await prisma.customRequestCredits.create({
-    data: {
-      amount: 7,
-      accountId: account!.id,
-    },
-  });
-
-  // const customRequestCredits = await prisma.customRequestCredits.update({
-  //   where: {
-  //     accountId: account!.id,
-  //   },
+  // const customRequestCredits = await prisma.customRequestCredits.create({
   //   data: {
   //     amount: 7,
+  //     accountId: account!.id,
   //   },
   // });
+
+  const customRequestCredits = await prisma.customRequestCredits.update({
+    where: {
+      accountId: account!.id,
+    },
+    data: {
+      amount: 7,
+    },
+  });
 }
 
 giveCustomRequestCredits();

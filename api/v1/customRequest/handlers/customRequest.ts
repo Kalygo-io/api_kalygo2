@@ -28,6 +28,7 @@ export async function customRequest(
           // @ts-ignore
           email: req.user.email,
           language: language,
+          model: req.body.model,
         },
       },
       {

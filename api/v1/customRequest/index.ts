@@ -10,9 +10,9 @@ router
   .route("/custom-request")
   .post(
     [
+      multerS3Middleware.array("documents"),
       authenticateToken,
       canCallerPushToQueue,
-      multerS3Middleware.array("documents"),
     ],
     customRequest
   );

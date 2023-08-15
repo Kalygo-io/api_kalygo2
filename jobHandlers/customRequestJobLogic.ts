@@ -12,20 +12,6 @@ import { streamToString } from "@/utils/streamToString";
 import { convertPDFToTxtFile } from "./helpers/customRequestJob/pdf2txt";
 import { customRequestJobComplete_SES_Config } from "@/emails/customRequestJobComplete";
 
-const enc = encoding_for_model("gpt-3.5-turbo");
-
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function isPartsValid(parts: string[]): boolean {
-  for (let i = 0; i < parts.length; i++) {
-    if (enc.encode(parts[i]).length > 4096) return false;
-  }
-
-  return true;
-}
-
 export async function customRequestJobLogic(
   params: {
     bucket: string;
@@ -33,10 +19,25 @@ export async function customRequestJobLogic(
     email: string;
     customPrompt: string;
     language: string;
+    model: "gpt-3.5-turbo" | "gpt-4";
   },
   job: any,
   done: (err?: Error | null, result?: any) => void
 ) {
+  const enc = encoding_for_model(params.model);
+
+  function sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  function isPartsValid(parts: string[]): boolean {
+    for (let i = 0; i < parts.length; i++) {
+      if (enc.encode(parts[i]).length > 4096) return false;
+    }
+
+    return true;
+  }
+
   try {
     console.log("processing JOB with params...", params);
     const { files, bucket, email, customPrompt, language } = params;
@@ -184,7 +185,7 @@ export async function customRequestJobLogic(
         // console.log(prompt);
 
         const completion = await OpenAI.createChatCompletion({
-          model: "gpt-3.5-turbo",
+          model: params.model,
           messages: [
             {
               role: "user",

@@ -5,6 +5,7 @@ import { summaryJobComplete_SES_Config } from "@/emails/summaryJobComplete";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { sesClient } from "@/clients/ses_client";
 import { generatePromptPrefix } from "./generatePromptPrefix";
+import { HACK_testPromptPrefix } from "./HACK_testPromptPrefix";
 import { sleep } from "@/utils/sleep";
 import CONFIG from "@/config";
 import { SummaryV2Customizations } from "@/types/SummaryV2Customizations";
@@ -50,6 +51,7 @@ export async function summarizeEachFileInChunks(
     // -v-v- THIS IS THE PROMPT PREFIX THAT WILL BE APPLIED TO EACH CHUNK OF EACH FILE -v-v-
     // prettier-ignore
     const promptPrefix = generatePromptPrefix({ format, length, language });
+    // const promptPrefix = HACK_testPromptPrefix()
     p(".*.*. splitting text .*.*."); // for console debugging...
     // -v-v- LOOP OVER THE TEXT-BASED VERSIONS OF EACH FILE -v-v-
     // prettier-ignore

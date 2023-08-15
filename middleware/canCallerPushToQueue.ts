@@ -49,18 +49,6 @@ export default async function canCallerPushToQueue(
   });
 
   console.log("DEBUG canCallerPushToQueue middleware...");
-  console.log("totalCharges < 5", totalCharges < 5);
-  console.log("activeJobs.length < 5", activeJobs.length < 5);
-  console.log("stripeCustomer.default_source", stripeCustomer.default_source);
-  console.log(
-    'req.body.model === "gpt-3.5-turbo"',
-    req.body.model === "gpt-3.5-turbo"
-  );
-  console.log("account?.SummaryCredits", account?.SummaryCredits);
-  console.log("req.body", req.body);
-  console.log("req.body.model", req.body.model);
-  console.log("account?.VectorSearchCredits", account?.VectorSearchCredits);
-  console.log("account?.CustomRequestCredits", account?.CustomRequestCredits);
 
   let ACCOUNT_TOTAL_CHARGES_LIMIT;
   if (process.env.NODE_ENV === "development") {
@@ -68,6 +56,17 @@ export default async function canCallerPushToQueue(
   } else {
     ACCOUNT_TOTAL_CHARGES_LIMIT = 5;
   }
+
+  console.log("activeJobs.length", activeJobs.length);
+  console.log("stripeCustomer.default_source", stripeCustomer.default_source);
+  console.log("req.body", req.body);
+  console.log("account?.SummaryCredits", account?.SummaryCredits);
+  console.log("account?.VectorSearchCredits", account?.VectorSearchCredits);
+  console.log("account?.CustomRequestCredits", account?.CustomRequestCredits);
+  console.log(
+    `totalCharges < ${ACCOUNT_TOTAL_CHARGES_LIMIT}`,
+    totalCharges < ACCOUNT_TOTAL_CHARGES_LIMIT
+  );
 
   if (
     totalCharges < ACCOUNT_TOTAL_CHARGES_LIMIT &&

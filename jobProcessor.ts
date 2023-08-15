@@ -34,12 +34,4 @@ jobQueue.process(async function (job, done) {
   } catch (e: any) {
     done(new Error(e ? e.message : "Something went wrong"));
   }
-
-  // done();
-  // // or give an error if error
-  // done(new Error('error transcoding'));
-  // // or pass it a result
-  // done(null, { framerate: 29.5 /* etc... */ });
-  // // If the job throws an unhandled exception it is also handled correctly
-  // throw new Error('some unexpected error');
 });

@@ -29,9 +29,9 @@ router
   .route("/summarize-v2")
   .post(
     [
+      multerS3Middleware.array("documents"),
       authenticateToken,
       canCallerPushToQueue,
-      multerS3Middleware.array("documents"),
     ],
     summarizeV2
   );

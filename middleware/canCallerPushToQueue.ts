@@ -57,6 +57,8 @@ export default async function canCallerPushToQueue(
     req.body.model === "gpt-3.5-turbo"
   );
   console.log("account?.SummaryCredits", account?.SummaryCredits);
+  console.log("req.body", req.body);
+  console.log("req.body.model", req.body.model);
   console.log("account?.VectorSearchCredits", account?.VectorSearchCredits);
   console.log("account?.CustomRequestCredits", account?.CustomRequestCredits);
 

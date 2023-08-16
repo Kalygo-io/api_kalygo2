@@ -34,7 +34,10 @@ export async function summarizeEachFileOverall(
     const { format, length, language, model } = customizations;
     job.progress(0);
     // -v-v- CHECK IF CALLER HAS AN ACCOUNT -v-v-
-    const account = await guard_beforeRunningSummary(email, model);
+    const { account, customerId } = await guard_beforeRunningSummary(
+      email,
+      model
+    );
     // -v-v- TRACK I/O TOKENS FOR BILLING -v-v-
     const encoder: Tiktoken = encoding_for_model(model);
     let inputTokens = 0;
@@ -206,7 +209,8 @@ export async function summarizeEachFileOverall(
       CONFIG.models[model].pricing,
       account,
       "usd",
-      "SummaryV2"
+      "SummaryV2",
+      customerId
     );
     job.progress(100);
     p("DONE");

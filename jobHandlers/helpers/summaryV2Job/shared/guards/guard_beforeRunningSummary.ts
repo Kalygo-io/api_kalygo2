@@ -16,11 +16,17 @@ export async function guard_beforeRunningSummary(
     },
   });
   // -v-v- GUARD IF NO ACCOUNT FOUND -v-v-
-  if (!account?.stripeId) {
-    throw new Error("402");
-  }
+  // prettier-ignore
+  const customerSearchResults = await stripe.customers.search({ // FIND EXISTING STRIPE CUSTOMER
+    // @ts-ignore
+    query: `email:\'${email}\'`,
+  });
+  // prettier-ignore
+  if (!customerSearchResults.data[0].id) throw new Error("402");
 
-  const stripeCustomer = await stripe.customers.retrieve(account.stripeId);
+  const stripeCustomer = await stripe.customers.retrieve(
+    customerSearchResults.data[0].id
+  );
   const summaryCredits = account?.SummaryCredits?.amount;
   if (
     (!stripeCustomer.default_source && model === "gpt-4" && summaryCredits) ||
@@ -29,5 +35,8 @@ export async function guard_beforeRunningSummary(
     throw new Error("402");
   }
 
-  return account;
+  return {
+    account,
+    customerId: customerSearchResults.data[0].id,
+  };
 }

@@ -71,7 +71,13 @@ export async function summaryJobLogic(
 
     console.log("account", account);
 
-    if (!account?.stripeId) {
+    // FIND EXISTING STRIPE CUSTOMER
+    const customerSearchResults = await stripe.customers.search({
+      // @ts-ignore
+      query: `email:\'${account.email}\'`,
+    });
+
+    if (!customerSearchResults.data[0].id) {
       done(new Error("402"));
       return;
     }
@@ -108,7 +114,7 @@ export async function summaryJobLogic(
         amount: quote * 100,
         currency: "usd",
         description: `Summarization for ${bucket}/${key}`,
-        customer: account?.stripeId,
+        customer: customerSearchResults.data[0].id,
       });
     }
 

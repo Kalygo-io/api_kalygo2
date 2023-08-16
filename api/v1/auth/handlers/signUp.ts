@@ -8,6 +8,7 @@ import { generateVerifyEmail_SES_Config } from "@emails/verifyEmail";
 import { sesClient } from "@/clients/ses_client";
 import { stripe } from "@/clients/stripe_client";
 import { RoleTypes } from "@prisma/client";
+import config from "@/config";
 
 export async function signUp(req: Request, res: Response, next: NextFunction) {
   try {
@@ -17,15 +18,9 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
       throw new Error("Sign up not supported in staging");
 
     const count = await prisma.account.count();
-    if (count > 400) {
+    if (count > config.limit.maxAccounts) {
       throw new Error("RATE_LIMIT");
     }
-
-    const customer: any = await stripe.customers.create({
-      // @ts-ignore
-      email: email,
-      description: "Kalygo customer",
-    });
 
     // hash password and store in db
     const passwordHash = await argon2.hash(password);
@@ -36,8 +31,12 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
         email,
         passwordHash,
         emailVerificationToken,
-        stripeId: customer.id,
       },
+    });
+
+    let customer: any = await stripe.customers.create({
+      email: email,
+      description: "Kalygo customer",
     });
 
     const role = await prisma.role.create({

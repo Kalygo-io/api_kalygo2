@@ -18,52 +18,52 @@ export async function subscriptionSignUp(
   try {
     res.status(501).send();
     return;
-    console.log("req.body", req.body);
-    const { email, password } = req.body;
-    const count = await prisma.account.count();
-    if (count > config.limit.maxAccounts) {
-      throw new Error("RATE_LIMIT");
-    }
-    const customer: any = await stripe.customers.create({
-      // @ts-ignore
-      email: email,
-      description: "Kalygo customer",
-    });
-    // hash password and store in db
-    const passwordHash = await argon2.hash(password);
-    const emailVerificationToken = v4();
-    const result = await prisma.account.create({
-      data: {
-        email,
-        passwordHash,
-        emailVerificationToken,
-        stripeId: customer.id,
-      },
-    });
-    /* ADD CARD */
-    const addCardStripeResp = await stripe.customers.createSource(customer.id, {
-      source: {
-        object: "card",
-        exp_month: req.body.exp_month,
-        exp_year: req.body.exp_year,
-        number: req.body.card_number,
-        cvc: req.body.cvc,
-      },
-    });
-    console.log("addCardStripeResp", addCardStripeResp);
-    const subscription = await stripe.subscriptions.create({
-      customer: customer.id,
-      items: [{ price: config.stripe.products.kalygoPremiumPlan.price }],
-      trial_period_days: 14, // UNIX timestamp of when first default payment source will be charged
-    });
-    console.log("subscription", subscription); // prod_O5vJPAJqU617nh
-    const emailConfig = generateVerifyEmail_SES_Config(
-      email,
-      `${process.env.FRONTEND_HOSTNAME}/verify-email?email=${email}&email-verification-token=${emailVerificationToken}`,
-      req
-    );
-    await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
-    res.status(200).send();
+    // console.log("req.body", req.body);
+    // const { email, password } = req.body;
+    // const count = await prisma.account.count();
+    // if (count > config.limit.maxAccounts) {
+    //   throw new Error("RATE_LIMIT");
+    // }
+    // const customer: any = await stripe.customers.create({
+    //   // @ts-ignore
+    //   email: email,
+    //   description: "Kalygo customer",
+    // });
+    // // hash password and store in db
+    // const passwordHash = await argon2.hash(password);
+    // const emailVerificationToken = v4();
+    // const result = await prisma.account.create({
+    //   data: {
+    //     email,
+    //     passwordHash,
+    //     emailVerificationToken,
+    //     stripe_Id: customer.id, // HACK
+    //   },
+    // });
+    // /* ADD CARD */
+    // const addCardStripeResp = await stripe.customers.createSource(customer.id, {
+    //   source: {
+    //     object: "card",
+    //     exp_month: req.body.exp_month,
+    //     exp_year: req.body.exp_year,
+    //     number: req.body.card_number,
+    //     cvc: req.body.cvc,
+    //   },
+    // });
+    // console.log("addCardStripeResp", addCardStripeResp);
+    // const subscription = await stripe.subscriptions.create({
+    //   customer: customer.id,
+    //   items: [{ price: config.stripe.products.kalygoPremiumPlan.price }],
+    //   trial_period_days: 14, // UNIX timestamp of when first default payment source will be charged
+    // });
+    // console.log("subscription", subscription); // prod_O5vJPAJqU617nh
+    // const emailConfig = generateVerifyEmail_SES_Config(
+    //   email,
+    //   `${process.env.FRONTEND_HOSTNAME}/verify-email?email=${email}&email-verification-token=${emailVerificationToken}`,
+    //   req
+    // );
+    // await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
+    // res.status(200).send();
   } catch (e) {
     next(e);
   }

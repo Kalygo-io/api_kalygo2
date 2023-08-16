@@ -16,20 +16,25 @@ export async function guard_beforeRunningSearch(
     },
   });
   // -v-v- GUARD IF NO ACCOUNT FOUND -v-v-
-  if (!account?.stripeId) {
-    throw new Error("402");
-  }
-
-  const stripeCustomer = await stripe.customers.retrieve(account.stripeId);
+  // prettier-ignore
+  const customerSearchResults = await stripe.customers.search({ // FIND EXISTING STRIPE CUSTOMER
+    query: `email:\'${email}\'`,
+  });
+  console.log(
+    "customerSearchResults.data[0].id",
+    customerSearchResults.data[0].id
+  );
+  // prettier-ignore
+  if (!customerSearchResults.data[0].id) throw new Error("402"); // GUARD
+  const stripeCustomer = customerSearchResults.data[0];
   const vectorSearchCredits = account?.VectorSearchCredits?.amount;
-  if (
-    (!stripeCustomer.default_source &&
-      model === "text-embedding-ada-002" &&
-      vectorSearchCredits) ||
-    (!stripeCustomer.default_source && !vectorSearchCredits)
-  ) {
+
+  console.log("vectorSearchCredits", vectorSearchCredits);
+
+  if (!stripeCustomer.default_source && !vectorSearchCredits) {
+    // GUARD
+    console.log("guard_beforeRunningSearch.ts");
     throw new Error("402");
   }
-
   return account;
 }

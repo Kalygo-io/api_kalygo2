@@ -16,7 +16,7 @@ export default {
     },
   },
   limit: {
-    maxAccounts: 300,
+    maxAccounts: 400,
   },
   tpmBuffer: 200,
   queue: {

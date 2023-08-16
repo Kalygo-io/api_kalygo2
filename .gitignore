@@ -30,6 +30,7 @@ ecosystem.config.prod.js
 ecosystem.config.staging.js
 
 db_backups
+stripe_data_exports
 
 version.json
 

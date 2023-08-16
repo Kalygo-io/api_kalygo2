@@ -1,8 +1,5 @@
-import { stripe } from "@/clients/stripe_client";
 import prisma from "@/db/prisma_client";
 import { Request, Response, NextFunction } from "express";
-import get from "lodash.get";
-import pick from "lodash.pick";
 
 export async function getLogins(
   req: Request,
@@ -41,21 +38,7 @@ export async function getLogins(
     });
 
     const loginsCount = await prisma.login.count();
-
-    // let subscriptions = {
-    //   data: [],
-    // };
-    // let stripeCustomer;
-    // if (account?.stripeId) {
-    //   subscriptions = await stripe.subscriptions.list({
-    //     customer: account?.stripeId,
-    //   });
-    //   stripeCustomer = await stripe.customers.retrieve(account.stripeId);
-    // }
-
     if (records) {
-      //   console.log("accounts", accounts);
-
       res.status(200).json({
         count: loginsCount,
         logins: records,

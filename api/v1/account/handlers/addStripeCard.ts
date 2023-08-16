@@ -8,40 +8,36 @@ export async function addStripeCard(
   next: NextFunction
 ) {
   try {
-    console.log("GET addStripeCard", req.body);
-
-    const result = await prisma.account.findFirst({
+    console.log("POST addStripeCard", req.body);
+    // Checking that the account exists along with a record in Stripe
+    const account = await prisma.account.findFirst({
       where: {
         // @ts-ignore
         email: req.user.email,
       },
     });
-
-    if (!result?.stripeId) {
+    // GUARD
+    if (!account) {
+      res.status(500).send();
+      return;
+    }
+    const customerSearchResults = await stripe.customers.search({
+      query: `email:\'${account?.email}\'`,
+      limit: 1,
+    });
+    // If no Stripe customer exists create a Stripe account for the customer
+    if (!customerSearchResults.data[0]) {
+      // prettier-ignore
+      console.log("no Stripe customer found with caller's email so creating created new one...");
       /* CREATE STRIPE ID */
-
-      const customer: any = await stripe.customers.create({
-        // @ts-ignore
-        email: req.user.email,
+      const newCustomer: any = await stripe.customers.create({
+        email: account.email,
         description: "Kalygo customer",
       });
-
-      /* PATCH ACCOUNT WITH STRIPE ID */
-
-      await prisma.account.updateMany({
-        where: {
-          // @ts-ignore
-          email: req.user.email,
-        },
-        data: {
-          stripeId: customer.id,
-        },
-      });
-
+      console.log("newCustomer object in Stripe created successfully...");
       /* ADD CARD */
-
       const addCardStripeResp = await stripe.customers.createSource(
-        customer.id,
+        newCustomer.id,
         {
           source: {
             object: "card",
@@ -52,12 +48,12 @@ export async function addStripeCard(
           },
         }
       );
-
-      console.log("addCardStripeResp", addCardStripeResp);
-      res.status(200).send();
+      res.status(200).json(addCardStripeResp);
     } else {
+      // prettier-ignore
+      console.log("Stripe customer with caller's email exists...");
       const addCardStripeResp = await stripe.customers.createSource(
-        result.stripeId,
+        customerSearchResults.data[0].id,
         {
           source: {
             object: "card",
@@ -68,7 +64,6 @@ export async function addStripeCard(
           },
         }
       );
-
       res.status(200).json(addCardStripeResp);
     }
   } catch (e) {

@@ -27,24 +27,35 @@ export async function getAccount(
       },
     });
 
+    const customerSearchResults = await stripe.customers.search({
+      query: `email:\'${account?.email}\'`,
+      limit: 1,
+    });
+
     let subscriptions = {
       data: [],
     };
-    let stripeCustomer;
-    if (account?.stripeId) {
-      subscriptions = await stripe.subscriptions.list({
-        customer: account?.stripeId,
+
+    if (!customerSearchResults.data[0]) {
+      res.status(200).json({
+        ...pick(account, [
+          "email",
+          "firstName",
+          "lastName",
+          "subscriptionPlan",
+        ]),
+        subscriptions: subscriptions,
+        stripeDefaultSource: null,
+        summaryCredits: get(account, "SummaryCredits.amount", 0),
+        vectorSearchCredits: get(account, "VectorSearchCredits.amount", 0),
+        customRequestCredits: get(account, "CustomRequestCredits.amount", 0),
       });
-
-      stripeCustomer = await stripe.customers.retrieve(account.stripeId);
-    }
-
-    if (account) {
+    } else {
       console.log("account", account);
-      console.log(
-        "account VectorSearchCredits",
-        get(account, "VectorSearchCredits.amount", 0)
-      );
+
+      subscriptions = await stripe.subscriptions.list({
+        customer: customerSearchResults.data[0].id,
+      });
 
       res.status(200).json({
         ...pick(account, [
@@ -54,13 +65,11 @@ export async function getAccount(
           "subscriptionPlan",
         ]),
         subscriptions: subscriptions,
-        stripeDefaultSource: stripeCustomer?.default_source,
+        stripeDefaultSource: customerSearchResults.data[0]?.default_source,
         summaryCredits: get(account, "SummaryCredits.amount", 0),
         vectorSearchCredits: get(account, "VectorSearchCredits.amount", 0),
         customRequestCredits: get(account, "CustomRequestCredits.amount", 0),
       });
-    } else {
-      res.status(404).send();
     }
   } catch (e) {
     next(e);

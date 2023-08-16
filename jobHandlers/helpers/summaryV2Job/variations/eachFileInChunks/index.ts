@@ -37,7 +37,10 @@ export async function summarizeEachFileInChunks(
     p("Summarize Each File In Chunks"); // for console debugging...
     const start = Date.now(); // for timing the job
     const { format, length, language, model } = customizations; // extract all the customization requests
-    const account = await guard_beforeRunningSummary(email, model);
+    const { account, customerId } = await guard_beforeRunningSummary(
+      email,
+      model
+    );
     job.progress(0); // reset the job progress to 0% at the start of each job execution
     // -v-v- TRACK I/O TOKENS FOR BILLING -v-v-
     const encoder: Tiktoken = encoding_for_model(model);
@@ -157,7 +160,8 @@ export async function summarizeEachFileInChunks(
       CONFIG.models[model].pricing,
       account,
       "usd",
-      "SummaryV2"
+      "SummaryV2",
+      customerId
     );
     job.progress(100);
     p("DONE");

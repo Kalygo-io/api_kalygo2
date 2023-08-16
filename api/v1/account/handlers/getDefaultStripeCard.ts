@@ -9,7 +9,7 @@ export async function getDefaultStripeCard(
   try {
     console.log("getDefaultCard");
 
-    //   stripe.customers.retrieve(stripe_id, function (err, customer) {
+    //   stripe.customers.retrieve(stripe_id, function (err, customer) { // HACK
     //     if (err) {
     //       return res.status(400).json({
     //         success: false,

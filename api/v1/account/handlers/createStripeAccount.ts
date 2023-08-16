@@ -10,34 +10,37 @@ export async function createStripeAccount(
   try {
     console.log("GET createStripeAccount");
 
-    const result = await prisma.account.findFirst({
-      where: {
-        // @ts-ignore
-        email: req.user.email,
-      },
-    });
+    res.status(501).send();
+    return;
 
-    if (!result?.stripeId) {
-      const customer: any = await stripe.customers.create({
-        // @ts-ignore
-        email: req.user.email,
-        description: "Kalygo customer",
-      });
+    // const result = await prisma.account.findFirst({
+    //   where: {
+    //     // @ts-ignore
+    //     email: req.user.email,
+    //   },
+    // });
 
-      await prisma.account.updateMany({
-        where: {
-          // @ts-ignore
-          email: req.user.email,
-        },
-        data: {
-          stripeId: customer.id,
-        },
-      });
+    // if (!result?.stripe_Id) { // HACK
+    //   const customer: any = await stripe.customers.create({
+    //     // @ts-ignore
+    //     email: req.user.email,
+    //     description: "Kalygo customer",
+    //   });
 
-      res.status(201).send();
-    } else {
-      res.status(200).send();
-    }
+    //   await prisma.account.updateMany({
+    //     where: {
+    //       // @ts-ignore
+    //       email: req.user.email,
+    //     },
+    //     data: {
+    //       stripe_Id: customer.id, // HACK
+    //     },
+    //   });
+
+    //   res.status(201).send();
+    // } else {
+    //   res.status(200).send();
+    // }
   } catch (e) {
     next(e);
   }

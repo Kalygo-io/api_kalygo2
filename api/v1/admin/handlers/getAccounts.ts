@@ -34,20 +34,7 @@ export async function getAccounts(
 
     const accountsCount = await prisma.account.count();
 
-    // let subscriptions = {
-    //   data: [],
-    // };
-    // let stripeCustomer;
-    // if (account?.stripeId) {
-    //   subscriptions = await stripe.subscriptions.list({
-    //     customer: account?.stripeId,
-    //   });
-    //   stripeCustomer = await stripe.customers.retrieve(account.stripeId);
-    // }
-
     if (accounts) {
-      //   console.log("accounts", accounts);
-
       res.status(200).json({
         count: accountsCount,
         accounts: accounts,

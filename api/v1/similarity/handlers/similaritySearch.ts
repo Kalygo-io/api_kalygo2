@@ -100,11 +100,16 @@ export async function similaritySearch(
       });
     } else {
       // TODO - refactor
+      // FIND EXISTING STRIPE CUSTOMER
+      const customerSearchResults = await stripe.customers.search({
+        // @ts-ignore
+        query: `email:\'${req.user.email}\'`,
+      });
       await stripe.charges.create({
         amount: quote * 100,
         currency: "usd",
         description: `Vector Search for ${req.file?.path}`,
-        customer: account?.stripeId,
+        customer: customerSearchResults.data[0].id,
       });
     }
     const query = req.body.query;

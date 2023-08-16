@@ -27,20 +27,29 @@ export async function getAccountPaymentMethods(
       },
     });
 
-    let subscriptions = {
-      data: [],
-    };
+    console.log("account", account?.email);
+    const customerSearchResults = await stripe.customers.search({
+      query: `email:\'${account?.email}\'`,
+      limit: 1,
+    });
 
-    let stripeCustomer = null;
-    if (account?.stripeId) {
+    if (!customerSearchResults.data[0]) {
+      res.status(404).send();
+    } else {
+      let subscriptions = {
+        data: [],
+      };
+
+      let stripeCustomer = null;
+
       subscriptions = await stripe.subscriptions.list({
-        customer: account?.stripeId,
+        customer: customerSearchResults.data[0].id,
       });
 
-      stripeCustomer = await stripe.customers.retrieve(account.stripeId);
-    }
+      stripeCustomer = await stripe.customers.retrieve(
+        customerSearchResults.data[0].id
+      );
 
-    if (account) {
       res.status(200).json({
         ...pick(account, ["email", "subscriptionPlan"]),
         subscriptions: subscriptions,
@@ -49,8 +58,6 @@ export async function getAccountPaymentMethods(
         vectorSearchCredits: get(account, "VectorSearchCredits.amount", 0),
         customRequestCredits: get(account, "CustomRequestCredits.amount", 0),
       });
-    } else {
-      res.status(404).send();
     }
   } catch (e) {
     next(e);

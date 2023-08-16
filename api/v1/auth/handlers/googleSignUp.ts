@@ -24,20 +24,17 @@ export async function googleSignUp(
 
     if (email && emailVerified) {
       // if there is no user in the DB associated with the gmail of google sign in
-      const customer: any = await stripe.customers.create({
-        // @ts-ignore
-        email: email,
-        description: "Kalygo customer",
-      });
       const account = await prisma.account.create({
         data: {
-          email,
-          stripeId: customer.id,
-          // firstName: firstName,
+          email, // firstName: firstName,
           // lastName: lastName,
           isGoogleAccount: true,
           emailVerified: true,
         },
+      });
+      const customer: any = await stripe.customers.create({
+        email: email,
+        description: "Kalygo customer",
       });
       await prisma.role.create({
         data: {

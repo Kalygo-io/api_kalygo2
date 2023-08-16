@@ -57,11 +57,15 @@ export async function customRequestJobLogic(
       },
     });
 
-    if (!account?.stripeId) {
+    // FIND EXISTING STRIPE CUSTOMER
+    const customerSearchResults = await stripe.customers.search({
+      // @ts-ignore
+      query: `email:\'${account.email}\'`,
+    });
+    if (!customerSearchResults.data[0].id) {
       done(new Error("402"));
       return;
     }
-
     const filesToText = [];
     let totalTokenCount = 0;
     let totalApiCost = 0;
@@ -121,7 +125,7 @@ export async function customRequestJobLogic(
         amount: quote * 100,
         currency: "usd",
         description: `Custom Request`,
-        customer: account?.stripeId,
+        customer: customerSearchResults.data[0].id,
       });
     }
 

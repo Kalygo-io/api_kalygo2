@@ -31,12 +31,21 @@ export default async function canCallerPushToQueue(
     (total, charge) => total + charge.amount,
     0
   );
+  // FIND EXISTING STRIPE CUSTOMER
+  const customerSearchResults = await stripe.customers.search({
+    // @ts-ignore
+    query: `email:\'${account.email}\'`,
+  });
   // -v-v- GUARD IF NO ACCOUNT FOUND -v-v-
-  if (!account?.stripeId) {
+  if (!customerSearchResults.data[0].id) {
     throw new Error("402");
+    return;
   }
+
   // -v-v- GUARD IF NO CARD ATTACHED TO STRIPE ACCOUNT FOUND -v-v-
-  const stripeCustomer = await stripe.customers.retrieve(account.stripeId);
+  const stripeCustomer = await stripe.customers.retrieve(
+    customerSearchResults.data[0].id
+  );
   let activeJobs = await jobQueue.getJobs([
     "active",
     "waiting",

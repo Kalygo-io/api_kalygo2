@@ -1,5 +1,4 @@
 import {
-  summarize,
   summarizeV2,
   getSummarizationQuote,
   accountSummaries,
@@ -22,9 +21,6 @@ const router = Router();
 //   .route("/upload")
 //   .post([multerS3Middleware.array("documents", 3)], upload);
 
-router
-  .route("/summarize")
-  .post([authenticateToken, canCallerPushToQueue], summarize);
 router
   .route("/summarize-v2")
   .post(

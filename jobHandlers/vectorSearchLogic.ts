@@ -55,6 +55,17 @@ export async function vectorSearchJobLogic(
 
     console.log("account -> w/ credits info ->", account);
 
+    // FIND EXISTING STRIPE CUSTOMER
+    const customerSearchResults = await stripe.customers.search({
+      // @ts-ignore
+      query: `email:\'${account.email}\'`,
+    });
+
+    if (!customerSearchResults.data[0].id) {
+      done(new Error("402"));
+      return;
+    }
+
     // vvv vvv $0.0004 per 1000 tokens for embeddings with
     // https://platform.openai.com/docs/guides/embeddings/what-are-embeddings
     // const text = fs.readFileSync(`${req.file?.path}`, "utf8");
@@ -92,10 +103,10 @@ export async function vectorSearchJobLogic(
         amount: quote * 100,
         currency: "usd",
         description: `Vector Search for ${bucket}/${key}`,
-        customer: account?.stripeId,
+        customer: customerSearchResults.data[0].id,
       });
     }
-    
+
     try {
       if (account) {
         await prisma.openAiCharges.create({

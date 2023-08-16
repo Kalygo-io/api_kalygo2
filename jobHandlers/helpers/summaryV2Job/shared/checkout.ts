@@ -19,7 +19,8 @@ export async function checkout(
   },
   account: any,
   currency: "usd" = "usd",
-  checkoutDescription: string
+  checkoutDescription: string,
+  stripeCustomerId: string
 ) {
   p("inputTokens", inputTokens);
   p("outputTokens", outputTokens);
@@ -54,7 +55,7 @@ export async function checkout(
         amount: Math.floor(amountToChargeCaller * 100), // '* 100' is because Stripe goes by pennies
         currency,
         description: checkoutDescription,
-        customer: account?.stripeId,
+        customer: stripeCustomerId,
       });
     } catch (e) {
       console.log("retry charging card...");
@@ -64,7 +65,7 @@ export async function checkout(
           amount: Math.floor(amountToChargeCaller * 100), // '* 100' is because Stripe goes by pennies
           currency,
           description: checkoutDescription,
-          customer: account?.stripeId,
+          customer: stripeCustomerId,
         });
       } catch (e) {
         sleep(120000); // linear backoff
@@ -72,7 +73,7 @@ export async function checkout(
           amount: Math.floor(amountToChargeCaller * 100), // '* 100' is because Stripe goes by pennies
           currency,
           description: checkoutDescription,
-          customer: account?.stripeId,
+          customer: stripeCustomerId,
         });
       }
     }

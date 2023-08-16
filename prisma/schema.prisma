@@ -23,7 +23,6 @@ model Account {
   emailVerified          Boolean               @default(false)
   markAsDeleted          Boolean               @default(false)
   isGoogleAccount        Boolean               @default(false)
-  stripeId               String                @default("")
   CustomRequest          CustomRequest[]
   Summaries              Summary[]
   VectorSearches         VectorSearch[]

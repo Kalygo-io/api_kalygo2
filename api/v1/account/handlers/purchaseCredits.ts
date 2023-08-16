@@ -18,6 +18,9 @@ export async function purchaseCredits(
   try {
     console.log("req.body", req.body);
 
+    res.status(501).send();
+    return;
+
     const {
       card: { exp_month, exp_year, card_number, cvc, name },
       credits,

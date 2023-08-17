@@ -24,6 +24,7 @@ export async function getAccount(
         SummaryCredits: true,
         VectorSearchCredits: true,
         CustomRequestCredits: true,
+        UsageCredits: true,
       },
     });
 
@@ -49,6 +50,7 @@ export async function getAccount(
         summaryCredits: get(account, "SummaryCredits.amount", 0),
         vectorSearchCredits: get(account, "VectorSearchCredits.amount", 0),
         customRequestCredits: get(account, "CustomRequestCredits.amount", 0),
+        usageCredits: get(account, "UsageCredits.amount"),
       });
     } else {
       console.log("account", account);
@@ -69,6 +71,7 @@ export async function getAccount(
         summaryCredits: get(account, "SummaryCredits.amount", 0),
         vectorSearchCredits: get(account, "VectorSearchCredits.amount", 0),
         customRequestCredits: get(account, "CustomRequestCredits.amount", 0),
+        usageCredits: get(account, "UsageCredits.amount"),
       });
     }
   } catch (e) {

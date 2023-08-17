@@ -8,8 +8,10 @@ import { changePlan } from "./changePlan";
 import { deleteAccount } from "./deleteAccount";
 import { cancelSubscription } from "./cancelSubscription";
 import { getAccountPaymentMethods } from "./getAccountPaymentMethods";
+import { buyCredits } from "./buyCredits";
 
 export {
+  buyCredits,
   createStripeAccount,
   getAccount,
   deleteAccount,

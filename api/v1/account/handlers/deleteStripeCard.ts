@@ -53,11 +53,11 @@ export async function deleteStripeCard(
         for (let s of get(subscriptions, "data")) {
           await stripe.subscriptions.cancel(s.id);
         }
-        const addCardStripeResp = await stripe.customers.deleteSource(
+        const stripeResp = await stripe.customers.deleteSource(
           customerSearchResults.data[0].id,
           req.body.card_id
         );
-        console.log("addCardStripeResp", addCardStripeResp);
+        console.log("stripeResp", stripeResp);
         res.status(200).send();
       } else {
         res.status(402).send();

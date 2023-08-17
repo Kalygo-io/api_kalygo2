@@ -13,7 +13,7 @@ import {
 
 import { Router } from "express";
 import { authenticateToken } from "@middleware/index";
-import { purchaseCredits } from "./handlers/purchaseCredits";
+import { buyCredits } from "./handlers/buyCredits";
 
 const router = Router();
 
@@ -31,7 +31,7 @@ router
 router
   .route("/cancel-subscription")
   .delete(authenticateToken, cancelSubscription);
-router.route("/purchase-credits").post(authenticateToken, purchaseCredits);
+router.route("/buy-credits").post(authenticateToken, buyCredits);
 router.route("/change-plan").patch(authenticateToken, changePlan);
 router.route("/").patch(authenticateToken, patchAccount);
 router.route("/").get(authenticateToken, getAccount);

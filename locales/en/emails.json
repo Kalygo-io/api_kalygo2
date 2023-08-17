@@ -40,5 +40,12 @@
     "greeting": "Your custom request results have been generated",
     "message": "View results:",
     "ending": ""
+  },
+  "purchasedCredits": {
+    "subject": "Credits were purchased for your account",
+    "message-as-text": "Credits were purchased for your account",
+    "greeting": "{{usage_credits}} credits were purchased for your account",
+    "message": "If this was not you please reach out to support@kalygo.io immediately.",
+    "ending": ""
   }
 }

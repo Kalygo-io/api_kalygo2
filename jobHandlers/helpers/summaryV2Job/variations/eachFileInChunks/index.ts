@@ -17,6 +17,8 @@ import { makeChunksSmaller } from "./makeChunksSmaller";
 import { checkout } from "../../shared/checkout";
 import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
 import { SummaryMode } from "@prisma/client";
+import { guard_beforeCallingModel } from "../../shared/guards/guard_beforeCallingModel";
+import config from "@/config";
 
 const tpmDelay = 60000;
 
@@ -87,6 +89,31 @@ export async function summarizeEachFileInChunks(
       for (let i = 0; i < chunks.length; i++) {
         const prompt = `${promptPrefix} ${chunks[i]}`;
         const promptTokenCount = encoder.encode(prompt).length;
+
+        // *** Deducting cost of INPUT TOKENS from credit balance ***
+        const inputTokenCost =
+          (promptTokenCount /
+            config.models[model].pricing.input.perTokens) *
+          config.models[model].pricing.input.rate;
+        console.log(
+          "Cost of processing INPUT_TOKENS - now deducting from credits balance...",
+          inputTokenCost,
+          account?.UsageCredits?.amount
+        );
+
+        // ***
+        await prisma.usageCredits.update({
+          data: {
+            amount: {
+              decrement: inputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+            },
+          },
+          where: {
+            accountId: account?.id,
+          },
+        });
+        // ***
+
         inputTokens += promptTokenCount; // track input tokens
         tpmAccum += promptTokenCount; // accumulate input tokens
         p(`token length of prompt for chunk ${i}`, promptTokenCount);
@@ -102,6 +129,10 @@ export async function summarizeEachFileInChunks(
         // prettier-ignore
         p(`calling OpenAI to summarize chunk ${i} of file ${originalNameOfFile}...`);
         lastChunkBeforeFailing = i
+
+        // -v-v- GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
+        guard_beforeCallingModel(email, model);
+        
         // -v-v- CALL THE A.I. MODEL -v-v-
         const completion = await generateOpenAiUserChatCompletionWithExponentialBackoff(model, prompt, tpmDelay, `chunk${i}`)
         const completionText: string = completion.data?.choices[0]?.message?.content || "ERROR: No Content"
@@ -110,6 +141,36 @@ export async function summarizeEachFileInChunks(
         // prettier-ignore
         // -v-v- TRACK THE OUTPUT TOKENS -v-v-
         const outputTokenCount = encoder.encode(completionText).length;
+        // *** Deducting cost of OUTPUT_TOKENS from credit balance ***
+        const outputTokenCost =
+          (outputTokenCount / config.models[model].pricing.output.perTokens) *
+          config.models[model].pricing.output.rate;
+        console.log(
+          "Cost of OUTPUT_TOKENS - now deducting from credits balance...",
+          outputTokenCost,
+          account?.UsageCredits?.amount
+        );
+
+        // ***
+        const updatedAccountCreditsAmount = await prisma.usageCredits.update({
+          data: {
+            amount: {
+              decrement: outputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+            },
+          },
+          where: {
+            accountId: account?.id,
+          },
+        });
+        // ***
+
+        if (
+          updatedAccountCreditsAmount.amount <
+          config.models[model].minimumCreditsRequired
+        ) {
+          throw new Error("402");
+        }
+
         outputTokens += outputTokenCount; // track output tokens
         tpmAccum += outputTokenCount; // accumulate output tokens
         // -v-v- STORE THE COMPLETION OF EACH CHUNK OF THE FILE -v-v-

@@ -17,6 +17,8 @@ import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../sh
 import { checkout } from "../../shared/checkout";
 import { breakUpNextChunkForSummaryOfSummaries } from "./breakUpNextChunkForSummaryOfSummaries";
 import { SummaryMode } from "@prisma/client";
+import { guard_beforeCallingModel } from "../../shared/guards/guard_beforeCallingModel";
+import config from "@/config";
 
 const tpmDelay = 60000;
 
@@ -110,6 +112,32 @@ export async function summarizeFilesOverall(
           await sleep(tpmDelay);
           tpmAccum = 0;
         }
+
+        // -v-v- GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
+        guard_beforeCallingModel(email, model);
+        // *** Deducting cost of INPUT TOKENS from credit balance ***
+        const inputTokenCost =
+          (nextPromptTokenCount /
+            config.models[model].pricing.input.perTokens) *
+          config.models[model].pricing.input.rate;
+        console.log(
+          "Cost of INPUT_TOKENS - now deducting from credits balance)",
+          inputTokenCost,
+          account?.UsageCredits?.amount
+        );
+        // ***
+        await prisma.usageCredits.update({
+          data: {
+            amount: {
+              decrement: inputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+            },
+          },
+          where: {
+            accountId: account?.id,
+          },
+        });
+        // *^*^*
+
         // -v-v- CALL THE A.I. MODEL -v-v-
         let completion =
           await generateOpenAiUserChatCompletionWithExponentialBackoff(
@@ -123,6 +151,28 @@ export async function summarizeFilesOverall(
         p(`snippet of last OpenAI completion - '${completionText.slice(0,16)}'`);
         // -v-v- TRACK THE OUTPUT TOKENS -v-v-
         const outputTokenCount = enc.encode(completionText).length;
+        // *** Deducting cost of OUTPUT_TOKENS from credit balance ***
+        const outputTokenCost =
+          (outputTokenCount / config.models[model].pricing.output.perTokens) *
+          config.models[model].pricing.output.rate;
+        console.log(
+          "Cost of OUTPUT_TOKENS - now deducting from credits balance...",
+          outputTokenCost,
+          account?.UsageCredits?.amount
+        );
+        // ***
+        await prisma.usageCredits.update({
+          data: {
+            amount: {
+              decrement: outputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+            },
+          },
+          where: {
+            accountId: account?.id,
+          },
+        });
+        // ***
+
         outputTokens += outputTokenCount; // track output tokens
         tpmAccum += outputTokenCount; // accumulate output tokens
         // -v-v- STORING THE COMPLETION SO IT CAN BE INCORPORATED INTO THE NEXT PROMPT -v-v-
@@ -185,6 +235,7 @@ export async function summarizeFilesOverall(
         length,
         language,
       });
+
       const finalPrompt = generateFinalSummarizationPrompt(
         {
           format,
@@ -195,7 +246,8 @@ export async function summarizeFilesOverall(
         summariesOfEachFile.length
       );
       p("*** snippet of finalPrompt... ***", finalPrompt.slice(0, 16));
-      p("tokens to be sent", enc.encode(finalPrompt).length);
+      const finalPromptTokenCount = enc.encode(finalPrompt).length;
+      p("tokens to be sent", finalPromptTokenCount);
       inputTokens += enc.encode(finalPrompt).length;
       tpmAccum += enc.encode(finalPrompt).length;
       if (tpmAccum > CONFIG.models[model].tpm - CONFIG.tpmBuffer) {
@@ -203,6 +255,32 @@ export async function summarizeFilesOverall(
         await sleep(tpmDelay);
         tpmAccum = 0;
       }
+
+      // -v-v- GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
+      guard_beforeCallingModel(email, model);
+      // *** Deducting cost of INPUT TOKENS from credit balance ***
+      const inputTokenCost =
+        (finalPromptTokenCount / config.models[model].pricing.input.perTokens) *
+        config.models[model].pricing.input.rate;
+      console.log(
+        "Cost of INPUT_TOKENS - now deducting from credits balance)",
+        inputTokenCost,
+        account?.UsageCredits?.amount
+      );
+
+      // ***
+      await prisma.usageCredits.update({
+        data: {
+          amount: {
+            decrement: inputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+          },
+        },
+        where: {
+          accountId: account?.id,
+        },
+      });
+      // ***
+
       // -v-v- CALL THE A.I. MODEL -v-v-
       let completion =
         await generateOpenAiUserChatCompletionWithExponentialBackoff(
@@ -213,6 +291,29 @@ export async function summarizeFilesOverall(
       const completionText =
         completion.data?.choices[0]?.message?.content || "No Content";
       const outputTokenCount = enc.encode(completionText).length;
+
+      // *** Deducting cost of OUTPUT_TOKENS from credit balance ***
+      const outputTokenCost =
+        (outputTokenCount / config.models[model].pricing.output.perTokens) *
+        config.models[model].pricing.output.rate;
+      console.log(
+        "Cost of OUTPUT_TOKENS - now deducting from credits balance...",
+        outputTokenCost,
+        account?.UsageCredits?.amount
+      );
+      // ***
+      await prisma.usageCredits.update({
+        data: {
+          amount: {
+            decrement: outputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+          },
+        },
+        where: {
+          accountId: account?.id,
+        },
+      });
+      // ***
+
       outputTokens += outputTokenCount; // track output tokens
       tpmAccum += outputTokenCount; // accumulate output tokens
       // prettier-ignore

@@ -101,7 +101,22 @@ export async function summarizeEachFileOverall(
         const nextPromptTokenCount = encoder.encode(nextPrompt).length;
         chunksCounter += 1;
         inputTokens += nextPromptTokenCount; // track input tokens
+        tpmAccum += nextPromptTokenCount; // accumulate input tokens
+        // prettier-ignore
+        p(`token length of prompt for next part ${chunksCounter} of file`, nextPromptTokenCount);
+        p("inputTokens", inputTokens);
+        p("outputTokens", outputTokens);
+        p("tpmAccum", tpmAccum);
+        // -v-v- WE NOW HAVE EXCEEDED THE TOKENS / MINUTE LIMIT SO WE PAUSE -v-v-
+        // prettier-ignore
+        if (tpmAccum > CONFIG.models[model].tpm - CONFIG.tpmBuffer) { // tpmBuffer is to control how close to the rate limit you want to get
+          p(`sleeping for ${tpmDelay / 60000} minute(s)`) // for console debugging...
+          await sleep(tpmDelay);
+          tpmAccum = 0;
+        }
 
+        // -v-v- GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
+        guard_beforeCallingModel(email, model);
         // *** Deducting cost of INPUT TOKENS from credit balance ***
         const inputTokenCost =
           (nextPromptTokenCount /
@@ -126,23 +141,6 @@ export async function summarizeEachFileOverall(
         });
         // ***
 
-        tpmAccum += nextPromptTokenCount; // accumulate input tokens
-        // prettier-ignore
-        p(`token length of prompt for next part ${chunksCounter} of file`, nextPromptTokenCount);
-        p("inputTokens", inputTokens);
-        p("outputTokens", outputTokens);
-        p("tpmAccum", tpmAccum);
-        // -v-v- WE NOW HAVE EXCEEDED THE TOKENS / MINUTE LIMIT SO WE PAUSE -v-v-
-        // prettier-ignore
-        if (tpmAccum > CONFIG.models[model].tpm - CONFIG.tpmBuffer) { // tpmBuffer is to control how close to the rate limit you want to get
-          p(`sleeping for ${tpmDelay / 60000} minute(s)`) // for console debugging...
-          await sleep(tpmDelay);
-          tpmAccum = 0;
-        }
-
-        // -v-v- GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
-        guard_beforeCallingModel(email, model);
-
         // -v-v- CALL THE A.I. MODEL -v-v-
         p("call the A.I. model"); // for console debugging...
         let completion =
@@ -166,9 +164,8 @@ export async function summarizeEachFileOverall(
           outputTokenCost,
           account?.UsageCredits?.amount
         );
-
         // ***
-        const updatedAccountCreditsAmount = await prisma.usageCredits.update({
+        await prisma.usageCredits.update({
           data: {
             amount: {
               decrement: outputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
@@ -179,13 +176,6 @@ export async function summarizeEachFileOverall(
           },
         });
         // ***
-
-        if (
-          updatedAccountCreditsAmount.amount <
-          config.models[model].minimumCreditsRequired
-        ) {
-          throw new Error("402");
-        }
 
         outputTokens += outputTokenCount; // track output tokens
         tpmAccum += outputTokenCount; // accumulate output tokens

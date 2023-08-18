@@ -19,6 +19,7 @@ export default async function canCallerPushToQueue(
       SummaryCredits: true,
       VectorSearchCredits: true,
       CustomRequestCredits: true,
+      UsageCredits: true,
     },
   });
   const userOpenAiCharges = await prisma.openAiCharges.findMany({
@@ -43,9 +44,10 @@ export default async function canCallerPushToQueue(
   }
 
   // -v-v- GUARD IF NO CARD ATTACHED TO STRIPE ACCOUNT FOUND -v-v-
-  const stripeCustomer = await stripe.customers.retrieve(
-    customerSearchResults.data[0].id
-  );
+  // const stripeCustomer = await stripe.customers.retrieve(
+  //   customerSearchResults.data[0].id
+  // );
+
   let activeJobs = await jobQueue.getJobs([
     "active",
     "waiting",
@@ -67,11 +69,12 @@ export default async function canCallerPushToQueue(
   }
 
   console.log("activeJobs.length", activeJobs.length);
-  console.log("stripeCustomer.default_source", stripeCustomer.default_source);
+  // console.log("stripeCustomer.default_source", stripeCustomer.default_source);
   console.log("req.body", req.body);
   console.log("account?.SummaryCredits", account?.SummaryCredits);
   console.log("account?.VectorSearchCredits", account?.VectorSearchCredits);
   console.log("account?.CustomRequestCredits", account?.CustomRequestCredits);
+  console.log("account?.UsageCredits", account?.UsageCredits?.amount);
   console.log(
     `totalCharges < ${ACCOUNT_TOTAL_CHARGES_LIMIT}`,
     totalCharges < ACCOUNT_TOTAL_CHARGES_LIMIT
@@ -79,15 +82,13 @@ export default async function canCallerPushToQueue(
 
   if (
     totalCharges < ACCOUNT_TOTAL_CHARGES_LIMIT &&
-    activeJobs.length < 5 &&
-    (stripeCustomer.default_source ||
-      (!stripeCustomer.default_source &&
+    activeJobs.length < 8 &&
+    ((account?.UsageCredits?.amount || 0) > 0 ||
+      ((account?.UsageCredits?.amount || 0) <= 0 &&
         req.body.model === "gpt-3.5-turbo" &&
-        ((account?.SummaryCredits && account?.SummaryCredits?.amount > 0) ||
-          (account?.VectorSearchCredits &&
-            account?.VectorSearchCredits?.amount > 0) ||
-          (account?.CustomRequestCredits &&
-            account?.CustomRequestCredits?.amount > 0))))
+        (account?.SummaryCredits?.amount ||
+          account?.VectorSearchCredits?.amount ||
+          account?.CustomRequestCredits?.amount)))
   ) {
     console.log("CAN push to queue");
     next();

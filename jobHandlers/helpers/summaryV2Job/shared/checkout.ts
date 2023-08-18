@@ -49,34 +49,34 @@ export async function checkout(
       },
     });
   } else {
-    p("charging card via Stripe...");
-    try {
-      await stripe.charges.create({
-        amount: Math.floor(amountToChargeCaller * 100), // '* 100' is because Stripe goes by pennies
-        currency,
-        description: checkoutDescription,
-        customer: stripeCustomerId,
-      });
-    } catch (e) {
-      console.log("retry charging card...");
-      sleep(60000); // linear backoff
-      try {
-        await stripe.charges.create({
-          amount: Math.floor(amountToChargeCaller * 100), // '* 100' is because Stripe goes by pennies
-          currency,
-          description: checkoutDescription,
-          customer: stripeCustomerId,
-        });
-      } catch (e) {
-        sleep(120000); // linear backoff
-        await stripe.charges.create({
-          amount: Math.floor(amountToChargeCaller * 100), // '* 100' is because Stripe goes by pennies
-          currency,
-          description: checkoutDescription,
-          customer: stripeCustomerId,
-        });
-      }
-    }
+    p("Kalygo is credits-based now so disabling charging card via Stripe...");
+    // try {
+    //   await stripe.charges.create({
+    //     amount: Math.floor(amountToChargeCaller * 100), // '* 100' is because Stripe goes by pennies
+    //     currency,
+    //     description: checkoutDescription,
+    //     customer: stripeCustomerId,
+    //   });
+    // } catch (e) {
+    //   console.log("retry charging card...");
+    //   sleep(60000); // linear backoff
+    //   try {
+    //     await stripe.charges.create({
+    //       amount: Math.floor(amountToChargeCaller * 100), // '* 100' is because Stripe goes by pennies
+    //       currency,
+    //       description: checkoutDescription,
+    //       customer: stripeCustomerId,
+    //     });
+    //   } catch (e) {
+    //     sleep(120000); // linear backoff
+    //     await stripe.charges.create({
+    //       amount: Math.floor(amountToChargeCaller * 100), // '* 100' is because Stripe goes by pennies
+    //       currency,
+    //       description: checkoutDescription,
+    //       customer: stripeCustomerId,
+    //     });
+    //   }
+    // }
   }
 
   await prisma.openAiCharges.create({

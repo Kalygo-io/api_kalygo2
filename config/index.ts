@@ -24,6 +24,7 @@ export default {
   },
   models: {
     "gpt-3.5-turbo": {
+      minimumCreditsRequired: 10,
       context: 4000,
       tpm: 90000,
       rpm: -1, // TODO
@@ -40,6 +41,7 @@ export default {
       },
     },
     "gpt-4": {
+      minimumCreditsRequired: 80,
       context: 8000,
       tpm: 10000,
       rpm: -1, // TODO

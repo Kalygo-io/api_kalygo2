@@ -37,11 +37,12 @@ export async function summarizeEachFileInChunks(
     p("Summarize Each File In Chunks"); // for console debugging...
     const start = Date.now(); // for timing the job
     const { format, length, language, model } = customizations; // extract all the customization requests
+    job.progress(0); // reset the job progress to 0% at the start of each job execution
+    // -v-v- CHECK IF CALLER HAS AN ACCOUNT -v-v-
     const { account, customerId } = await guard_beforeRunningSummary(
       email,
       model
     );
-    job.progress(0); // reset the job progress to 0% at the start of each job execution
     // -v-v- TRACK I/O TOKENS FOR BILLING -v-v-
     const encoder: Tiktoken = encoding_for_model(model);
     let inputTokens = 0;

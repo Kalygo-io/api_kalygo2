@@ -1,37 +1,36 @@
 import { stripe } from "@/clients/stripe_client";
+import config from "@/config";
 import prisma from "@/db/prisma_client";
 
 export async function guard_beforeRunningSummary(
   email: string,
   model: "gpt-3.5-turbo" | "gpt-4"
 ) {
-  // -v-v- CHECK IF CALLER HAS AN ACCOUNT -v-v-
-  const account = await prisma.account.findFirst({
+  let account = await prisma.account.findFirst({
     where: {
       email: email,
       emailVerified: true,
     },
     include: {
       SummaryCredits: true,
+      UsageCredits: true,
     },
   });
-  // -v-v- GUARD IF NO ACCOUNT FOUND -v-v-
+
   // prettier-ignore
   const customerSearchResults = await stripe.customers.search({ // FIND EXISTING STRIPE CUSTOMER
     // @ts-ignore
-    query: `email:\'${email}\'`,
+    query: `email:\'${account.email}\'`,
   });
-  // prettier-ignore
-  if (!customerSearchResults.data[0].id) throw new Error("402");
-
-  const stripeCustomer = await stripe.customers.retrieve(
-    customerSearchResults.data[0].id
-  );
-  const summaryCredits = account?.SummaryCredits?.amount;
   if (
-    (!stripeCustomer.default_source && model === "gpt-4" && summaryCredits) ||
-    (!stripeCustomer.default_source && !summaryCredits)
+    customerSearchResults.data[0].id &&
+    (model === "gpt-3.5-turbo" || model === "gpt-4") &&
+    (account?.UsageCredits?.amount! >
+      config.models[model].minimumCreditsRequired ||
+      (account?.SummaryCredits?.amount! || 0) > 0)
   ) {
+    console.log("passing guard_beforeRunningSummary...");
+  } else {
     throw new Error("402");
   }
 

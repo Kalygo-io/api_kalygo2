@@ -16,6 +16,8 @@ import { guard_beforeRunningSummary } from "../../shared/guards/guard_beforeRunn
 import { checkout } from "../../shared/checkout";
 import { breakUpNextChunk } from "./breakUpNextChunk";
 import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
+import config from "@/config";
+import { guard_beforeCallingModel } from "../../shared/guards/guard_beforeCallingModel";
 
 const tpmDelay = 60000;
 
@@ -99,6 +101,31 @@ export async function summarizeEachFileOverall(
         const nextPromptTokenCount = encoder.encode(nextPrompt).length;
         chunksCounter += 1;
         inputTokens += nextPromptTokenCount; // track input tokens
+
+        // *** Deducting cost of INPUT TOKENS from credit balance ***
+        const inputTokenCost =
+          (nextPromptTokenCount /
+            config.models[model].pricing.input.perTokens) *
+          config.models[model].pricing.input.rate;
+        console.log(
+          "Cost of INPUT_TOKENS - now deducting from credits balance)",
+          inputTokenCost,
+          account?.UsageCredits?.amount
+        );
+
+        // ***
+        await prisma.usageCredits.update({
+          data: {
+            amount: {
+              decrement: inputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+            },
+          },
+          where: {
+            accountId: account?.id,
+          },
+        });
+        // ***
+
         tpmAccum += nextPromptTokenCount; // accumulate input tokens
         // prettier-ignore
         p(`token length of prompt for next part ${chunksCounter} of file`, nextPromptTokenCount);
@@ -112,6 +139,10 @@ export async function summarizeEachFileOverall(
           await sleep(tpmDelay);
           tpmAccum = 0;
         }
+
+        // -v-v- GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
+        guard_beforeCallingModel(email, model);
+
         // -v-v- CALL THE A.I. MODEL -v-v-
         p("call the A.I. model"); // for console debugging...
         let completion =
@@ -126,6 +157,36 @@ export async function summarizeEachFileOverall(
         p(`snippet of last OpenAI completion - '${completionText.slice(0,16)}'`);
         // -v-v- TRACK THE OUTPUT TOKENS -v-v-
         const outputTokenCount = encoder.encode(completionText).length;
+        // *** Deducting cost of OUTPUT_TOKENS from credit balance ***
+        const outputTokenCost =
+          (outputTokenCount / config.models[model].pricing.output.perTokens) *
+          config.models[model].pricing.output.rate;
+        console.log(
+          "Cost of OUTPUT_TOKENS - now deducting from credits balance...",
+          outputTokenCost,
+          account?.UsageCredits?.amount
+        );
+
+        // ***
+        const updatedAccountCreditsAmount = await prisma.usageCredits.update({
+          data: {
+            amount: {
+              decrement: outputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+            },
+          },
+          where: {
+            accountId: account?.id,
+          },
+        });
+        // ***
+
+        if (
+          updatedAccountCreditsAmount.amount <
+          config.models[model].minimumCreditsRequired
+        ) {
+          throw new Error("402");
+        }
+
         outputTokens += outputTokenCount; // track output tokens
         tpmAccum += outputTokenCount; // accumulate output tokens
         // -v-v- STORING THE COMPLETION SO IT CAN BE INCORPORATED INTO THE NEXT PROMPT -v-v-
@@ -153,22 +214,86 @@ export async function summarizeEachFileOverall(
         const finalBulletPointsPrompt = `${bulletPointsPromptPrefix} ${chunks[0]}`;
         // prettier-ignore
         const finalBulletPointsPromptTokenCount = encoder.encode(finalBulletPointsPrompt).length;
+
+        // *** Deducting cost of INPUT TOKENS from credit balance ***
+        const inputTokenCost =
+          (finalBulletPointsPromptTokenCount /
+            config.models[model].pricing.input.perTokens) *
+          config.models[model].pricing.input.rate;
+        console.log(
+          "Cost of processing INPUT_TOKENS (finalPromptInput) - now deducting from credits balance...",
+          inputTokenCost,
+          account?.UsageCredits?.amount
+        );
+
+        // ***
+        await prisma.usageCredits.update({
+          data: {
+            amount: {
+              decrement: inputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+            },
+          },
+          where: {
+            accountId: account?.id,
+          },
+        });
+        // ***
         // prettier-ignore
         p("finalBulletPointsPromptTokenCount", finalBulletPointsPromptTokenCount); // for console debugging...
+        inputTokens += finalBulletPointsPromptTokenCount;
         tpmAccum += finalBulletPointsPromptTokenCount;
         if (tpmAccum > CONFIG.models[model].tpm - CONFIG.tpmBuffer) {
           // tpmBuffer is to control how close to the rate limit you want to get
           await sleep(tpmDelay);
           tpmAccum = 0;
         }
+
+        // -v-v- GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
+        guard_beforeCallingModel(email, model);
+
+        // CALL THE A.I. MODEL
+        console.log("calling the A.I. model...");
         let completion =
           await generateOpenAiUserChatCompletionWithExponentialBackoff(
             model,
             finalBulletPointsPrompt,
             tpmDelay
           );
+
+        // ***
         const finalBulletPointsCompletionText =
           completion.data?.choices[0]?.message?.content || "ERROR: No Content";
+
+        // -v-v- TRACK THE OUTPUT TOKENS -v-v-
+        const finalBulletPointsCompletionTextTokenCount = encoder.encode(
+          finalBulletPointsCompletionText
+        ).length;
+
+        outputTokens += finalBulletPointsCompletionTextTokenCount;
+        tpmAccum += finalBulletPointsCompletionTextTokenCount;
+        // *** Deducting cost of OUTPUT_TOKENS from credit balance ***
+        const outputTokenCost =
+          (finalBulletPointsCompletionTextTokenCount /
+            config.models[model].pricing.output.perTokens) *
+          config.models[model].pricing.output.rate;
+        console.log(
+          "Cost of OUTPUT_TOKENS - now deducting from credits balance...",
+          outputTokenCost,
+          account?.UsageCredits?.amount
+        );
+
+        await prisma.usageCredits.update({
+          data: {
+            amount: {
+              decrement: outputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+            },
+          },
+          where: {
+            accountId: account?.id,
+          },
+        });
+        // ***
+
         // prettier-ignore
         p("snippet of completion of final bullet points generation request", finalBulletPointsCompletionText.slice(0, 16));
         summaryForFile = finalBulletPointsCompletionText;

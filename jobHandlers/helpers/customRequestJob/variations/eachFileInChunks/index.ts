@@ -14,7 +14,7 @@ import { guard_beforeRunningSummary } from "../../shared/guards/guard_beforeRunn
 import { makeChunksSmaller } from "./makeChunksSmaller";
 import { checkout } from "../../shared/checkout";
 import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
-import { SummaryMode } from "@prisma/client";
+import { ScanningMode, SummaryMode } from "@prisma/client";
 import { guard_beforeCallingModel } from "../../shared/guards/guard_beforeCallingModel";
 import config from "@/config";
 import { CustomRequestCustomizations } from "@/types/CustomRequestCustomizations";
@@ -39,11 +39,6 @@ export async function eachFileInChunks(
     const start = Date.now(); // for timing the job
     const { prompt, model } = customizations; // extract all the customization requests
     job.progress(0); // reset the job progress to 0% at the start of each job execution
-
-    job.progress(100); // reset the job progress to 0% at the start of each job execution
-
-    done(null, { customRequestId: 1 });
-    return;
 
     // -v-v- CHECK IF CALLER HAS AN ACCOUNT -v-v-
     const { account, customerId } = await guard_beforeRunningSummary(
@@ -92,7 +87,9 @@ export async function eachFileInChunks(
       // -v-v- SO WE LOOP OVER THE CHUNKS AND STORE THE SUMMARY OF EACH CHUNK -v-v-
       let summarizedChunksOfCurrentFile: { chunk: number; chunkSummary: string; }[] = [];
       for (let i = 0; i < chunks.length; i++) {
-        const prompt = `${promptPrefix} ${chunks[i]}`;
+        const prompt = `PROMPT: ${promptPrefix}
+
+DATA: ${chunks[i]}`;
         const promptTokenCount = encoder.encode(prompt).length;
 
         // *** Deducting cost of INPUT TOKENS from credit balance ***
@@ -204,6 +201,7 @@ export async function eachFileInChunks(
         files: files,
         bucket: bucket,
         prompt: prompt,
+        mode: ScanningMode.EACH_FILE_IN_CHUNKS,
         completionResponse: summaryForEachFile,
       },
     });
@@ -236,7 +234,7 @@ export async function eachFileInChunks(
       CONFIG.models[model].pricing,
       account,
       "usd",
-      "SummaryV2",
+      "Custom Request",
       customerId
     );
     job.progress(100);
@@ -244,7 +242,7 @@ export async function eachFileInChunks(
     const end = Date.now();
     // prettier-ignore
     console.log(`Execution time: ${end - start} ms or ${(end - start) / 1000 / 60} minutes`);
-    done(null, { summaryV2Id: customRequestRecord.id });
+    done(null, { customRequestId: customRequestRecord.id });
   } catch (e) {
     p("ERROR", (e as Error).toString());
 

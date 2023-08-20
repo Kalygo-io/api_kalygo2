@@ -14,6 +14,7 @@ import { customRequestJobComplete_SES_Config } from "@/emails/customRequestJobCo
 import { ScanningMode } from "@prisma/client";
 import { CustomRequestCustomizations } from "@/types/CustomRequestCustomizations";
 import { eachFileInChunks } from "./helpers/customRequestJob/variations/eachFileInChunks";
+import { eachFileOverall } from "./helpers/customRequestJob/variations/eachFileOverall";
 
 export async function customRequestJobLogic(
   params: {
@@ -60,6 +61,19 @@ export async function customRequestJobLogic(
           done
         );
         break;
+
+      case ScanningMode.EACH_FILE_OVERALL:
+        eachFileOverall(
+          customizations,
+          email,
+          files,
+          bucket,
+          job,
+          locale,
+          done
+        );
+        break;
+
       default:
         throw new Error("TODO");
     }

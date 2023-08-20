@@ -201,7 +201,7 @@ export async function summarizeEachFileOverall(
           },
           summaryForFile
         );
-        const finalBulletPointsPrompt = `${bulletPointsPromptPrefix} ${chunks[0]}`;
+        const finalBulletPointsPrompt = `${bulletPointsPromptPrefix}`;
         // prettier-ignore
         const finalBulletPointsPromptTokenCount = encoder.encode(finalBulletPointsPrompt).length;
 

@@ -89,13 +89,15 @@ model Rating {
 }
 
 model File {
-  id        Int       @id @default(autoincrement())
-  summary   SummaryV2 @relation(fields: [summaryId], references: [id])
-  summaryId Int
-  bucket    String
-  key       String
-  hash      String?
-  createdAt DateTime? @default(now())
+  id              Int            @id @default(autoincrement())
+  summary         SummaryV2      @relation(fields: [summaryId], references: [id])
+  summaryId       Int
+  bucket          String
+  key             String
+  hash            String?
+  createdAt       DateTime?      @default(now())
+  CustomRequest   CustomRequest? @relation(fields: [customRequestId], references: [id])
+  customRequestId Int?
 }
 
 model VectorSearch {
@@ -127,15 +129,17 @@ model SmartSearch {
 }
 
 model CustomRequest {
-  id                 Int       @id @default(autoincrement())
-  requester          Account   @relation(fields: [requesterId], references: [id])
+  id                 Int          @id @default(autoincrement())
+  requester          Account      @relation(fields: [requesterId], references: [id])
   requesterId        Int
+  Files              File[]
   files              Json
+  mode               ScanningMode @default(PRIOR_TO_TRACKING_MODE)
   bucket             String
   prompt             String
   completionResponse Json
-  createdAt          DateTime? @default(now())
-  updatedAt          DateTime? @updatedAt
+  createdAt          DateTime?    @default(now())
+  updatedAt          DateTime?    @updatedAt
   Rating             Rating[]
 }
 
@@ -218,6 +222,16 @@ enum RoleTypes {
 }
 
 enum SummaryMode {
+  PRIOR_TO_TRACKING_MODE
+  OVERALL
+  EACH_FILE_OVERALL
+  EACH_FILE_IN_CHUNKS
+  EACH_FILE_PER_PAGE
+  EACH_FILE_PER_PAGE_THEN_OVERALL
+  EACH_FILE_OVERLAPPING_CHUNKS
+}
+
+enum ScanningMode {
   PRIOR_TO_TRACKING_MODE
   OVERALL
   EACH_FILE_OVERALL

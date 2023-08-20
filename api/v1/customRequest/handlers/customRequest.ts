@@ -24,7 +24,13 @@ export async function customRequest(
         params: {
           bucket: process.env.S3_DOCUMENTS_BUCKET,
           files: req.files,
-          customPrompt: req.body.customPrompt,
+          customizations: {
+            finalPrompt: req.body.finalPrompt,
+            mode: req.body.mode,
+            model: req.body.model,
+            overallPrompt: req.body.overallPrompt,
+            prompt: req.body.prompt,
+          },
           // @ts-ignore
           email: req.user.email,
           language: language,

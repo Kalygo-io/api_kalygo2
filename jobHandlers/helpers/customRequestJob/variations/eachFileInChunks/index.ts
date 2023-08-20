@@ -18,6 +18,7 @@ import { ScanningMode, SummaryMode } from "@prisma/client";
 import { guard_beforeCallingModel } from "../../shared/guards/guard_beforeCallingModel";
 import config from "@/config";
 import { CustomRequestCustomizations } from "@/types/CustomRequestCustomizations";
+import { customRequestJobComplete_SES_Config } from "@/emails/customRequestJobComplete";
 
 const tpmDelay = 60000;
 
@@ -205,20 +206,10 @@ DATA: ${chunks[i]}`;
         completionResponse: summaryForEachFile,
       },
     });
-    // const summaryV2Record = await prisma.summaryV2.create({
-    //   data: {
-    //     requesterId: account!.id,
-    //     summary: summaryForEachFile,
-    //     model: model,
-    //     mode: SummaryMode.EACH_FILE_IN_CHUNKS,
-    //     language: language,
-    //     format: format,
-    //   },
-    // });
     // -v-v- SEND AN EMAIL NOTIFICATION -v-v-
     p("send email notification...");
     try {
-      const emailConfig = summaryJobComplete_SES_Config(
+      const emailConfig = customRequestJobComplete_SES_Config(
         email,
         `${process.env.FRONTEND_HOSTNAME}/dashboard/custom-request-result?custom-request-id=${customRequestRecord.id}`,
         locale

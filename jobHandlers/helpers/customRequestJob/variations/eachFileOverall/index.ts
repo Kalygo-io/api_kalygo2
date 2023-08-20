@@ -19,6 +19,7 @@ import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../sh
 import config from "@/config";
 import { guard_beforeCallingModel } from "../../shared/guards/guard_beforeCallingModel";
 import { CustomRequestCustomizations } from "@/types/CustomRequestCustomizations";
+import { customRequestJobComplete_SES_Config } from "@/emails/customRequestJobComplete";
 
 const tpmDelay = 60000;
 
@@ -308,7 +309,7 @@ DATA: ${contextForFile}`;
     p("send an email notification...");
     job.progress(95);
     try {
-      const emailConfig = summaryJobComplete_SES_Config(
+      const emailConfig = customRequestJobComplete_SES_Config(
         email,
         `${process.env.FRONTEND_HOSTNAME}/dashboard/custom-request-result?custom-request-id=${customRequestRecord.id}`,
         locale

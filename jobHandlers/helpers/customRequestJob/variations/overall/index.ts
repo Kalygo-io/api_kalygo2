@@ -20,10 +20,11 @@ import { ScanningMode, SummaryMode } from "@prisma/client";
 import { guard_beforeCallingModel } from "../../shared/guards/guard_beforeCallingModel";
 import config from "@/config";
 import { CustomRequestCustomizations } from "@/types/CustomRequestCustomizations";
+import { customRequestJobComplete_SES_Config } from "@/emails/customRequestJobComplete";
 
 const tpmDelay = 60000;
 
-export async function summarizeFilesOverall(
+export async function promptAgainstFilesOverall(
   customizations: CustomRequestCustomizations,
   email: string,
   files: any[],
@@ -345,7 +346,7 @@ CONTEXT OF EACH FILE: ${chunks[0]}`;
     // Send an email
     job.progress(95);
     try {
-      const emailConfig = summaryJobComplete_SES_Config(
+      const emailConfig = customRequestJobComplete_SES_Config(
         email,
         `${process.env.FRONTEND_HOSTNAME}/dashboard/custom-request-result?custom-request-id=${customRequestRecord.id}`,
         locale

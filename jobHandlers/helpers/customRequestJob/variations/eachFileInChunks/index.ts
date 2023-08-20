@@ -1,12 +1,10 @@
 import fs from "fs";
 import prisma from "@/db/prisma_client";
 import { Tiktoken, encoding_for_model } from "@dqbd/tiktoken";
-import { summaryJobComplete_SES_Config } from "@/emails/summaryJobComplete";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { sesClient } from "@/clients/ses_client";
 import { sleep } from "@/utils/sleep";
 import CONFIG from "@/config";
-import { SummaryV2Customizations } from "@/types/SummaryV2Customizations";
 import { convertFilesToTextFormat } from "@/utils/convertFilesToTextFormat";
 import { areChunksValidForModelContext } from "@/utils/areChunksValidForModelContext";
 import { p } from "@/utils/p";
@@ -14,7 +12,7 @@ import { guard_beforeRunningSummary } from "../../shared/guards/guard_beforeRunn
 import { makeChunksSmaller } from "./makeChunksSmaller";
 import { checkout } from "../../shared/checkout";
 import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
-import { ScanningMode, SummaryMode } from "@prisma/client";
+import { ScanningMode } from "@prisma/client";
 import { guard_beforeCallingModel } from "../../shared/guards/guard_beforeCallingModel";
 import config from "@/config";
 import { CustomRequestCustomizations } from "@/types/CustomRequestCustomizations";

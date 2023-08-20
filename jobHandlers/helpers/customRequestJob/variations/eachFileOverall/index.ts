@@ -1,14 +1,10 @@
 import prisma from "@/db/prisma_client";
 import { Tiktoken, encoding_for_model } from "@dqbd/tiktoken";
-import { summaryJobComplete_SES_Config } from "@/emails/summaryJobComplete";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { sesClient } from "@/clients/ses_client";
-import { ScanningMode, SummaryMode } from "@prisma/client";
-// import { generateBulletPointsPromptPrefix } from "./generateBulletPointsPromptPrefix";
-// import { generatePromptPrefix } from "./generatePromptPrefix";
+import { ScanningMode } from "@prisma/client";
 import { sleep } from "@/utils/sleep";
 import CONFIG from "@/config";
-import { SummaryV2Customizations } from "@/types/SummaryV2Customizations";
 import { p } from "@/utils/p";
 import { convertFilesToTextFormat } from "@/utils/convertFilesToTextFormat";
 import { isChunkValidForModelContext } from "@/utils/isChunkValidForModelContext";

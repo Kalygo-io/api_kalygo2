@@ -135,6 +135,7 @@ model CustomRequest {
   Files              File[]
   files              Json
   mode               ScanningMode @default(PRIOR_TO_TRACKING_MODE)
+  model              String?
   bucket             String
   prompt             String
   completionResponse Json

@@ -15,6 +15,7 @@ import { ScanningMode } from "@prisma/client";
 import { CustomRequestCustomizations } from "@/types/CustomRequestCustomizations";
 import { eachFileInChunks } from "./helpers/customRequestJob/variations/eachFileInChunks";
 import { eachFileOverall } from "./helpers/customRequestJob/variations/eachFileOverall";
+import { summarizeFilesOverall } from "./helpers/customRequestJob/variations/overall";
 
 export async function customRequestJobLogic(
   params: {
@@ -64,6 +65,18 @@ export async function customRequestJobLogic(
 
       case ScanningMode.EACH_FILE_OVERALL:
         eachFileOverall(
+          customizations,
+          email,
+          files,
+          bucket,
+          job,
+          locale,
+          done
+        );
+        break;
+
+      case ScanningMode.OVERALL:
+        summarizeFilesOverall(
           customizations,
           email,
           files,

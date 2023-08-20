@@ -76,11 +76,13 @@ export async function eachFileOverall(
         p("processing next chunk of the file..."); // for console debugging...
         // -v-v- THIS IS THE PROMPT PREFIX THAT WILL BE APPLIED TO EACH CHUNK OF EACH FILE. -v-v-
         // -v-v- IT WILL INCLUDE THE COMPLETION OF PREVIOUSLY PROCESSED CHUNKS IN ORDER TO HELP REFINE AN OVERALL COMPLETION. -v-v-
-        let promptPrefix = `${
-          contextForFile && `PREVIOUS CONTEXT: ${contextForFile}`
-        }
+        let promptPrefix = contextForFile
+          ? `${contextForFile && `PREVIOUS CONTEXT: ${contextForFile}`}
         
 PROMPT: ${prompt}
+
+DATA:`
+          : `PROMPT: ${prompt}
 
 DATA:`;
 

@@ -8,7 +8,7 @@ import CONFIG from "@/config";
 import { convertFilesToTextFormat } from "@/utils/convertFilesToTextFormat";
 import { areChunksValidForModelContext } from "@/utils/areChunksValidForModelContext";
 import { p } from "@/utils/p";
-import { guard_beforeRunningSummary } from "../../shared/guards/guard_beforeRunningSummary";
+import { guard_beforeRunningCustomRequest } from "../../shared/guards/guard_beforeRunningCustomRequest";
 import { makeChunksSmaller } from "./makeChunksSmaller";
 import { checkout } from "../../shared/checkout";
 import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
@@ -40,7 +40,7 @@ export async function eachFileInChunks(
     job.progress(0); // reset the job progress to 0% at the start of each job execution
 
     // -v-v- CHECK IF CALLER HAS AN ACCOUNT -v-v-
-    const { account, customerId } = await guard_beforeRunningSummary(
+    const { account, customerId } = await guard_beforeRunningCustomRequest(
       email,
       model
     );
@@ -201,6 +201,7 @@ DATA: ${chunks[i]}`;
         bucket: bucket,
         prompt: prompt,
         mode: ScanningMode.EACH_FILE_IN_CHUNKS,
+        model: model,
         completionResponse: summaryForEachFile,
       },
     });

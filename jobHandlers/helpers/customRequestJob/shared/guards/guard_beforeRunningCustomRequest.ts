@@ -2,7 +2,7 @@ import { stripe } from "@/clients/stripe_client";
 import config from "@/config";
 import prisma from "@/db/prisma_client";
 
-export async function guard_beforeRunningSummary(
+export async function guard_beforeRunningCustomRequest(
   email: string,
   model: "gpt-3.5-turbo" | "gpt-4"
 ) {
@@ -29,7 +29,7 @@ export async function guard_beforeRunningSummary(
       config.models[model].minimumCreditsRequired ||
       (account?.SummaryCredits?.amount! || 0) > 0)
   ) {
-    console.log("passing guard_beforeRunningSummary...");
+    console.log("passing guard_beforeRunningCustomRequest...");
   } else {
     throw new Error("402");
   }

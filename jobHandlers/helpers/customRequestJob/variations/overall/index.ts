@@ -6,7 +6,7 @@ import { sleep } from "@/utils/sleep";
 import CONFIG from "@/config";
 import { p } from "@/utils/p";
 import { convertFilesToTextFormat } from "@/utils/convertFilesToTextFormat";
-import { guard_beforeRunningSummary } from "../../shared/guards/guard_beforeRunningSummary";
+import { guard_beforeRunningCustomRequest } from "../../shared/guards/guard_beforeRunningCustomRequest";
 import { isChunkValidForModelContext } from "@/utils/isChunkValidForModelContext";
 import { breakUpNextChunk } from "./breakUpNextChunk";
 import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
@@ -36,7 +36,7 @@ export async function promptAgainstFilesOverall(
     const { model, prompt, overallPrompt } = customizations;
     job.progress(0);
     // -v-v- CHECK IF CALLER HAS AN ACCOUNT -v-v-
-    const { account, customerId } = await guard_beforeRunningSummary(
+    const { account, customerId } = await guard_beforeRunningCustomRequest(
       email,
       model
     );
@@ -333,6 +333,7 @@ CONTEXT OF EACH FILE: ${chunks[0]}`;
         completionResponse: finalOverallPromptOutputs,
         mode: ScanningMode.OVERALL,
         prompt: prompt,
+        model: model,
         files: files,
         bucket: bucket,
       },

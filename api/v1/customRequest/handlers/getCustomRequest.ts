@@ -25,6 +25,9 @@ export async function getCustomRequest(
         requesterId: account?.id,
         id: parseInt(req.params.id),
       },
+      include: {
+        Rating: true,
+      },
     });
 
     console.log("account", account);

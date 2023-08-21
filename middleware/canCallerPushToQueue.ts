@@ -39,7 +39,7 @@ export default async function canCallerPushToQueue(
   });
   // -v-v- GUARD IF NO ACCOUNT FOUND -v-v-
   if (!customerSearchResults.data[0].id) {
-    throw new Error("402");
+    res.status(402).send();
     return;
   }
 
@@ -80,9 +80,13 @@ export default async function canCallerPushToQueue(
     totalCharges < ACCOUNT_TOTAL_CHARGES_LIMIT
   );
 
+  if (activeJobs.length > 8) {
+    res.status(429).send();
+    return;
+  }
+
   if (
     totalCharges < ACCOUNT_TOTAL_CHARGES_LIMIT &&
-    activeJobs.length < 8 &&
     ((account?.UsageCredits?.amount || 0) > 0 ||
       ((account?.UsageCredits?.amount || 0) <= 0 &&
         req.body.model === "gpt-3.5-turbo" &&

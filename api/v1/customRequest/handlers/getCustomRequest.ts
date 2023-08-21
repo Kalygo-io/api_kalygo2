@@ -26,7 +26,7 @@ export async function getCustomRequest(
         id: parseInt(req.params.id),
       },
       include: {
-        Rating: true,
+        Ratings: true,
       },
     });
 

@@ -39,10 +39,6 @@ export async function rateCustomRequest(
       return;
     }
 
-    // console.log("account", account);
-
-    debugger;
-
     const ratingRecord = await prisma.rating.findFirst({
       where: {
         accountId: account!.id,
@@ -65,7 +61,7 @@ export async function rateCustomRequest(
         data: {
           accountId: account!.id,
           customRequestId: Number.parseInt(customRequestId),
-          ratingType: "SummaryV2",
+          ratingType: "CustomRequest",
           rating,
           ratingMax,
         },

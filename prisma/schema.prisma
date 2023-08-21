@@ -125,7 +125,7 @@ model SmartSearch {
   results       Json
   createdAt     DateTime? @default(now())
   updatedAt     DateTime? @updatedAt
-  Rating        Rating[]
+  Ratings       Rating[]
 }
 
 model CustomRequest {
@@ -141,7 +141,7 @@ model CustomRequest {
   completionResponse Json
   createdAt          DateTime?    @default(now())
   updatedAt          DateTime?    @updatedAt
-  Rating             Rating[]
+  Ratings            Rating[]
 }
 
 model SummaryCredits {

@@ -9,6 +9,7 @@ import {
   deleteAccount,
   cancelSubscription,
   getAccountPaymentMethods,
+  getPurchaseHistory,
 } from "./handlers";
 
 import { Router } from "express";
@@ -27,6 +28,10 @@ router.route("/get-stripe-cards").get(authenticateToken, getStripeCards);
 router
   .route("/get-account-payment-methods")
   .get(authenticateToken, getAccountPaymentMethods);
+
+router
+  .route("/get-purchase-history")
+  .get(authenticateToken, getPurchaseHistory);
 
 router
   .route("/cancel-subscription")

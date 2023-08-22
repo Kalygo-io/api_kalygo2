@@ -8,6 +8,7 @@ import { changePlan } from "./changePlan";
 import { deleteAccount } from "./deleteAccount";
 import { cancelSubscription } from "./cancelSubscription";
 import { getAccountPaymentMethods } from "./getAccountPaymentMethods";
+import { getPurchaseHistory } from "./getPurchaseHistory";
 import { buyCredits } from "./buyCredits";
 
 export {
@@ -22,4 +23,5 @@ export {
   changePlan,
   cancelSubscription,
   getAccountPaymentMethods,
+  getPurchaseHistory,
 };

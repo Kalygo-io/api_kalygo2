@@ -39,6 +39,7 @@ model Account {
   Ratings                Rating[]
   SmartSearch            SmartSearch[]
   UsageCredits           UsageCredits?
+  AccessGroups           AccessGroup[]
 }
 
 model Summary {
@@ -55,18 +56,19 @@ model Summary {
 }
 
 model SummaryV2 {
-  id          Int         @id @default(autoincrement())
-  requester   Account     @relation(fields: [requesterId], references: [id])
-  requesterId Int
-  Files       File[]
-  Ratings     Rating[]
-  mode        SummaryMode @default(PRIOR_TO_TRACKING_MODE)
-  summary     Json
-  model       String
-  format      String
-  language    String
-  createdAt   DateTime?   @default(now())
-  updatedAt   DateTime?   @updatedAt
+  id           Int           @id @default(autoincrement())
+  requester    Account       @relation(fields: [requesterId], references: [id])
+  requesterId  Int
+  Files        File[]
+  Ratings      Rating[]
+  mode         SummaryMode   @default(PRIOR_TO_TRACKING_MODE)
+  summary      Json
+  model        String
+  format       String
+  language     String
+  createdAt    DateTime?     @default(now())
+  updatedAt    DateTime?     @updatedAt
+  AccessGroups AccessGroup[]
 }
 
 model Rating {
@@ -98,6 +100,7 @@ model File {
   createdAt       DateTime?      @default(now())
   CustomRequest   CustomRequest? @relation(fields: [customRequestId], references: [id])
   customRequestId Int?
+  AccessGroups    AccessGroup[]
 }
 
 model VectorSearch {
@@ -129,19 +132,20 @@ model SmartSearch {
 }
 
 model CustomRequest {
-  id                 Int          @id @default(autoincrement())
-  requester          Account      @relation(fields: [requesterId], references: [id])
+  id                 Int           @id @default(autoincrement())
+  requester          Account       @relation(fields: [requesterId], references: [id])
   requesterId        Int
   Files              File[]
   files              Json
-  mode               ScanningMode @default(PRIOR_TO_TRACKING_MODE)
+  mode               ScanningMode  @default(PRIOR_TO_TRACKING_MODE)
   model              String?
   bucket             String
   prompt             String
   completionResponse Json
-  createdAt          DateTime?    @default(now())
-  updatedAt          DateTime?    @updatedAt
+  createdAt          DateTime?     @default(now())
+  updatedAt          DateTime?     @updatedAt
   Ratings            Rating[]
+  AccessGroups       AccessGroup[]
 }
 
 model SummaryCredits {
@@ -207,6 +211,17 @@ model Orgs {
   name      String
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
+}
+
+model AccessGroup {
+  id             Int             @id @default(autoincrement())
+  name           String
+  createdAt      DateTime?       @default(now())
+  updatedAt      DateTime?       @updatedAt
+  members        Account[]
+  files          File[]
+  summaries      SummaryV2[]
+  customRequests CustomRequest[]
 }
 
 enum SubscriptionPlan {

@@ -10,6 +10,7 @@ import {
   cancelSubscription,
   getAccountPaymentMethods,
   getPurchaseHistory,
+  getAccessGroups,
 } from "./handlers";
 
 import { Router } from "express";
@@ -32,6 +33,8 @@ router
 router
   .route("/get-purchase-history")
   .get(authenticateToken, getPurchaseHistory);
+
+router.route("/get-access-groups").get(authenticateToken, getAccessGroups);
 
 router
   .route("/cancel-subscription")

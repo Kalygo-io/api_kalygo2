@@ -29,7 +29,11 @@ export async function getAccountWithAccessGroups(
       },
     });
 
+    console.log("AccessGroups", get(account, "AccessGroups", []));
+
     if (get(account, "AccessGroups", []).find((value) => value.id === 1)) {
+      console.log("Public AccessGroup exists");
+
       res.status(200).json({
         ...pick(account, [
           "email",
@@ -45,6 +49,8 @@ export async function getAccountWithAccessGroups(
         accessGroups: get(account, "AccessGroups"),
       });
     } else {
+      console.log("Public AccessGroup does NOT exist");
+
       await prisma.accountsAndAccessGroups.create({
         data: {
           accountId: account?.id!,

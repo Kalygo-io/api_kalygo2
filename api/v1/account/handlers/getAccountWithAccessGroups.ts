@@ -25,7 +25,11 @@ export async function getAccountWithAccessGroups(
         VectorSearchCredits: true,
         CustomRequestCredits: true,
         UsageCredits: true,
-        AccountsAndAccessGroups: true,
+        AccountsAndAccessGroups: {
+          include: {
+            accessGroup: true,
+          },
+        },
       },
     });
 

@@ -33,14 +33,6 @@ export async function getAccountWithAccessGroups(
       },
     });
 
-    console.log(
-      "AccountsAndAccessGroups",
-      get(account, "AccountsAndAccessGroups", [])
-    );
-    console.log("* Account *", account);
-
-    console.log("--- --- ---");
-
     // const accountsAndAccessGroups =
     //   await prisma.accountsAndAccessGroups.findMany({});
     // console.log("accountsAndAccessGroups", accountsAndAccessGroups);

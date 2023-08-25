@@ -331,6 +331,7 @@ export async function summarizeFilesOverall(
         requesterId: account!.id,
         summary: summaryOfSummaries,
         mode: SummaryMode.OVERALL,
+        title: filesToText.map((f) => f.originalName).join(" "),
         model: model,
         language: language,
         format: format,

@@ -64,6 +64,7 @@ model SummaryV2 {
   Ratings                  Rating[]
   mode                     SummaryMode                @default(PRIOR_TO_TRACKING_MODE)
   summary                  Json
+  title                    String                     @default("")
   model                    String
   format                   String
   language                 String

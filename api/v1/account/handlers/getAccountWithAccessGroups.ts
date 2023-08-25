@@ -71,6 +71,8 @@ export async function getAccountWithAccessGroups(
       });
     }
   } catch (e) {
+    console.log("ERROR in getPublicSummaryV2", e);
+
     next(e);
   }
 }

@@ -7,3 +7,7 @@ curl -X POST https://hooks.zapier.com/hooks/catch/13166575/3dzuxn1/
 curl -X POST http://localhost:3000/api/v1/mailing/join
    -H "Content-Type: application/json"
    -d '{"email": "thaddadavis@gmail.com", "name": "tad"}' 
+
+   ## TIPS
+
+   - need to seed db with the "Public" access group with id 1 ie: `npx prisma db seed`

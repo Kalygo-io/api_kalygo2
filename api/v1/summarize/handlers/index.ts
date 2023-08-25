@@ -5,6 +5,8 @@ import { getSummariesV2 } from "./getSummariesV2";
 import { getSummary } from "./getSummary";
 import { getSummaryV2 } from "./getSummaryV2";
 import { rateSummaryV2 } from "./rateSummaryV2";
+import { addToAccessGroup } from "./addToAccessGroup";
+import { removeFromAccessGroup } from "./removeFromAccessGroup";
 
 export {
   summarizeV2,
@@ -14,4 +16,6 @@ export {
   getSummary,
   getSummaryV2,
   rateSummaryV2,
+  addToAccessGroup,
+  removeFromAccessGroup,
 };

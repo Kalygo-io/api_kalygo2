@@ -57,19 +57,19 @@ model Summary {
 }
 
 model SummaryV2 {
-  id           Int           @id @default(autoincrement())
-  requester    Account       @relation(fields: [requesterId], references: [id])
-  requesterId  Int
-  Files        File[]
-  Ratings      Rating[]
-  mode         SummaryMode   @default(PRIOR_TO_TRACKING_MODE)
-  summary      Json
-  model        String
-  format       String
-  language     String
-  createdAt    DateTime?     @default(now())
-  updatedAt    DateTime?     @updatedAt
-  AccessGroups AccessGroup[]
+  id                       Int                        @id @default(autoincrement())
+  requester                Account                    @relation(fields: [requesterId], references: [id])
+  requesterId              Int
+  Files                    File[]
+  Ratings                  Rating[]
+  mode                     SummaryMode                @default(PRIOR_TO_TRACKING_MODE)
+  summary                  Json
+  model                    String
+  format                   String
+  language                 String
+  createdAt                DateTime?                  @default(now())
+  updatedAt                DateTime?                  @updatedAt
+  SummariesAndAccessGroups SummariesAndAccessGroups[]
 }
 
 model Rating {
@@ -225,17 +225,29 @@ model AccountsAndAccessGroups {
   @@id([accessGroupId, accountId])
 }
 
+model SummariesAndAccessGroups {
+  summary       SummaryV2   @relation(fields: [summaryId], references: [id])
+  summaryId     Int // relation scalar field (used in the `@relation` attribute above)
+  accessGroup   AccessGroup @relation(fields: [accessGroupId], references: [id])
+  accessGroupId Int // relation scalar field (used in the `@relation` attribute above)
+  createdAt     DateTime    @default(now())
+  createdBy     String
+
+  @@id([summaryId, accessGroupId])
+}
+
 model AccessGroup {
-  id             Int                       @id @default(autoincrement())
-  name           String
-  createdBy      Account                   @relation(fields: [createdById], references: [id])
-  createdById    Int
-  createdAt      DateTime?                 @default(now())
-  updatedAt      DateTime?                 @updatedAt
-  members        AccountsAndAccessGroups[]
-  files          File[]
-  summaries      SummaryV2[]
-  customRequests CustomRequest[]
+  id                       Int                        @id @default(autoincrement())
+  name                     String
+  createdBy                Account                    @relation(fields: [createdById], references: [id])
+  createdById              Int
+  visible                  Boolean                    @default(false)
+  createdAt                DateTime?                  @default(now())
+  updatedAt                DateTime?                  @updatedAt
+  members                  AccountsAndAccessGroups[]
+  files                    File[]
+  customRequests           CustomRequest[]
+  SummariesAndAccessGroups SummariesAndAccessGroups[]
 
   @@unique([name, createdById])
 }

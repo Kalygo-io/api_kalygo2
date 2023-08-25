@@ -7,6 +7,7 @@ async function main() {
   await prisma.accessGroup.upsert({
     update: {
       name: "Public",
+      visible: true,
     },
     where: {
       id: 1,

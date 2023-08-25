@@ -205,14 +205,21 @@ export async function summarizeEachFileInChunks(
         mode: SummaryMode.EACH_FILE_IN_CHUNKS,
         language: language,
         format: format,
-        AccessGroups: {
-          create: [
-            {
-              createdById: account?.id!,
-              name: `${v4()}`,
-            },
-          ],
-        },
+      },
+    });
+
+    const accessGroup = await prisma.accessGroup.create({
+      data: {
+        name: `summaryV2_${summaryV2Record.id}`,
+        createdById: account?.id!,
+      },
+    });
+
+    await prisma.summariesAndAccessGroups.create({
+      data: {
+        accessGroupId: accessGroup.id,
+        summaryId: summaryV2Record.id,
+        createdBy: account?.email!,
       },
     });
 

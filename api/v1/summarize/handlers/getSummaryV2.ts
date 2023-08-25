@@ -31,7 +31,11 @@ export async function getSummaryV2(
       },
       include: {
         Ratings: true,
-        AccessGroups: true,
+        SummariesAndAccessGroups: {
+          include: {
+            accessGroup: true,
+          },
+        },
       },
     });
 

@@ -25,20 +25,27 @@ export async function getAccountWithAccessGroups(
         VectorSearchCredits: true,
         CustomRequestCredits: true,
         UsageCredits: true,
-        AccessGroups: true,
+        AccountsAndAccessGroups: true,
       },
     });
 
-    console.log("AccessGroups", get(account, "AccessGroups", []));
-    console.log("AccessGroups", account);
+    console.log(
+      "AccountsAndAccessGroups",
+      get(account, "AccountsAndAccessGroups", [])
+    );
+    console.log("* Account *", account);
 
     console.log("--- --- ---");
 
-    const accountsAndAccessGroups =
-      await prisma.accountsAndAccessGroups.findMany({});
-    console.log("accountsAndAccessGroups", accountsAndAccessGroups);
+    // const accountsAndAccessGroups =
+    //   await prisma.accountsAndAccessGroups.findMany({});
+    // console.log("accountsAndAccessGroups", accountsAndAccessGroups);
 
-    if (get(account, "AccessGroups", []).find((value) => value.id === 1)) {
+    if (
+      get(account, "AccountsAndAccessGroups", []).find(
+        (value: any) => value.id === 1
+      )
+    ) {
       console.log("Public AccessGroup exists");
 
       res.status(200).json({

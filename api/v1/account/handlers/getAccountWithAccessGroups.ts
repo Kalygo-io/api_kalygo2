@@ -43,7 +43,7 @@ export async function getAccountWithAccessGroups(
 
     if (
       get(account, "AccountsAndAccessGroups", []).find(
-        (value: any) => value.id === 1
+        (value: any) => value.accessGroupId === 1
       )
     ) {
       console.log("Public AccessGroup exists");

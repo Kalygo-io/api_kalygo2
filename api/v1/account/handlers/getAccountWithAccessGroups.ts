@@ -30,6 +30,13 @@ export async function getAccountWithAccessGroups(
     });
 
     console.log("AccessGroups", get(account, "AccessGroups", []));
+    console.log("AccessGroups", account);
+
+    console.log("--- --- ---");
+
+    const accountsAndAccessGroups =
+      await prisma.accountsAndAccessGroups.findMany({});
+    console.log("accountsAndAccessGroups", accountsAndAccessGroups);
 
     if (get(account, "AccessGroups", []).find((value) => value.id === 1)) {
       console.log("Public AccessGroup exists");

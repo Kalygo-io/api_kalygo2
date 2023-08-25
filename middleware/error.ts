@@ -15,15 +15,15 @@ function errorMiddleware(
   const message = error.message || "Something went wrong";
   const stack = error.stack || "";
 
-  if (process.env.NODE_ENV === "production") {
-    response.status(status).send();
-  } else {
-    response.status(status).json({
-      status,
-      message,
-      stack,
-    });
-  }
+  // if (process.env.NODE_ENV === "production") {
+  //   response.status(status).send();
+  // } else {
+  response.status(status).json({
+    status,
+    message,
+    stack,
+  });
+  // }
 }
 
 export default errorMiddleware;

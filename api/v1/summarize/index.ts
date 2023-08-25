@@ -4,6 +4,7 @@ import {
   accountSummaries,
   getSummary,
   getSummaryV2,
+  getPublicSummaryV2,
   getSummariesV2,
   rateSummaryV2,
   addToAccessGroup,
@@ -14,6 +15,7 @@ import { Router } from "express";
 
 import { authenticateToken } from "@middleware/index";
 import { multerS3Middleware } from "@middleware/index";
+import { isSummaryPublic } from "@middleware/index";
 import { uploadToDiskMiddleware } from "@/middleware/multer-disk";
 import canCallerPushToQueue from "@/middleware/canCallerPushToQueue";
 
@@ -35,6 +37,9 @@ router.route("/summaries-v2").get([authenticateToken], getSummariesV2);
 
 router.route("/get-summary/:id").get([authenticateToken], getSummary);
 router.route("/get-summary-v2/:id").get([authenticateToken], getSummaryV2);
+router
+  .route("/get-public-summary-v2/:id")
+  .get([isSummaryPublic], getPublicSummaryV2);
 router.route("/rate-summary-v2/:id").post([authenticateToken], rateSummaryV2);
 
 router

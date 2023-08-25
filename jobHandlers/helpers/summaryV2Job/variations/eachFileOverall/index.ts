@@ -129,16 +129,18 @@ export async function summarizeEachFileOverall(
         );
 
         // ***
-        await prisma.usageCredits.update({
-          data: {
-            amount: {
-              decrement: inputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+        if (!account?.SummaryCredits?.amount) {
+          await prisma.usageCredits.update({
+            data: {
+              amount: {
+                decrement: inputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+              },
             },
-          },
-          where: {
-            accountId: account?.id,
-          },
-        });
+            where: {
+              accountId: account?.id,
+            },
+          });
+        }
         // ***
 
         // -v-v- CALL THE A.I. MODEL -v-v-
@@ -165,16 +167,18 @@ export async function summarizeEachFileOverall(
           account?.UsageCredits?.amount
         );
         // ***
-        await prisma.usageCredits.update({
-          data: {
-            amount: {
-              decrement: outputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+        if (!account?.SummaryCredits?.amount) {
+          await prisma.usageCredits.update({
+            data: {
+              amount: {
+                decrement: outputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+              },
             },
-          },
-          where: {
-            accountId: account?.id,
-          },
-        });
+            where: {
+              accountId: account?.id,
+            },
+          });
+        }
         // ***
 
         outputTokens += outputTokenCount; // track output tokens
@@ -217,16 +221,18 @@ export async function summarizeEachFileOverall(
         );
 
         // ***
-        await prisma.usageCredits.update({
-          data: {
-            amount: {
-              decrement: inputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+        if (!account?.SummaryCredits?.amount) {
+          await prisma.usageCredits.update({
+            data: {
+              amount: {
+                decrement: inputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+              },
             },
-          },
-          where: {
-            accountId: account?.id,
-          },
-        });
+            where: {
+              accountId: account?.id,
+            },
+          });
+        }
         // ***
         // prettier-ignore
         p("finalBulletPointsPromptTokenCount", finalBulletPointsPromptTokenCount); // for console debugging...
@@ -272,16 +278,19 @@ export async function summarizeEachFileOverall(
           account?.UsageCredits?.amount
         );
 
-        await prisma.usageCredits.update({
-          data: {
-            amount: {
-              decrement: outputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+        // ***
+        if (!account?.SummaryCredits?.amount) {
+          await prisma.usageCredits.update({
+            data: {
+              amount: {
+                decrement: outputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+              },
             },
-          },
-          where: {
-            accountId: account?.id,
-          },
-        });
+            where: {
+              accountId: account?.id,
+            },
+          });
+        }
         // ***
 
         // prettier-ignore

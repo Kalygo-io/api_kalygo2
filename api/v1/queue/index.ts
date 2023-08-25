@@ -12,7 +12,7 @@ router.route("/clear-queue").post([authenticateToken, isAdmin], clearQueue);
 router.route("/view-queue").get([authenticateToken], viewQueue);
 router
   .route("/remove-job-from-queue")
-  .delete([authenticateToken, isAdmin], removeJobFromQueue);
+  .delete([authenticateToken, isJobCreator], removeJobFromQueue);
 router.route("/retry-job").post([authenticateToken, isJobCreator], retryJob);
 
 export default router;

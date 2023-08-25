@@ -34,3 +34,7 @@ update "Account" set "emailVerificationToken"=null, "emailVerified"=true where i
 ##
 
 DELETE FROM "Account" WHERE id=26;
+
+##
+
+npx prisma db seed

@@ -10,6 +10,7 @@ import { cancelSubscription } from "./cancelSubscription";
 import { getAccountPaymentMethods } from "./getAccountPaymentMethods";
 import { getPurchaseHistory } from "./getPurchaseHistory";
 import { getAccessGroups } from "./getAccessGroups";
+import { getAccountWithAccessGroups } from "./getAccountWithAccessGroups";
 import { buyCredits } from "./buyCredits";
 
 export {
@@ -26,4 +27,5 @@ export {
   getAccountPaymentMethods,
   getPurchaseHistory,
   getAccessGroups,
+  getAccountWithAccessGroups,
 };

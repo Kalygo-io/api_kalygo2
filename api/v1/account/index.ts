@@ -11,6 +11,7 @@ import {
   getAccountPaymentMethods,
   getPurchaseHistory,
   getAccessGroups,
+  getAccountWithAccessGroups,
 } from "./handlers";
 
 import { Router } from "express";
@@ -41,7 +42,10 @@ router
   .delete(authenticateToken, cancelSubscription);
 router.route("/buy-credits").post(authenticateToken, buyCredits);
 router.route("/change-plan").patch(authenticateToken, changePlan);
-router.route("/").patch(authenticateToken, patchAccount);
+router.route("/").get(authenticateToken, getAccount);
+router
+  .route("/get-account-with-access-groups")
+  .get(authenticateToken, getAccountWithAccessGroups);
 router.route("/").get(authenticateToken, getAccount);
 router.route("/").delete(authenticateToken, deleteAccount);
 

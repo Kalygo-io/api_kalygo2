@@ -19,6 +19,7 @@ import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../sh
 import { SummaryMode } from "@prisma/client";
 import { guard_beforeCallingModel } from "../../shared/guards/guard_beforeCallingModel";
 import config from "@/config";
+import { v4 } from "uuid";
 
 const tpmDelay = 60000;
 
@@ -193,6 +194,9 @@ export async function summarizeEachFileInChunks(
     const timeFinalSummaryWasGenerated = Date.now(); // to help provide a tts aka time-to-summary quote
     // prettier-ignore
     console.log(`Execution time: ${timeFinalSummaryWasGenerated - start} ms or ${(timeFinalSummaryWasGenerated - start) / 1000 / 60} minutes`);
+
+    // vvv add Summary to caller's Access Group vvv
+
     const summaryV2Record = await prisma.summaryV2.create({
       data: {
         requesterId: account!.id,
@@ -201,8 +205,19 @@ export async function summarizeEachFileInChunks(
         mode: SummaryMode.EACH_FILE_IN_CHUNKS,
         language: language,
         format: format,
+        AccessGroups: {
+          create: [
+            {
+              createdById: account?.id!,
+              name: `${v4()}`,
+            },
+          ],
+        },
       },
     });
+
+    // ^^^ add Summary to caller's Access Group ^^^
+
     // -v-v- SEND AN EMAIL NOTIFICATION -v-v-
     p("send email notification...");
     try {

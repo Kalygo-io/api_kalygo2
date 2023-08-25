@@ -11,35 +11,36 @@ datasource db {
 }
 
 model Account {
-  id                     Int                   @id @default(autoincrement())
-  email                  String                @unique
-  firstName              String?
-  lastName               String?
-  alias                  String?
-  phone                  String?
-  passwordHash           String?
-  resetPasswordToken     String?
-  emailVerificationToken String?
-  emailVerified          Boolean               @default(false)
-  markAsDeleted          Boolean               @default(false)
-  isGoogleAccount        Boolean               @default(false)
-  CustomRequest          CustomRequest[]
-  Summaries              Summary[]
-  VectorSearches         VectorSearch[]
-  createdAt              DateTime?             @default(now())
-  updatedAt              DateTime?             @updatedAt
-  subscriptionPlan       SubscriptionPlan      @default(FREE)
-  Logins                 Login[]
-  SummaryCredits         SummaryCredits?
-  VectorSearchCredits    VectorSearchCredits?
-  CustomRequestCredits   CustomRequestCredits?
-  OpenAiCharges          OpenAiCharges[]
-  Roles                  Role[]
-  SummaryV2              SummaryV2[]
-  Ratings                Rating[]
-  SmartSearch            SmartSearch[]
-  UsageCredits           UsageCredits?
-  AccessGroups           AccessGroup[]
+  id                      Int                       @id @default(autoincrement())
+  email                   String                    @unique
+  firstName               String?
+  lastName                String?
+  alias                   String?
+  phone                   String?
+  passwordHash            String?
+  resetPasswordToken      String?
+  emailVerificationToken  String?
+  emailVerified           Boolean                   @default(false)
+  markAsDeleted           Boolean                   @default(false)
+  isGoogleAccount         Boolean                   @default(false)
+  CustomRequest           CustomRequest[]
+  Summaries               Summary[]
+  VectorSearches          VectorSearch[]
+  createdAt               DateTime?                 @default(now())
+  updatedAt               DateTime?                 @updatedAt
+  subscriptionPlan        SubscriptionPlan          @default(FREE)
+  Logins                  Login[]
+  SummaryCredits          SummaryCredits?
+  VectorSearchCredits     VectorSearchCredits?
+  CustomRequestCredits    CustomRequestCredits?
+  OpenAiCharges           OpenAiCharges[]
+  Roles                   Role[]
+  SummaryV2               SummaryV2[]
+  Ratings                 Rating[]
+  SmartSearch             SmartSearch[]
+  UsageCredits            UsageCredits?
+  AccountsAndAccessGroups AccountsAndAccessGroups[]
+  AccessGroups            AccessGroup[]
 }
 
 model Summary {
@@ -213,15 +214,30 @@ model Orgs {
   updatedAt DateTime? @updatedAt
 }
 
+model AccountsAndAccessGroups {
+  account       Account     @relation(fields: [accountId], references: [id])
+  accountId     Int // relation scalar field (used in the `@relation` attribute above)
+  accessGroup   AccessGroup @relation(fields: [accessGroupId], references: [id])
+  accessGroupId Int // relation scalar field (used in the `@relation` attribute above)
+  createdAt     DateTime    @default(now())
+  createdBy     String
+
+  @@id([accessGroupId, accountId])
+}
+
 model AccessGroup {
-  id             Int             @id @default(autoincrement())
+  id             Int                       @id @default(autoincrement())
   name           String
-  createdAt      DateTime?       @default(now())
-  updatedAt      DateTime?       @updatedAt
-  members        Account[]
+  createdBy      Account                   @relation(fields: [createdById], references: [id])
+  createdById    Int
+  createdAt      DateTime?                 @default(now())
+  updatedAt      DateTime?                 @updatedAt
+  members        AccountsAndAccessGroups[]
   files          File[]
   summaries      SummaryV2[]
   customRequests CustomRequest[]
+
+  @@unique([name, createdById])
 }
 
 enum SubscriptionPlan {

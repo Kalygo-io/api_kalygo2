@@ -44,6 +44,9 @@
     "@middleware": "./dist/middleware",
     "@config": "./dist/config"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.338.0",
     "@aws-sdk/client-ses": "^3.332.0",

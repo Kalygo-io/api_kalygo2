@@ -21,7 +21,6 @@ export async function getSummaryV2(
     });
 
     console.log("account", account);
-
     console.log("req.params.id", req.params.id);
 
     const summary = await prisma.summaryV2.findFirst({
@@ -32,6 +31,7 @@ export async function getSummaryV2(
       },
       include: {
         Ratings: true,
+        AccessGroups: true,
       },
     });
 

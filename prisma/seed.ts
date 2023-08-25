@@ -15,6 +15,7 @@ async function main() {
     create: {
       name: "public",
       createdById: 1,
+      visible: true,
     },
   });
 

@@ -60,7 +60,7 @@ export async function getAccountWithAccessGroups(
         vectorSearchCredits: get(account, "VectorSearchCredits.amount", 0),
         customRequestCredits: get(account, "CustomRequestCredits.amount", 0),
         usageCredits: get(account, "UsageCredits.amount"),
-        accessGroups: get(account, "AccessGroups"),
+        accessGroups: get(account, "AccountsAndAccessGroups"),
       });
     } else {
       console.log("Public AccessGroup does NOT exist");
@@ -87,7 +87,7 @@ export async function getAccountWithAccessGroups(
         vectorSearchCredits: get(account, "VectorSearchCredits.amount", 0),
         customRequestCredits: get(account, "CustomRequestCredits.amount", 0),
         usageCredits: get(account, "UsageCredits.amount"),
-        accessGroups: get(account, "AccessGroups"),
+        accessGroups: get(account, "AccountsAndAccessGroups"),
       });
     }
   } catch (e) {

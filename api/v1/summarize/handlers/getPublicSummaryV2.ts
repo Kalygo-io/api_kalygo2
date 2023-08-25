@@ -35,6 +35,8 @@ export async function getPublicSummaryV2(
       res.status(404).send();
     }
   } catch (e) {
+    console.log("ERROR in getPublicSummaryV2", e);
+
     next(e);
   }
 }

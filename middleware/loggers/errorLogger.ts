@@ -7,7 +7,7 @@ export const errorLogger = createLogger({
   format: combine(timestamp(), errors({ stack: true }), json()),
   transports: [
     new DailyRotateFile({
-      filename: "logs/application-%DATE%.log",
+      filename: "logs/application-error-%DATE%.log",
       datePattern: "YYYY-MM-DD-HH",
       zippedArchive: true,
       maxSize: "20m",

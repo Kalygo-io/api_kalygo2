@@ -9,6 +9,8 @@ function errorMiddleware(
   response: Response,
   next: NextFunction
 ) {
+  console.log("! error middleware !");
+
   errorLogger.error(error);
 
   const status = error.status || 500;

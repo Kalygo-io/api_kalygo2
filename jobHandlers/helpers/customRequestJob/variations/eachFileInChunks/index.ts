@@ -103,16 +103,18 @@ DATA: ${chunks[i]}`;
         );
 
         // ***
-        await prisma.usageCredits.update({
-          data: {
-            amount: {
-              decrement: inputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+        if (!account?.CustomRequestCredits?.amount) {
+          await prisma.usageCredits.update({
+            data: {
+              amount: {
+                decrement: inputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+              },
             },
-          },
-          where: {
-            accountId: account?.id,
-          },
-        });
+            where: {
+              accountId: account?.id,
+            },
+          });
+        }
         // ***
 
         inputTokens += promptTokenCount; // track input tokens
@@ -153,25 +155,25 @@ DATA: ${chunks[i]}`;
         );
 
         // ***
-        const updatedAccountCreditsAmount = await prisma.usageCredits.update({
-          data: {
-            amount: {
-              decrement: outputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+        if (!account?.CustomRequestCredits?.amount) {
+          const updatedAccountCreditsAmount = await prisma.usageCredits.update({
+            data: {
+              amount: {
+                decrement: outputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+              },
             },
-          },
-          where: {
-            accountId: account?.id,
-          },
-        });
-        // ***
-
-        if (
-          updatedAccountCreditsAmount.amount <
-          config.models[model].minimumCreditsRequired
-        ) {
-          throw new Error("402");
+            where: {
+              accountId: account?.id,
+            },
+          });
+        
+          if (
+            updatedAccountCreditsAmount.amount <
+            config.models[model].minimumCreditsRequired
+          ) {
+            throw new Error("402");
+          }
         }
-
         outputTokens += outputTokenCount; // track output tokens
         tpmAccum += outputTokenCount; // accumulate output tokens
         // -v-v- STORE THE COMPLETION OF EACH CHUNK OF THE FILE -v-v-

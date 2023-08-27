@@ -270,16 +270,18 @@ CONTEXT OF EACH FILE: ${chunks[0]}`;
       );
 
       // ***
-      await prisma.usageCredits.update({
-        data: {
-          amount: {
-            decrement: inputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+      if (!account?.CustomRequestCredits?.amount) {
+        await prisma.usageCredits.update({
+          data: {
+            amount: {
+              decrement: inputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+            },
           },
-        },
-        where: {
-          accountId: account?.id,
-        },
-      });
+          where: {
+            accountId: account?.id,
+          },
+        });
+      }
       // ***
 
       // -v-v- CALL THE A.I. MODEL -v-v-
@@ -303,16 +305,18 @@ CONTEXT OF EACH FILE: ${chunks[0]}`;
         account?.UsageCredits?.amount
       );
       // ***
-      await prisma.usageCredits.update({
-        data: {
-          amount: {
-            decrement: outputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+      if (!account?.CustomRequestCredits?.amount) {
+        await prisma.usageCredits.update({
+          data: {
+            amount: {
+              decrement: outputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+            },
           },
-        },
-        where: {
-          accountId: account?.id,
-        },
-      });
+          where: {
+            accountId: account?.id,
+          },
+        });
+      }
       // ***
 
       outputTokens += outputTokenCount; // track output tokens

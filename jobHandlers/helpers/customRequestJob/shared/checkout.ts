@@ -37,15 +37,15 @@ export async function checkout(
   // prettier-ignore
   amountToChargeCaller = amountToChargeCaller < 0.5 ? 0.5 : amountToChargeCaller; // Stripe has a minimum charge of 50¢ USD
   p("amountToChargeCaller", amountToChargeCaller); // for console debugging
-  const summaryCredits = account?.SummaryCredits?.amount;
-  if (summaryCredits && summaryCredits > 0) {
+  const customRequestCredits = account?.CustomRequestCredits?.amount;
+  if (customRequestCredits && customRequestCredits > 0) {
     p("paid for with free credit...");
-    await prisma.summaryCredits.updateMany({
+    await prisma.customRequestCredits.updateMany({
       where: {
         accountId: account.id,
       },
       data: {
-        amount: summaryCredits - 1,
+        amount: customRequestCredits - 1,
       },
     });
   } else {

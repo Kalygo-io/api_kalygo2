@@ -12,7 +12,7 @@ export async function guard_beforeRunningCustomRequest(
       emailVerified: true,
     },
     include: {
-      SummaryCredits: true,
+      CustomRequestCredits: true,
       UsageCredits: true,
     },
   });
@@ -27,7 +27,7 @@ export async function guard_beforeRunningCustomRequest(
     (model === "gpt-3.5-turbo" || model === "gpt-4") &&
     (account?.UsageCredits?.amount! >
       config.models[model].minimumCreditsRequired ||
-      (account?.SummaryCredits?.amount! || 0) > 0)
+      (account?.CustomRequestCredits?.amount! || 0) > 0)
   ) {
     console.log("passing guard_beforeRunningCustomRequest...");
   } else {

@@ -35,7 +35,27 @@ export async function getAccountPaymentMethods(
     });
 
     if (!customerSearchResults.data[0]) {
-      res.status(404).send();
+      const newStripeCustomer: any = await stripe.customers.create({
+        // @ts-ignore
+        email: req.user.email,
+        description: "Kalygo customer",
+      });
+
+      console.log("newCustomer object in Stripe created successfully...");
+
+      let subscriptions = {
+        data: [],
+      };
+
+      res.status(200).json({
+        ...pick(account, ["email", "subscriptionPlan"]),
+        subscriptions: subscriptions,
+        stripeDefaultSource: newStripeCustomer.default_source,
+        summaryCredits: get(account, "SummaryCredits.amount", 0),
+        vectorSearchCredits: get(account, "VectorSearchCredits.amount", 0),
+        customRequestCredits: get(account, "CustomRequestCredits.amount", 0),
+        usageCredits: get(account, "UsageCredits.amount", 0),
+      });
     } else {
       let subscriptions = {
         data: [],

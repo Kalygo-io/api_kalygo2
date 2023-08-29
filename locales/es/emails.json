@@ -25,6 +25,8 @@
     "message-as-text": "Su resumen ha sido generado",
     "greeting": "Su resumen ha sido generado",
     "message": "Ver resumen:",
+    "view-summary": "View Summary",
+    "email_preview": "Your summary has been generated",
     "ending": ""
   },
   "vectorSearchJobComplete": {
@@ -38,7 +40,9 @@
     "subject": "Your custom request results have been generated",
     "message-as-text": "Your custom request results have been generated",
     "greeting": "Your custom request results have been generated",
+    "email_preview": "Your custom request results have been generated",
     "message": "View results:",
+    "view_custom_request": "View custom request",
     "ending": ""
   }
 }

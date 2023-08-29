@@ -1,11 +1,11 @@
-import en_emailsTranslations from "../locales/en/emails.json";
-import es_emailsTranslations from "../locales/es/emails.json";
-import fr_emailsTranslations from "../locales/fr/emails.json";
-import pt_emailsTranslations from "../locales/pt/emails.json";
+import en_emailsTranslations from "@/locales/en/emails.json";
+import es_emailsTranslations from "@/locales/es/emails.json";
+import fr_emailsTranslations from "@/locales/fr/emails.json";
+import pt_emailsTranslations from "@/locales/pt/emails.json";
 
-export function summaryJobComplete_SES_Config(
+export function customRequestJobComplete_SES_Config(
   email: string,
-  SUMMARY_LINK: string,
+  CUSTOM_REQUEST_LINK: string,
   language: any
 ) {
   let translations;
@@ -36,22 +36,22 @@ export function summaryJobComplete_SES_Config(
     TemplateData: `
       { 
         \"SUBJECT\":\"${
-          translations.summaryJobComplete.subject
+          translations.customRequestJobComplete.subject
           // true
           // req.t("emails:summaryJobComplete.subject")
         }\", 
         \"MESSAGE_AS_TEXT\":\"${
-          translations.summaryJobComplete["message-as-text"]
+          translations.customRequestJobComplete["message-as-text"]
           // true
           // req.t("emails:summaryJobComplete.message-as-text")
         }\",
         \"GREETING\":\"${
-          translations.summaryJobComplete.greeting
+          translations.customRequestJobComplete.greeting
           // true
           // req.t("emails:summaryJobComplete.greeting")
         }\",
         \"MESSAGE\":\"${
-          `${translations.summaryJobComplete.message} ${SUMMARY_LINK}`
+          `${translations.customRequestJobComplete.message} ${CUSTOM_REQUEST_LINK}`
           // true
           // req.t("emails:summaryJobComplete.message", {
           //   summary_link: SUMMARY_LINK,

@@ -4,13 +4,6 @@ import { OpenAI } from "@/clients/openai_client";
 import get from "lodash.get";
 import { s3, GetObjectCommand } from "@/clients/s3_client";
 
-import { encoding_for_model } from "@dqbd/tiktoken";
-import { summaryJobComplete_SES_Config } from "@/emails/summaryJobComplete";
-import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
-import { sesClient } from "@/clients/ses_client";
-import { streamToString } from "@/utils/streamToString";
-import { convertPDFToTxtFile } from "./helpers/customRequestJob/pdf2txt";
-import { customRequestJobComplete_SES_Config } from "@/emails/customRequestJobComplete";
 import { ScanningMode } from "@prisma/client";
 import { CustomRequestCustomizations } from "@/types/CustomRequestCustomizations";
 import { eachFileInChunks } from "./helpers/customRequestJob/variations/eachFileInChunks";

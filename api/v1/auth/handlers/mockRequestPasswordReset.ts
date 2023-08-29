@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { v4 } from "uuid";
-import { generateResetPassword_SES_Config } from "@emails/resetPassword";
+import { generateResetPassword_SES_Config } from "@emails/v1/resetPassword";
 import { sesClient } from "@/clients/ses_client";
 
 export async function mockRequestPasswordReset(

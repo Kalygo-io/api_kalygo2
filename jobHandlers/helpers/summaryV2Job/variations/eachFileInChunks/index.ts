@@ -1,7 +1,7 @@
 import fs from "fs";
 import prisma from "@/db/prisma_client";
 import { Tiktoken, encoding_for_model } from "@dqbd/tiktoken";
-import { summaryJobComplete_SES_Config } from "@/emails/summaryJobComplete";
+import { summaryJobComplete_SES_Config } from "@/emails/v2/summaryJobComplete";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { sesClient } from "@/clients/ses_client";
 import { generatePromptPrefix } from "./generatePromptPrefix";

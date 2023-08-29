@@ -5,12 +5,11 @@ import argon2 from "argon2";
 import { v4 } from "uuid";
 
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
-import { generateVerifyEmail_SES_Config } from "@emails/verifyEmail";
 
 import { sesClient } from "@/clients/ses_client";
 import config from "@/config";
 import { calculateTotal } from "@/config/calculatePricing";
-import { purchasedCreditsEmail_SES_Config } from "@/emails/purchasedCredits";
+import { purchasedCreditsEmail_SES_Config } from "@/emails/v1/purchasedCredits";
 
 export async function buyCredits(
   req: Request,

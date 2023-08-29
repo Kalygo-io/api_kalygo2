@@ -15,7 +15,7 @@ import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../sh
 import config from "@/config";
 import { guard_beforeCallingModel } from "../../shared/guards/guard_beforeCallingModel";
 import { CustomRequestCustomizations } from "@/types/CustomRequestCustomizations";
-import { customRequestJobComplete_SES_Config } from "@/emails/customRequestJobComplete";
+import { customRequestJobComplete_SES_Config } from "@/emails/v2/customRequestJobComplete";
 
 const tpmDelay = 60000;
 

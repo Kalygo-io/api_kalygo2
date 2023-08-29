@@ -1,7 +1,7 @@
-import en_emailsTranslations from "../locales/en/emails.json";
-import es_emailsTranslations from "../locales/es/emails.json";
-import fr_emailsTranslations from "../locales/fr/emails.json";
-import pt_emailsTranslations from "../locales/pt/emails.json";
+import en_emailsTranslations from "@/locales/en/emails.json";
+import es_emailsTranslations from "@/locales/es/emails.json";
+import fr_emailsTranslations from "@/locales/fr/emails.json";
+import pt_emailsTranslations from "@/locales/pt/emails.json";
 
 export function vectorSearchJobComplete_SES_Config(
   email: string,

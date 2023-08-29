@@ -4,7 +4,7 @@ import prisma from "@/db/prisma_client";
 import { chromaClient } from "@/clients/chroma_client";
 import { streamToString } from "@/utils/streamToString";
 import { s3, GetObjectCommand } from "@/clients/s3_client";
-import { vectorSearchJobComplete_SES_Config } from "@/emails/vectorSearchJobComplete";
+import { vectorSearchJobComplete_SES_Config } from "@/emails/v1/vectorSearchJobComplete";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { stripe } from "@/clients/stripe_client";
 import { sesClient } from "@/clients/ses_client";

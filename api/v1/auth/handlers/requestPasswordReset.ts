@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { nanoid } from "nanoid";
 import prisma from "@db/prisma_client";
-import { generateResetPassword_SES_Config } from "@emails/resetPassword";
+import { generateResetPassword_SES_Config } from "@emails/v1/resetPassword";
 import { sesClient } from "@/clients/ses_client";
 
 export async function requestPasswordReset(

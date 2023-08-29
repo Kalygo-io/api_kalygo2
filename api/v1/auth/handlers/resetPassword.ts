@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import prisma from "@db/prisma_client";
 import argon2 from "argon2";
-import { generatePasswordUpdated_SES_Config } from "@emails/passwordUpdated";
+import { generatePasswordUpdated_SES_Config } from "@emails/v1/passwordUpdated";
 import { sesClient } from "@/clients/ses_client";
 
 export async function resetPassword(

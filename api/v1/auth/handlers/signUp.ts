@@ -4,7 +4,7 @@ import argon2 from "argon2";
 import { v4 } from "uuid";
 
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
-import { generateVerifyEmail_SES_Config } from "@emails/verifyEmail";
+import { generateVerifyEmail_SES_Config } from "@emails/v2/verifyEmail";
 import { sesClient } from "@/clients/ses_client";
 import { stripe } from "@/clients/stripe_client";
 import { RoleTypes } from "@prisma/client";

@@ -12,6 +12,7 @@ import admin from "./admin";
 import download from "./download";
 import customRequest from "./customRequest";
 import queue from "./queue";
+import fun from "./fun";
 
 const router = express.Router();
 
@@ -24,6 +25,7 @@ router.use("/admin", admin);
 router.use("/mailingList", mailingList);
 router.use("/account", account);
 router.use("/feedback", feedback);
+router.use("/fun", fun);
 
 router.use(customRequest);
 router.use(download);

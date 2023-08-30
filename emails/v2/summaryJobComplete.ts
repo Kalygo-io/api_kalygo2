@@ -35,17 +35,6 @@ export function summaryJobComplete_SES_Config(
     },
     Source: "Kalygo <noreply@kalygo.io>",
     Template: TEMPLATE,
-    // TemplateData: `
-    //   {
-    //     \"SUBJECT\":\"${translations.summaryJobComplete.subject}\",
-    //     \"MESSAGE_AS_TEXT\":\"${
-    //       translations.summaryJobComplete["message-as-text"]
-    //     }\",
-    //     \"GREETING\":\"${translations.summaryJobComplete.greeting}\",
-    //     \"MESSAGE\":\"${`${translations.summaryJobComplete.message} ${SUMMARY_LINK}`}\",
-    //     \"ENDING\":\"\"
-    //   }
-    // `,
     TemplateData: `{
         \"SUBJECT"\: \"${translations.summaryJobComplete.subject}\",
         \"MESSAGE_AS_TEXT\": \"${translations.summaryJobComplete["message-as-text"]} ${SUMMARY_LINK}\",

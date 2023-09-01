@@ -18,17 +18,45 @@ export async function sendEmail(
   try {
     console.log("POST send-email");
 
-    let locale: string = req?.i18n?.language?.substring(0, 2) || "en";
+    const {
+      recipientEmail,
+      subject,
+      messageAsText,
+      emailPreviewText,
+      logoOnclickUrl,
+      logoImageUrl,
+      greeting,
+      paragraphs,
+      ending,
+      endingSignature,
+    } = req.body;
 
-    // const emailConfig = funStationaryTheme_SES_Config(
-    //   req.body.email,
-    //   "Test",
-    //   "Hello Tad",
-    //   "Message",
-    //   "Ending",
-    //   locale
-    // );
-    // await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
+    // let locale: string = req?.i18n?.language?.substring(0, 2) || "en";
+
+    for (let i = 1; i < 11; i++) {
+      console.log("paragraphs[i]", paragraphs[i]);
+
+      if (!paragraphs[i]) {
+        delete paragraphs[i];
+      }
+    }
+
+    console.log("*** paragraphs ***", paragraphs);
+
+    const emailConfig = funStationaryTheme_SES_Config(
+      // @ts-ignore
+      [recipientEmail],
+      subject,
+      messageAsText,
+      emailPreviewText,
+      logoOnclickUrl,
+      logoImageUrl,
+      greeting,
+      paragraphs,
+      ending,
+      endingSignature
+    );
+    await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
 
     res.status(200).send();
   } catch (e) {

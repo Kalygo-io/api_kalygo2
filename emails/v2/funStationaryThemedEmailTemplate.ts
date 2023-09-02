@@ -23,6 +23,20 @@ export function funStationaryTheme_SES_Config(
       //   ],
       ToAddresses: recipients,
       //   ToAddresses: [
+      //     "Chris Daniels <chris@theshrimpsociety.com>",
+      //     "Aaron Chavez <aaron@argentstrategies.com>",
+      //     "Tad Duval <tad@cmdlabs.io>",
+      //   ],
+      //   ToAddresses: [
+      //     "Ana Caka <ac7601@bard.edu>",
+      //     "joseph.12082@gmail.com",
+      //     "Lauren Seff <laurenseff@gmail.com>",
+      //     "Matt Hughes <matt@matthughes.link>",
+      //     "Sarah Murphy <sarahmurphy005@icloud.com>",
+      //     "team@kalygo.io",
+      //     "tad@cmdlabs.io",
+      //   ],
+      //   ToAddresses: [
       //     "Jesse Hollander <jesse@aiforge.org>",
       //     "Kevin Jackson <kevin@aiforge.org>",
       //     "Miguel Diaz <miguel@aiforge.org>",
@@ -52,6 +66,10 @@ export function funStationaryTheme_SES_Config(
       {
         Name: "BatchId",
         Value: "Kalygo",
+      },
+      {
+        Name: "Campaign",
+        Value: "3_month_Milestone_Organic_Users_Feedback_Request",
       },
     ],
   };

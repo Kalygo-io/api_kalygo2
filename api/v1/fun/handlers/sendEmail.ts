@@ -19,7 +19,7 @@ export async function sendEmail(
     console.log("POST send-email");
 
     const {
-      recipientEmail,
+      recipientEmails,
       subject,
       messageAsText,
       emailPreviewText,
@@ -43,20 +43,22 @@ export async function sendEmail(
 
     console.log("*** paragraphs ***", paragraphs);
 
-    const emailConfig = funStationaryTheme_SES_Config(
-      // @ts-ignore
-      [recipientEmail],
-      subject,
-      messageAsText,
-      emailPreviewText,
-      logoOnclickUrl,
-      logoImageUrl,
-      greeting,
-      paragraphs,
-      ending,
-      endingSignature
-    );
-    await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
+    for (let i = 0; i < recipientEmails.length; i++) {
+      const emailConfig = funStationaryTheme_SES_Config(
+        // @ts-ignore
+        [recipientEmails[i]],
+        subject,
+        messageAsText,
+        emailPreviewText,
+        logoOnclickUrl,
+        logoImageUrl,
+        greeting,
+        paragraphs,
+        ending,
+        endingSignature
+      );
+      await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
+    }
 
     res.status(200).send();
   } catch (e) {

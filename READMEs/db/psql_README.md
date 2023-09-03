@@ -23,3 +23,11 @@ https://linux.how2shout.com/how-to-install-postgresql-14-on-ec2-amazon-linux-2/ 
 ## connecting to database
 
 \c <db_name>
+
+## All accounts that have ran a summary
+
+select distinct "SummaryV2"."requesterId", "Account".email from "SummaryV2", "Account" where "SummaryV2"."requesterId" = "Account"."id";
+
+## All accounts that have ran a custom request
+
+select distinct "CustomRequest"."requesterId", "Account".email from "CustomRequest", "Account" where "CustomRequest"."requesterId" = "Account"."id";

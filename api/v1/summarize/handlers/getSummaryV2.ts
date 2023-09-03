@@ -39,9 +39,6 @@ export async function getSummaryV2(
       },
     });
 
-    console.log("account", account);
-    console.log("summary", summary);
-
     if (summary) {
       res.status(200).json(summary || null);
     } else {

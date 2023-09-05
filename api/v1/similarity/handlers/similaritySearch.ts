@@ -9,7 +9,7 @@ const enc = encoding_for_model("text-embedding-ada-002");
 
 import { stripe } from "@/clients/stripe_client";
 import { OpenAIEmbeddingFunction } from "chromadb";
-import { convertPDFToTxtWithMetadata } from "@/jobHandlers/helpers/customRequestJob/pdf_2_txt_with_metadata";
+import { convertPDFToTextWithMetadata } from "@utils/convertPDFToTextWithMetadata";
 import { guard_beforeRunningSearch } from "./helpers/guard_beforeRunningSearch";
 import { p } from "@/utils/p";
 import { s3, GetObjectCommand } from "@/clients/s3_client";
@@ -52,7 +52,7 @@ export async function similaritySearch(
       let text;
       // @ts-ignore
       let pdfByteArray = await Body?.transformToByteArray();
-      textWithMetadata = await convertPDFToTxtWithMetadata(pdfByteArray);
+      textWithMetadata = await convertPDFToTextWithMetadata(pdfByteArray);
       textConcat = textWithMetadata.reduce(
         (accum: string, val: Record<string, any>) => {
           return accum + val.text;

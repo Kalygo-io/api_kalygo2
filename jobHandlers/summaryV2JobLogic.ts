@@ -3,6 +3,7 @@ import { SummaryMode } from "@prisma/client";
 import { summarizeEachFileOverall } from "@/jobHandlers/helpers/summaryV2Job/variations/eachFileOverall";
 import { summarizeEachFileInChunks } from "@/jobHandlers/helpers/summaryV2Job/variations/eachFileInChunks";
 import { summarizeFilesOverall } from "@/jobHandlers/helpers/summaryV2Job/variations/overall";
+import { summarizeEachFilePerPage } from "@/jobHandlers/helpers/summaryV2Job/variations/eachFilePerPage";
 import { SummaryV2Customizations } from "@/types/SummaryV2Customizations";
 
 export async function summaryV2JobLogic(
@@ -67,6 +68,23 @@ export async function summaryV2JobLogic(
         break;
       case SummaryMode.OVERALL:
         summarizeFilesOverall(
+          {
+            format,
+            length,
+            language,
+            model,
+            mode,
+          },
+          email,
+          files,
+          bucket,
+          job,
+          locale,
+          done
+        );
+        break;
+      case SummaryMode.EACH_FILE_PER_PAGE:
+        summarizeEachFilePerPage(
           {
             format,
             length,

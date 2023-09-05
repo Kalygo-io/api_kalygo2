@@ -1,6 +1,6 @@
 const pdfjs = require("pdfjs-dist/build/pdf.js");
 
-export function convertPDFToTxtFile(file: any): Promise<any> {
+export function convertPDFToText(file: any): Promise<any> {
   return new Promise(async (resolve, reject) => {
     try {
       const CMAP_URL = "pdfjs-dist/cmaps/";

@@ -1,14 +1,9 @@
-import prisma from "@/db/prisma_client";
-import { stripe } from "@/clients/stripe_client";
-import { OpenAI } from "@/clients/openai_client";
-import get from "lodash.get";
-import { s3, GetObjectCommand } from "@/clients/s3_client";
-
 import { ScanningMode } from "@prisma/client";
 import { CustomRequestCustomizations } from "@/types/CustomRequestCustomizations";
 import { eachFileInChunks } from "./helpers/customRequestJob/variations/eachFileInChunks";
 import { eachFileOverall } from "./helpers/customRequestJob/variations/eachFileOverall";
 import { promptAgainstFilesOverall } from "./helpers/customRequestJob/variations/overall";
+import { eachFilePerPage } from "./helpers/customRequestJob/variations/eachFilePerPage";
 
 export async function customRequestJobLogic(
   params: {
@@ -23,17 +18,6 @@ export async function customRequestJobLogic(
   job: any,
   done: (err?: Error | null, result?: any) => void
 ) {
-  // const enc = encoding_for_model(params.model);
-  // function sleep(ms: number) {
-  //   return new Promise((resolve) => setTimeout(resolve, ms));
-  // }
-  // function isPartsValid(parts: string[]): boolean {
-  //   for (let i = 0; i < parts.length; i++) {
-  //     if (enc.encode(parts[i]).length > 4096) return false;
-  //   }
-  //   return true;
-  // }
-
   try {
     console.log("processing JOB with params...", params);
     const { files, bucket, email, customizations, language, locale } = params;
@@ -70,6 +54,18 @@ export async function customRequestJobLogic(
 
       case ScanningMode.OVERALL:
         promptAgainstFilesOverall(
+          customizations,
+          email,
+          files,
+          bucket,
+          job,
+          locale,
+          done
+        );
+        break;
+
+      case ScanningMode.EACH_FILE_PER_PAGE:
+        eachFilePerPage(
           customizations,
           email,
           files,

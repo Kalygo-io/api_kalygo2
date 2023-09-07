@@ -65,7 +65,7 @@ export default async function canCallerPushToQueue(
   if (process.env.NODE_ENV === "development") {
     ACCOUNT_TOTAL_CHARGES_LIMIT = 40;
   } else {
-    ACCOUNT_TOTAL_CHARGES_LIMIT = 5;
+    ACCOUNT_TOTAL_CHARGES_LIMIT = 10;
   }
 
   console.log("activeJobs.length", activeJobs.length);

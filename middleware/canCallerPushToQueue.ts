@@ -80,7 +80,7 @@ export default async function canCallerPushToQueue(
     totalCharges < ACCOUNT_TOTAL_CHARGES_LIMIT
   );
 
-  if (activeJobs.length > 8) {
+  if (activeJobs.length > 10) {
     res.status(429).send();
     return;
   }

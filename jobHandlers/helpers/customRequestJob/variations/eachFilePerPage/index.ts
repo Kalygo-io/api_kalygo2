@@ -28,7 +28,7 @@ export async function eachFilePerPage(
   done: (err?: Error | null | undefined, result?: any) => void
 ) {
   try {
-    p("Summarize Each File Overall"); // for console debugging...
+    p("MODE eachFilePerPage"); // for console debugging...
     const start = Date.now();
     const { model, prompt } = customizations;
     job.progress(0);

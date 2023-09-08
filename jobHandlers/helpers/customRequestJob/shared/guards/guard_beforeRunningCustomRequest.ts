@@ -24,6 +24,27 @@ export async function guard_beforeRunningCustomRequest(
     // @ts-ignore
     query: `email:\'${account.email}\'`,
   });
+
+  console.log(
+    "customerSearchResults.data[0].id",
+    customerSearchResults.data[0].id
+  );
+  console.log("model", model);
+  console.log("account?.UsageCredits?.amount!", account?.UsageCredits?.amount!);
+  console.log(
+    "config.models[model].minimumCreditsRequired",
+    config.models[model].minimumCreditsRequired
+  );
+  console.log(
+    "account?.UsageCredits?.amount! > config.models[model].minimumCreditsRequired",
+    account?.UsageCredits?.amount! > config.models[model].minimumCreditsRequired
+  );
+  console.log("OR");
+  console.log(
+    "(account?.CustomRequestCredits?.amount! || 0) > 0",
+    (account?.CustomRequestCredits?.amount! || 0) > 0
+  );
+
   if (
     customerSearchResults.data[0].id &&
     (model === "gpt-3.5-turbo" || model === "gpt-4") &&

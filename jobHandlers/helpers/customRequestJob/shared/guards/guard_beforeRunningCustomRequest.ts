@@ -6,6 +6,8 @@ export async function guard_beforeRunningCustomRequest(
   email: string,
   model: "gpt-3.5-turbo" | "gpt-4"
 ) {
+  console.log("--- guard_beforeRunningCustomRequest ---");
+
   let account = await prisma.account.findFirst({
     where: {
       email: email,
@@ -31,6 +33,7 @@ export async function guard_beforeRunningCustomRequest(
   ) {
     console.log("passing guard_beforeRunningCustomRequest...");
   } else {
+    console.log("--- guard_beforeRunningCustomRequest THROWING ---");
     throw new Error("402");
   }
 

@@ -5,6 +5,8 @@ export async function guard_beforeCallingModel(
   email: string,
   model: "gpt-3.5-turbo" | "gpt-4"
 ) {
+  console.log("--- guard_beforeCallingModel ---");
+
   let account = await prisma.account.findFirst({
     where: {
       email: email,
@@ -24,6 +26,8 @@ export async function guard_beforeCallingModel(
   ) {
     console.log("passing guard_beforeCallingModel...");
   } else {
+    console.log("--- guard_beforeCallingModel THROWING ---");
+
     throw new Error("402");
   }
 }

@@ -46,7 +46,7 @@ router.route("/").get(authenticateToken, getAccount);
 router
   .route("/get-account-with-access-groups")
   .get(authenticateToken, getAccountWithAccessGroups);
-router.route("/").get(authenticateToken, getAccount);
+router.route("/").patch(authenticateToken, patchAccount);
 router.route("/").delete(authenticateToken, deleteAccount);
 
 export default router;

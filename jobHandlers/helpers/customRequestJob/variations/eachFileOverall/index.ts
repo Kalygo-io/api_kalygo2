@@ -29,7 +29,7 @@ export async function eachFileOverall(
   done: (err?: Error | null | undefined, result?: any) => void
 ) {
   try {
-    p("Summarize Each File Overall"); // for console debugging...
+    p("Each File Overall"); // for console debugging...
     const start = Date.now();
     const { prompt, model, finalPrompt } = customizations;
     job.progress(0);

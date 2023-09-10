@@ -1,4 +1,5 @@
 import { stripe } from "@/clients/stripe_client";
+import config from "@/config";
 import prisma from "@/db/prisma_client";
 
 export async function guard_beforeRunningSearch(
@@ -13,6 +14,7 @@ export async function guard_beforeRunningSearch(
     },
     include: {
       VectorSearchCredits: true,
+      UsageCredits: true,
     },
   });
   // -v-v- GUARD IF NO ACCOUNT FOUND -v-v-
@@ -25,16 +27,20 @@ export async function guard_beforeRunningSearch(
     customerSearchResults.data[0].id
   );
   // prettier-ignore
-  if (!customerSearchResults.data[0].id) throw new Error("402"); // GUARD
-  const stripeCustomer = customerSearchResults.data[0];
-  const vectorSearchCredits = account?.VectorSearchCredits?.amount;
+  const vectorSearchCredits = account?.VectorSearchCredits?.amount || 0;
 
   console.log("vectorSearchCredits", vectorSearchCredits);
 
-  if (!stripeCustomer.default_source && !vectorSearchCredits) {
+  if (
+    customerSearchResults.data[0].id &&
+    (vectorSearchCredits > 0 ||
+      account?.UsageCredits?.amount! >
+        config.models["text-embedding-ada-002"].minimumCreditsRequired)
+  ) {
+    return account;
+  } else {
     // GUARD
     console.log("guard_beforeRunningSearch.ts");
     throw new Error("402");
   }
-  return account;
 }

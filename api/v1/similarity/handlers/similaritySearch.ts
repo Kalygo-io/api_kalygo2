@@ -80,38 +80,6 @@ export async function similaritySearch(
       textConcat = text;
     }
 
-    const tokenCount: number = enc.encode(textConcat).length;
-    const apiCost =
-      (tokenCount / config.models[model].pricing.usage.perTokens) *
-      config.models[model].pricing.usage.rate; // text-embedding-ada-002
-    const markup = config.models[model].pricing.markUp; // 40%
-    const quote = Number.parseFloat(
-      (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2) // Stripe minimum charge is 50¢
-    );
-    const vectorSearchCredits = account?.VectorSearchCredits?.amount;
-    if (account && vectorSearchCredits && vectorSearchCredits > 0) {
-      await prisma.vectorSearchCredits.updateMany({
-        where: {
-          accountId: account.id,
-        },
-        data: {
-          amount: vectorSearchCredits - 1,
-        },
-      });
-    } else {
-      // TODO - refactor
-      // FIND EXISTING STRIPE CUSTOMER
-      const customerSearchResults = await stripe.customers.search({
-        // @ts-ignore
-        query: `email:\'${req.user.email}\'`,
-      });
-      await stripe.charges.create({
-        amount: quote * 100,
-        currency: "usd",
-        description: `Vector Search for ${req.file?.path}`,
-        customer: customerSearchResults.data[0].id,
-      });
-    }
     const query = req.body.query;
     console.log("--- query ---", query);
     // let intResults: any = text.match(/[^\.!\?]+[\.!\?]+/g);
@@ -121,6 +89,7 @@ export async function similaritySearch(
       textChunk: string;
       page: number;
     }[] = [];
+
     for (let i = 0; i < textWithMetadata.length; i++) {
       let pageChunks: any[] = textWithMetadata[i].text.split(/[ ,]+/);
       for (let j = 0; j < pageChunks.length; j++) {
@@ -143,6 +112,7 @@ export async function similaritySearch(
         return i.textChunk;
       }
     );
+
     let metadata = intResults?.map(
       (
         i: {
@@ -157,6 +127,7 @@ export async function similaritySearch(
         };
       }
     );
+
     let ids: any = intResults?.map(
       (
         i: {
@@ -168,6 +139,7 @@ export async function similaritySearch(
         return `id${idx}`;
       }
     );
+
     const shasum = crypto.createHash("sha1");
     shasum.update(textConcat);
     const hashIdOfText = shasum.digest("hex");
@@ -199,6 +171,37 @@ export async function similaritySearch(
     res.status(200).json({
       results: results,
     });
+
+    const tokenCount: number = enc.encode(textConcat).length;
+    const apiCost =
+      (tokenCount / config.models[model].pricing.usage.perTokens) *
+      config.models[model].pricing.usage.rate; // text-embedding-ada-002
+    const markup = config.models[model].pricing.markUp;
+    const quote = Number.parseFloat(
+      (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2) // Stripe minimum charge is 50¢
+    );
+    const vectorSearchCredits = account?.VectorSearchCredits?.amount;
+    if (account && vectorSearchCredits && vectorSearchCredits > 0) {
+      await prisma.vectorSearchCredits.updateMany({
+        where: {
+          accountId: account.id,
+        },
+        data: {
+          amount: vectorSearchCredits - 1,
+        },
+      });
+    } else {
+      await prisma.usageCredits.update({
+        data: {
+          amount: {
+            decrement: apiCost * 100, // * 100 as Usage credits are denominated in pennies
+          },
+        },
+        where: {
+          accountId: account?.id,
+        },
+      });
+    }
   } catch (e) {
     next(e);
   }

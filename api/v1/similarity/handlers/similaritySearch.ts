@@ -172,14 +172,27 @@ export async function similaritySearch(
       results: results,
     });
 
+    // vvv vvv TRACK SEARCHES IN DB vvv vvv
+    await prisma.vectorSearch.create({
+      data: {
+        requesterId: account!.id,
+        filename: file?.originalname,
+        bucket: bucket,
+        bucketKey: "N/A",
+        query: query,
+        results: results,
+      },
+    });
+    //
+
     const tokenCount: number = enc.encode(textConcat).length;
     const apiCost =
       (tokenCount / config.models[model].pricing.usage.perTokens) *
       config.models[model].pricing.usage.rate; // text-embedding-ada-002
     const markup = config.models[model].pricing.markUp;
-    const quote = Number.parseFloat(
-      (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2) // Stripe minimum charge is 50¢
-    );
+    // const quote = Number.parseFloat(
+    //   (apiCost * markup > 0.5 ? apiCost * markup : 0.5).toFixed(2) // Stripe minimum charge is 50¢
+    // );
     const vectorSearchCredits = account?.VectorSearchCredits?.amount;
     if (account && vectorSearchCredits && vectorSearchCredits > 0) {
       await prisma.vectorSearchCredits.updateMany({
@@ -196,7 +209,7 @@ export async function similaritySearch(
       await prisma.usageCredits.update({
         data: {
           amount: {
-            decrement: quote, // * 100 as Usage credits are denominated in pennies
+            decrement: apiCost * markup, // * 100 as Usage credits are denominated in pennies
           },
         },
         where: {

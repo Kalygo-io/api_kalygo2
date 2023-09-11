@@ -63,7 +63,7 @@ export default {
       tpm: 1000000,
       rpm: 3000,
       pricing: {
-        markUp: 1.5,
+        markUp: 1.4,
         usage: {
           rate: 0.0001, // USD
           perTokens: 1000,

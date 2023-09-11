@@ -41,6 +41,7 @@ model Account {
   UsageCredits            UsageCredits?
   AccountsAndAccessGroups AccountsAndAccessGroups[]
   AccessGroups            AccessGroup[]
+  Prompts                 Prompt[]
 }
 
 model Summary {
@@ -86,10 +87,13 @@ model Rating {
   accountId       Int?
   SmartSearch     SmartSearch?   @relation(fields: [smartSearchId], references: [id])
   smartSearchId   Int?
+  Prompt          Prompt?        @relation(fields: [promptId], references: [id])
+  promptId        Int?
 
   @@unique([accountId, smartSearchId])
   @@unique([accountId, summaryV2Id])
   @@unique([accountId, customRequestId])
+  @@unique([accountId, promptId])
 }
 
 model File {
@@ -131,6 +135,17 @@ model SmartSearch {
   createdAt     DateTime? @default(now())
   updatedAt     DateTime? @updatedAt
   Ratings       Rating[]
+}
+
+model Prompt {
+  id                     Int                      @id @default(autoincrement())
+  owner                  Account                  @relation(fields: [ownerId], references: [id])
+  ownerId                Int
+  prompt                 String
+  createdAt              DateTime?                @default(now())
+  updatedAt              DateTime?                @updatedAt
+  Ratings                Rating[]
+  PromptsAndAccessGroups PromptsAndAccessGroups[]
 }
 
 model CustomRequest {
@@ -248,6 +263,17 @@ model CustomRequestsAndAccessGroups {
   @@id([customRequestId, accessGroupId])
 }
 
+model PromptsAndAccessGroups {
+  prompt        Prompt      @relation(fields: [promptId], references: [id])
+  promptId      Int // relation scalar field (used in the `@relation` attribute above)
+  accessGroup   AccessGroup @relation(fields: [accessGroupId], references: [id])
+  accessGroupId Int // relation scalar field (used in the `@relation` attribute above)
+  createdAt     DateTime    @default(now())
+  createdBy     String
+
+  @@id([promptId, accessGroupId])
+}
+
 model AccessGroup {
   id                            Int                             @id @default(autoincrement())
   name                          String
@@ -256,10 +282,11 @@ model AccessGroup {
   visible                       Boolean                         @default(false)
   createdAt                     DateTime?                       @default(now())
   updatedAt                     DateTime?                       @updatedAt
-  members                       AccountsAndAccessGroups[]
   files                         File[]
+  members                       AccountsAndAccessGroups[]
   SummariesAndAccessGroups      SummariesAndAccessGroups[]
   CustomRequestsAndAccessGroups CustomRequestsAndAccessGroups[]
+  PromptsAndAccessGroups        PromptsAndAccessGroups[]
 
   @@unique([name, createdById])
 }

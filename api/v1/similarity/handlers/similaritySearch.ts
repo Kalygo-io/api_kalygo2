@@ -191,10 +191,12 @@ export async function similaritySearch(
         },
       });
     } else {
+      console.log("metering Usage Credits after successful Vector Search");
+
       await prisma.usageCredits.update({
         data: {
           amount: {
-            decrement: apiCost * 100, // * 100 as Usage credits are denominated in pennies
+            decrement: quote, // * 100 as Usage credits are denominated in pennies
           },
         },
         where: {

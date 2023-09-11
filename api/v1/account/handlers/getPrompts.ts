@@ -16,11 +16,14 @@ export async function getPrompts(
         // @ts-ignore
         email: req.user.email,
       },
+      include: {
+        Prompts: true,
+      },
     });
     console.log("account", account?.email);
+    console.log("Prompts", account?.Prompts);
 
-    // res.status(501).send();
-    res.status(200).send();
+    res.status(200).send(account?.Prompts || []);
   } catch (e) {
     next(e);
   }

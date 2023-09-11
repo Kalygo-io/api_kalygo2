@@ -198,7 +198,13 @@ export async function eachFilePerPage(
         bucket: bucket,
       },
     });
-
+    // -v-v- SAVE THE PROMPT TO DB -v-v-
+    const promptRecord = await prisma.prompt.create({
+      data: {
+        ownerId: account!.id,
+        prompt: prompt,
+      },
+    });
     // -v-v- SEND AN EMAIL NOTIFICATION -v-v-
     p("send an email notification...");
     job.progress(95);

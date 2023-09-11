@@ -10,6 +10,7 @@ import { cancelSubscription } from "./cancelSubscription";
 import { getAccountPaymentMethods } from "./getAccountPaymentMethods";
 import { getPurchaseHistory } from "./getPurchaseHistory";
 import { getAccessGroups } from "./getAccessGroups";
+import { getPrompts } from "./getPrompts";
 import { getAccountWithAccessGroups } from "./getAccountWithAccessGroups";
 import { buyCredits } from "./buyCredits";
 
@@ -17,6 +18,7 @@ export {
   buyCredits,
   createStripeAccount,
   getAccount,
+  getPrompts,
   deleteAccount,
   patchAccount,
   addStripeCard,

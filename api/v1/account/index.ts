@@ -12,6 +12,7 @@ import {
   getPurchaseHistory,
   getAccessGroups,
   getAccountWithAccessGroups,
+  getPrompts,
 } from "./handlers";
 
 import { Router } from "express";
@@ -34,6 +35,8 @@ router
 router
   .route("/get-purchase-history")
   .get(authenticateToken, getPurchaseHistory);
+
+router.route("/get-prompts").get(authenticateToken, getPrompts);
 
 router.route("/get-access-groups").get(authenticateToken, getAccessGroups);
 

@@ -217,15 +217,6 @@ DATA:`;
     let overallCompletionPartCounter = 0; // for the final step aka summarizing the summaries
     while (chunks.length > 0) {
       p("outer while...");
-      //   let finalSummarizationPrompt = generateFinalSummarizationPrompt(
-      //     {
-      //       format: "paragraph",
-      //       length: "long",
-      //       language,
-      //     },
-      //     chunks[0], // include the summaries of each file for context when prompting the model to synthesize them all
-      //     summariesOfEachFile.length
-      //   );
       let finalPrompt = `PROMPT: ${overallPrompt}
 
 CONTEXT OF EACH FILE: ${chunks[0]}`;
@@ -340,6 +331,13 @@ CONTEXT OF EACH FILE: ${chunks[0]}`;
         model: model,
         files: files,
         bucket: bucket,
+      },
+    });
+    // -v-v- SAVE THE PROMPT TO DB -v-v-
+    const promptRecord = await prisma.prompt.create({
+      data: {
+        ownerId: account!.id,
+        prompt: prompt,
       },
     });
     // -v-v- SEND AN EMAIL NOTIFICATION -v-v-

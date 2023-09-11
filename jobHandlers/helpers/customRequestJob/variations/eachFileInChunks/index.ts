@@ -191,11 +191,11 @@ DATA: ${chunks[i]}`;
       // prettier-ignore
       summaryForEachFile.push({ file: filesToText[fIndex].originalName, summary: summarizedChunksOfCurrentFile, });
     }
-    // -v-v- SAVE THE FINAL ANSWER TO DB -v-v-
     p("saving completionForEachFile to DB...");
     const timeFinalSummaryWasGenerated = Date.now(); // to help provide a tts aka time-to-summary quote
     // prettier-ignore
     console.log(`Execution time: ${timeFinalSummaryWasGenerated - start} ms or ${(timeFinalSummaryWasGenerated - start) / 1000 / 60} minutes`);
+    // -v-v- SAVE THE FINAL ANSWER TO DB -v-v-
     const customRequestRecord = await prisma.customRequest.create({
       data: {
         requesterId: account!.id,
@@ -205,6 +205,13 @@ DATA: ${chunks[i]}`;
         mode: ScanningMode.EACH_FILE_IN_CHUNKS,
         model: model,
         completionResponse: summaryForEachFile,
+      },
+    });
+    // -v-v- SAVE THE PROMPT TO DB -v-v-
+    const promptRecord = await prisma.prompt.create({
+      data: {
+        ownerId: account!.id,
+        prompt: prompt,
       },
     });
     // -v-v- SEND AN EMAIL NOTIFICATION -v-v-

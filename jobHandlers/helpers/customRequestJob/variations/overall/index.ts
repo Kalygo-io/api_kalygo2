@@ -340,6 +340,16 @@ CONTEXT OF EACH FILE: ${chunks[0]}`;
         prompt: prompt,
       },
     });
+    // -v-v- SAVE THE FINAL PROMPT TO DB -v-v-
+    if (overallPrompt) {
+      // -v-v- SAVE THE PROMPT TO DB -v-v-
+      await prisma.prompt.create({
+        data: {
+          ownerId: account!.id,
+          prompt: overallPrompt,
+        },
+      });
+    }
     // -v-v- SEND AN EMAIL NOTIFICATION -v-v-
     p("send an email notification...");
     // Send an email

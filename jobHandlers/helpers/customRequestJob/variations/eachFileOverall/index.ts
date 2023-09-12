@@ -317,6 +317,16 @@ DATA: ${contextForFile}`;
         prompt: prompt,
       },
     });
+    // -v-v- SAVE THE FINAL PROMPT TO DB -v-v-
+    if (finalPrompt) {
+      // -v-v- SAVE THE PROMPT TO DB -v-v-
+      await prisma.prompt.create({
+        data: {
+          ownerId: account!.id,
+          prompt: finalPrompt,
+        },
+      });
+    }
     // -v-v- SEND AN EMAIL NOTIFICATION -v-v-
     p("send an email notification...");
     job.progress(95);

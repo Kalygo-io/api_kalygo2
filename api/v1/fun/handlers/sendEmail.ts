@@ -21,7 +21,7 @@ export async function sendEmail(
     const {
       recipientEmails,
       subject,
-      messageAsText,
+
       emailPreviewText,
       logoOnclickUrl,
       logoImageUrl,
@@ -32,14 +32,19 @@ export async function sendEmail(
     } = req.body;
 
     // let locale: string = req?.i18n?.language?.substring(0, 2) || "en";
-
+    let messageAsText = `${greeting}\n\n`;
     for (let i = 1; i < 11; i++) {
       console.log("paragraphs[i]", paragraphs[i]);
 
       if (!paragraphs[i]) {
         delete paragraphs[i];
+      } else {
+        messageAsText += `${paragraphs[i]}\n\n`;
       }
     }
+    messageAsText += `${ending}\n${endingSignature}`;
+
+    console.log("messageAsText", messageAsText);
 
     console.log("*** paragraphs ***", paragraphs);
 
@@ -48,7 +53,7 @@ export async function sendEmail(
         // @ts-ignore
         [recipientEmails[i]],
         subject,
-        messageAsText,
+        "messageAsText",
         emailPreviewText,
         logoOnclickUrl,
         logoImageUrl,

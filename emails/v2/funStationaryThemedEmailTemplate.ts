@@ -53,10 +53,12 @@ export function funStationaryTheme_SES_Config(
         \"LOGO_ONCLICK_URL\": \"${logoOnclickUrl}\",
         \"LOGO_IMAGE_URL\": \"${logoImageUrl}\",
         \"GREETING\":\"${greeting}\",
-        ${paragraphs["1"] && `\"PARAGRAPH_1\":\"${paragraphs["1"]}\",`}
-        ${paragraphs["2"] && `\"PARAGRAPH_2\":\"${paragraphs["2"]}\",`}
+        ${paragraphs["1"] ? `\"PARAGRAPH_1\":\"${paragraphs["1"]}\",` : ""}
+        ${paragraphs["2"] ? `\"PARAGRAPH_2\":\"${paragraphs["2"]}\",` : ""}
         ${paragraphs["3"] ? `\"PARAGRAPH_3\":\"${paragraphs["3"]}\",` : ""}
         ${paragraphs["4"] ? `\"PARAGRAPH_4\":\"${paragraphs["4"]}\",` : ""}
+        ${paragraphs["5"] ? `\"PARAGRAPH_5\":\"${paragraphs["5"]}\",` : ""}
+        ${paragraphs["6"] ? `\"PARAGRAPH_6\":\"${paragraphs["6"]}\",` : ""}
         \"ENDING\":\"${ending}\",
         \"ENDING_SIGNATURE\":\"${endingSignature}\"
 }`,

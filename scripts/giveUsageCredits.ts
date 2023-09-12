@@ -25,7 +25,7 @@ async function giveUsageCredits() {
     },
     data: {
       amount: {
-        increment: 100,
+        increment: 1000,
       },
     },
   });

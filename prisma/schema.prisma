@@ -329,4 +329,5 @@ enum ScanningMode {
 enum RatingType {
   SummaryV2
   CustomRequest
+  Prompt
 }

@@ -23,9 +23,17 @@ export async function getPrompt(
         id: parseInt(id),
         ownerId: account?.id,
       },
+      include: {
+        Ratings: true,
+        PromptsAndAccessGroups: {
+          include: {
+            accessGroup: true,
+          },
+        },
+      },
     });
 
-    console.log("SEARCH results", prompt);
+    console.log("FOUND PROMPT", prompt);
 
     res.status(200).send(prompt);
   } catch (e) {

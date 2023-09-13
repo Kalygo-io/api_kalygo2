@@ -292,6 +292,8 @@ DATA: ${contextForFile}`;
         // prettier-ignore
         p("snippet of completion of final generation request", finalCompletionText.slice(0, 16));
         finalCompletionForFile = finalCompletionText;
+      } else {
+        finalCompletionForFile = contextForFile;
       }
       // -v-v- BUILD THE FINAL ANSWER THE CALLER WANTS -v-v-
       // prettier-ignore

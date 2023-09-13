@@ -146,6 +146,8 @@ model Prompt {
   updatedAt              DateTime?                @updatedAt
   Ratings                Rating[]
   PromptsAndAccessGroups PromptsAndAccessGroups[]
+
+  @@unique([id, ownerId])
 }
 
 model CustomRequest {

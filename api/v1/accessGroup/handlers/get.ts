@@ -1,15 +1,15 @@
 import prisma from "@/db/prisma_client";
 import { Request, Response, NextFunction } from "express";
 
-export async function createAccessGroup(
+export async function getAccessGroup(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    console.log("createAccessGroup");
+    console.log("getAccessGroup");
 
-    const { name } = req.body;
+    const { id } = req.params;
 
     const account = await prisma.account.findFirst({
       where: {
@@ -18,14 +18,14 @@ export async function createAccessGroup(
       },
     });
 
-    await prisma.accessGroup.create({
-      data: {
-        name: name,
+    const record = await prisma.accessGroup.findFirst({
+      where: {
+        id: parseInt(id),
         createdById: account?.id!,
       },
     });
 
-    res.status(200).send();
+    res.status(200).send(record);
   } catch (e) {
     next(e);
   }

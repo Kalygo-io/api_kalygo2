@@ -14,6 +14,7 @@ import customRequest from "./customRequest";
 import queue from "./queue";
 import fun from "./fun";
 import prompt from "./prompt";
+import accessGroup from "./accessGroup";
 
 const router = express.Router();
 
@@ -34,5 +35,6 @@ router.use(summarize);
 router.use(similaritySearch);
 router.use(queue);
 router.use(prompt);
+router.use(accessGroup);
 
 export default router;

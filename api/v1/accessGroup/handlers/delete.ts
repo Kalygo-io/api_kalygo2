@@ -1,16 +1,18 @@
 import prisma from "@/db/prisma_client";
 import { Request, Response, NextFunction } from "express";
+// import { stripe } from "@/clients/stripe_client";
+// import prisma from "@db/prisma_client";
+// import pick from "lodash.pick";
 
-export async function getAccessGroups(
+export async function deleteAccessGroup(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    console.log("getAccessGroups");
+    console.log("deleteAccessGroup");
 
-    // @ts-ignore
-    console.log("req.user", req.user);
+    const { id } = req.params;
 
     const account = await prisma.account.findFirst({
       where: {
@@ -19,16 +21,15 @@ export async function getAccessGroups(
       },
     });
 
-    const accountAccessGroups = await prisma.accessGroup.findMany({
+    await prisma.accessGroup.deleteMany({
       where: {
-        createdById: account?.id,
+        id: parseInt(id),
+        createdById: account?.id!,
       },
     });
 
-    res.status(200).json(accountAccessGroups);
+    res.status(200).send();
   } catch (e) {
-    console.log("e", e);
-
     next(e);
   }
 }

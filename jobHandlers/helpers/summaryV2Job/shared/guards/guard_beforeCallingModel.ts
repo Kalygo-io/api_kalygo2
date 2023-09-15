@@ -1,9 +1,10 @@
 import config from "@/config";
 import prisma from "@/db/prisma_client";
+import { SupportedModels } from "@/types/SummaryV2Customizations";
 
 export async function guard_beforeCallingModel(
   email: string,
-  model: "gpt-3.5-turbo" | "gpt-4"
+  model: SupportedModels
 ) {
   let account = await prisma.account.findFirst({
     where: {

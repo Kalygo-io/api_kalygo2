@@ -47,7 +47,9 @@ export async function summarizeEachFileInChunks(
       model
     );
     // -v-v- TRACK I/O TOKENS FOR BILLING -v-v-
-    const encoder: Tiktoken = encoding_for_model(model);
+    const encoder: Tiktoken = encoding_for_model(
+      model === "gpt-3.5-turbo-16k" ? "gpt-3.5-turbo" : model
+    );
     let inputTokens = 0;
     let outputTokens = 0;
     // -v-v- CONVERT ALL FILES TO TEXT-BASED FORMAT -v-v-

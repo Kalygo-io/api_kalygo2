@@ -40,6 +40,23 @@ export default {
         },
       },
     },
+    "gpt-3.5-turbo-16k": {
+      minimumCreditsRequired: 80,
+      context: 16000,
+      tpm: 180000,
+      rpm: -1, // TODO
+      pricing: {
+        markUp: 1.5,
+        input: {
+          rate: 0.003, // USD
+          perTokens: 1000,
+        },
+        output: {
+          rate: 0.004, // USD
+          perTokens: 1000,
+        },
+      },
+    },
     "gpt-4": {
       minimumCreditsRequired: 80,
       context: 8000,

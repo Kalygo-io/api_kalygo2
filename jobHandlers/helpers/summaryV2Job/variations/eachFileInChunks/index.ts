@@ -132,10 +132,8 @@ export async function summarizeEachFileInChunks(
         // prettier-ignore
         p(`calling OpenAI to summarize chunk ${i} of file ${originalNameOfFile}...`);
         lastChunkBeforeFailing = i
-
         // -v-v- GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
-        guard_beforeCallingModel(email, model);
-        
+        await guard_beforeCallingModel(email, model);
         // -v-v- CALL THE A.I. MODEL -v-v-
         const completion = await generateOpenAiUserChatCompletionWithExponentialBackoff(model, prompt, tpmDelay, `chunk${i}`)
         const completionText: string = completion.data?.choices[0]?.message?.content || "ERROR: No Content"
@@ -258,20 +256,21 @@ export async function summarizeEachFileInChunks(
   } catch (e) {
     p("ERROR", (e as Error).toString());
 
-    if (process.env.NODE_ENV !== "production") fs.open;
-    fs.writeFileSync(
-      `${__dirname}/../../../../debugQueue/failed.txt`,
-      chunks.join(),
-      {
-        encoding: "utf8",
-        flag: "w",
-        mode: 0o655,
-      }
-    );
+    if (process.env.NODE_ENV !== "production") {
+      fs.writeFileSync(
+        `${__dirname}/../../../../debugQueue/failed.txt`,
+        chunks.join(),
+        {
+          encoding: "utf8",
+          flag: "w",
+          mode: 0o655,
+        }
+      );
 
-    done(e as Error, {
-      lastFileBeforeFailing,
-      lastChunkBeforeFailing,
-    });
+      done(e as Error, {
+        lastFileBeforeFailing,
+        lastChunkBeforeFailing,
+      });
+    }
   }
 }

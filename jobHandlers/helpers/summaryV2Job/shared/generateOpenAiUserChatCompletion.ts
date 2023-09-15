@@ -1,7 +1,8 @@
 import { OpenAI } from "@/clients/openai_client";
+import { SupportedModels } from "@/types/SummaryV2Customizations";
 
 export async function generateOpenAiUserChatCompletion(
-  model: "gpt-3.5-turbo" | "gpt-4",
+  model: SupportedModels,
   prompt: string
 ) {
   const completion = await OpenAI.createChatCompletion({

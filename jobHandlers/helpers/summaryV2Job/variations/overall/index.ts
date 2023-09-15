@@ -43,7 +43,9 @@ export async function summarizeFilesOverall(
       model
     );
     // -v-v- TRACK I/O TOKENS FOR BILLING -v-v-
-    const enc: Tiktoken = encoding_for_model(model);
+    const enc: Tiktoken = encoding_for_model(
+      model === "gpt-3.5-turbo-16k" ? "gpt-3.5-turbo" : model
+    );
     let inputTokens = 0;
     let outputTokens = 0;
     const filesToText: {
@@ -114,7 +116,7 @@ export async function summarizeFilesOverall(
         }
 
         // -v-v- GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
-        guard_beforeCallingModel(email, model);
+        await guard_beforeCallingModel(email, model);
         // *** Deducting cost of INPUT TOKENS from credit balance ***
         const inputTokenCost =
           (nextPromptTokenCount /
@@ -257,7 +259,7 @@ export async function summarizeFilesOverall(
       }
 
       // -v-v- GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
-      guard_beforeCallingModel(email, model);
+      await guard_beforeCallingModel(email, model);
       // *** Deducting cost of INPUT TOKENS from credit balance ***
       const inputTokenCost =
         (finalPromptTokenCount / config.models[model].pricing.input.perTokens) *

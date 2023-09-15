@@ -4,16 +4,19 @@ import { sleep } from "@/utils/sleep";
 import fs from "fs";
 import { generateOpenAiUserChatCompletion } from "./generateOpenAiUserChatCompletion";
 import { Tiktoken, encoding_for_model } from "@dqbd/tiktoken";
+import { SupportedModels } from "@/types/SummaryV2Customizations";
 
 export async function generateOpenAiUserChatCompletionWithExponentialBackoff(
-  model: "gpt-3.5-turbo" | "gpt-4" = "gpt-3.5-turbo",
+  model: SupportedModels,
   prompt: string,
   delay: number,
   debugFilename: string = "test"
 ) {
   console.log("model", model);
   console.log("prompt.length", prompt.length);
-  const encoder: Tiktoken = encoding_for_model(model);
+  const encoder: Tiktoken = encoding_for_model(
+    model === "gpt-3.5-turbo-16k" ? "gpt-3.5-turbo" : model
+  );
   const promptTokenCount = encoder.encode(prompt).length;
   console.log("promptTokenCount", promptTokenCount);
 

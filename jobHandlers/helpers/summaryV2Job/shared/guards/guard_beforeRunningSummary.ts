@@ -25,7 +25,9 @@ export async function guard_beforeRunningSummary(
   });
   if (
     customerSearchResults.data[0].id &&
-    (model === "gpt-3.5-turbo" || model === "gpt-4") &&
+    (model === "gpt-3.5-turbo-16k" ||
+      model === "gpt-3.5-turbo" ||
+      model === "gpt-4") &&
     (account?.UsageCredits?.amount! >
       config.models[model].minimumCreditsRequired ||
       (account?.SummaryCredits?.amount! || 0) > 0)

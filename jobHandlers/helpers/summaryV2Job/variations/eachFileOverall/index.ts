@@ -41,7 +41,9 @@ export async function summarizeEachFileOverall(
       model
     );
     // -v-v- TRACK I/O TOKENS FOR BILLING -v-v-
-    const encoder: Tiktoken = encoding_for_model(model);
+    const encoder: Tiktoken = encoding_for_model(
+      model === "gpt-3.5-turbo-16k" ? "gpt-3.5-turbo" : model
+    );
     let inputTokens = 0;
     let outputTokens = 0;
     // -v-v- CONVERT ALL FILES TO TEXT-BASED FORMAT -v-v-
@@ -114,9 +116,8 @@ export async function summarizeEachFileOverall(
           await sleep(tpmDelay);
           tpmAccum = 0;
         }
-
         // -v-v- GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
-        guard_beforeCallingModel(email, model);
+        await guard_beforeCallingModel(email, model);
         // *** Deducting cost of INPUT TOKENS from credit balance ***
         const inputTokenCost =
           (nextPromptTokenCount /
@@ -127,7 +128,6 @@ export async function summarizeEachFileOverall(
           inputTokenCost,
           account?.UsageCredits?.amount
         );
-
         // ***
         if (!account?.SummaryCredits?.amount) {
           await prisma.usageCredits.update({
@@ -245,7 +245,7 @@ export async function summarizeEachFileOverall(
         }
 
         // -v-v- GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
-        guard_beforeCallingModel(email, model);
+        await guard_beforeCallingModel(email, model);
 
         // CALL THE A.I. MODEL
         console.log("calling the A.I. model...");
@@ -343,7 +343,9 @@ export async function summarizeEachFileOverall(
     console.log(`Execution time: ${end - start} ms or ${(end - start) / 1000 / 60} minutes`);
     done(null, { summaryV2Id: summaryV2Record.id });
   } catch (e) {
-    p("ERROR", (e as Error).toString());
+    p("ERROR BEFORE");
+    // p("ERROR", (e as Error).toString());
+    p("ERROR AFTER");
     done(e as Error, null);
   }
 }

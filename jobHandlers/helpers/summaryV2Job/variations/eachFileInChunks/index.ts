@@ -76,7 +76,7 @@ export async function summarizeEachFileInChunks(
       chunks = [filesToText[fIndex].text];
       while (
         !areChunksValidForModelContext(
-          [`${promptPrefix} ${chunks[0]}`], // check if the file is small enough to be prepended with the PROMPT_PREFIX and not trigger input token limit
+          chunks, // check if the file is small enough to be prepended with the PROMPT_PREFIX and not trigger input token limit
           CONFIG.models[model].context,
           encoder
         )
@@ -86,6 +86,19 @@ export async function summarizeEachFileInChunks(
         let newChunks = makeChunksSmaller(chunks, promptPrefix, CONFIG.models[model].context, encoder);
         chunks = newChunks;
       }
+
+      // vvv DEBUG vvv
+      console.log("DEBUGGING CHUNKS...")
+      console.log("CHUNKS COUNT", chunks.length)
+      
+      for (let i = 0; i < chunks.length; i++) {
+        console.log("CHUNK #", i)
+        console.log('charCount of chunk', chunks[i].length)
+        const promptTokenCount = encoder.encode(chunks[i]).length;
+        console.log('promptTokenCount', promptTokenCount)
+      }
+      // ^^^ DEBUG ^^^
+
       // -v-v- WE NOW HAVE THE FILE IN CHUNKS THAT WILL NOT EXCEED THE MODEL CONTEXT LIMIT -v-v-
       // -v-v- SO WE LOOP OVER THE CHUNKS AND STORE THE SUMMARY OF EACH CHUNK -v-v-
       let summarizedChunksOfCurrentFile: { chunk: number; chunkSummary: string; }[] = [];
@@ -257,16 +270,21 @@ export async function summarizeEachFileInChunks(
     p("ERROR", (e as Error).toString());
 
     if (process.env.NODE_ENV !== "production") {
-      fs.writeFileSync(
-        `${__dirname}/../../../../debugQueue/failed.txt`,
-        chunks.join(),
-        {
-          encoding: "utf8",
-          flag: "w",
-          mode: 0o655,
-        }
-      );
+      // fs.writeFileSync(
+      //   `${__dirname}/../../../../debugQueue/failed.txt`,
+      //   chunks.join(),
+      //   {
+      //     encoding: "utf8",
+      //     flag: "w",
+      //     mode: 0o655,
+      //   }
+      // );
 
+      done(e as Error, {
+        lastFileBeforeFailing,
+        lastChunkBeforeFailing,
+      });
+    } else {
       done(e as Error, {
         lastFileBeforeFailing,
         lastChunkBeforeFailing,

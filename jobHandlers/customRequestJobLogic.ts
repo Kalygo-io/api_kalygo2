@@ -4,6 +4,7 @@ import { eachFileInChunks } from "./helpers/customRequestJob/variations/eachFile
 import { eachFileOverall } from "./helpers/customRequestJob/variations/eachFileOverall";
 import { promptAgainstFilesOverall } from "./helpers/customRequestJob/variations/overall";
 import { eachFilePerPage } from "./helpers/customRequestJob/variations/eachFilePerPage";
+import { SupportedModels } from "@/types/SupportedModels";
 
 export async function customRequestJobLogic(
   params: {
@@ -12,7 +13,7 @@ export async function customRequestJobLogic(
     email: string;
     customizations: CustomRequestCustomizations;
     language: string;
-    model: "gpt-3.5-turbo" | "gpt-4";
+    model: SupportedModels;
     locale: string;
   },
   job: any,

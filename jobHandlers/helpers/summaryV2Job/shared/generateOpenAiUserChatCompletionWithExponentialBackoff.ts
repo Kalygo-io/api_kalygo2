@@ -4,7 +4,7 @@ import { sleep } from "@/utils/sleep";
 import fs from "fs";
 import { generateOpenAiUserChatCompletion } from "./generateOpenAiUserChatCompletion";
 import { Tiktoken, encoding_for_model } from "@dqbd/tiktoken";
-import { SupportedModels } from "@/types/SummaryV2Customizations";
+import { SupportedModels } from "@/types/SupportedModels";
 
 export async function generateOpenAiUserChatCompletionWithExponentialBackoff(
   model: SupportedModels,

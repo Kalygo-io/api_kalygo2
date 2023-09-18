@@ -1,7 +1,7 @@
 import { stripe } from "@/clients/stripe_client";
 import config from "@/config";
 import prisma from "@/db/prisma_client";
-import { SupportedModels } from "@/types/SummaryV2Customizations";
+import { SupportedModels } from "@/types/SupportedModels";
 
 export async function guard_beforeRunningSummary(
   email: string,

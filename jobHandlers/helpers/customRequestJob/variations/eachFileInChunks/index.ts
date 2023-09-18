@@ -45,7 +45,9 @@ export async function eachFileInChunks(
       model
     );
     // -v-v- TRACK I/O TOKENS FOR BILLING -v-v-
-    const encoder: Tiktoken = encoding_for_model(model);
+    const encoder: Tiktoken = encoding_for_model(
+      model === "gpt-3.5-turbo-16k" ? "gpt-3.5-turbo" : model
+    );
     let inputTokens = 0;
     let outputTokens = 0;
     // -v-v- CONVERT ALL FILES TO TEXT-BASED FORMAT -v-v-
@@ -134,7 +136,7 @@ DATA: ${chunks[i]}`;
         lastChunkBeforeFailing = i
 
         // -v-v- GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
-        guard_beforeCallingModel(email, model);
+        await guard_beforeCallingModel(email, model);
         
         // -v-v- CALL THE A.I. MODEL -v-v-
         const completion = await generateOpenAiUserChatCompletionWithExponentialBackoff(model, prompt, tpmDelay, `chunk${i}`)
@@ -244,17 +246,17 @@ DATA: ${chunks[i]}`;
     done(null, { customRequestId: customRequestRecord.id });
   } catch (e) {
     p("ERROR", (e as Error).toString());
-
-    if (process.env.NODE_ENV !== "production") fs.open;
-    fs.writeFileSync(
-      `${__dirname}/../../../../debugQueue/failed.txt`,
-      chunks.join(),
-      {
-        encoding: "utf8",
-        flag: "w",
-        mode: 0o655,
-      }
-    );
+    // if (process.env.NODE_ENV !== "production") {
+    //   fs.writeFileSync(
+    //     `${__dirname}/../../../../debugQueue/failed.txt`,
+    //     chunks.join(),
+    //     {
+    //       encoding: "utf8",
+    //       flag: "w",
+    //       mode: 0o655,
+    //     }
+    //   );
+    // }
 
     done(e as Error, {
       lastFileBeforeFailing,

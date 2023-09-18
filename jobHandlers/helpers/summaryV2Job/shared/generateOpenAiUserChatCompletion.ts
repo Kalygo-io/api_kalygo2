@@ -1,5 +1,5 @@
 import { OpenAI } from "@/clients/openai_client";
-import { SupportedModels } from "@/types/SummaryV2Customizations";
+import { SupportedModels } from "@/types/SupportedModels";
 
 export async function generateOpenAiUserChatCompletion(
   model: SupportedModels,

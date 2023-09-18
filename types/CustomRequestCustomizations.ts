@@ -1,9 +1,10 @@
 import { ScanningMode } from "@prisma/client";
+import { SupportedModels } from "./SupportedModels";
 
 export type CustomRequestCustomizations = {
   prompt: string;
   finalPrompt: string | null;
   overallPrompt: string | null;
   mode: ScanningMode;
-  model: "gpt-3.5-turbo" | "gpt-4";
+  model: SupportedModels;
 };

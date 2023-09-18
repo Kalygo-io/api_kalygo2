@@ -1,10 +1,11 @@
 import { stripe } from "@/clients/stripe_client";
 import config from "@/config";
 import prisma from "@/db/prisma_client";
+import { SupportedModels } from "@/types/SupportedModels";
 
 export async function guard_beforeRunningCustomRequest(
   email: string,
-  model: "gpt-3.5-turbo" | "gpt-4"
+  model: SupportedModels
 ) {
   console.log("--- guard_beforeRunningCustomRequest ---");
 
@@ -47,7 +48,9 @@ export async function guard_beforeRunningCustomRequest(
 
   if (
     customerSearchResults.data[0].id &&
-    (model === "gpt-3.5-turbo" || model === "gpt-4") &&
+    (model === "gpt-3.5-turbo" ||
+      model === "gpt-3.5-turbo-16k" ||
+      model === "gpt-4") &&
     (account?.UsageCredits?.amount! >
       config.models[model].minimumCreditsRequired ||
       (account?.CustomRequestCredits?.amount! || 0) > 0)

@@ -74,7 +74,7 @@ export async function eachFileInChunks(
       chunks = [filesToText[fIndex].text];
       while (
         !areChunksValidForModelContext(
-          [`${promptPrefix} ${chunks[0]}`], // check if the file is small enough to be prepended with the PROMPT_PREFIX and not trigger input token limit
+          chunks, // check if the file is small enough to be prepended with the PROMPT_PREFIX and not trigger input token limit
           CONFIG.models[model].context,
           encoder
         )

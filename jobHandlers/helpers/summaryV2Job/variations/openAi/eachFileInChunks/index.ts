@@ -8,23 +8,23 @@ import { generatePromptPrefix } from "./generatePromptPrefix";
 import { HACK_testPromptPrefix } from "./HACK_testPromptPrefix";
 import { sleep } from "@/utils/sleep";
 import CONFIG from "@/config";
-import { SummaryV2Customizations } from "@/types/SummaryV2Customizations";
+import { SummaryV2OpenAiCustomizations } from "@/types/SummaryV2OpenAiCustomizations";
 import { convertFilesToTextFormat } from "@/utils/convertFilesToTextFormat";
 import { areChunksValidForModelContext } from "@/utils/areChunksValidForModelContext";
 import { p } from "@/utils/p";
-import { guard_beforeRunningSummary } from "../../shared/guards/guard_beforeRunningSummary";
+import { guard_beforeRunningSummary } from "../../../shared/guards/guard_beforeRunningSummary";
 import { makeChunksSmaller } from "./makeChunksSmaller";
-import { checkout } from "../../shared/checkout";
-import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
+import { checkout } from "../../../shared/checkout";
+import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
 import { SummaryMode } from "@prisma/client";
-import { guard_beforeCallingModel } from "../../shared/guards/guard_beforeCallingModel";
+import { guard_beforeCallingModel } from "../../../shared/guards/guard_beforeCallingModel";
 import config from "@/config";
 import { v4 } from "uuid";
 
 const tpmDelay = 60000;
 
-export async function summarizeEachFileInChunks(
-  customizations: SummaryV2Customizations,
+export async function openAiSummarizeEachFileInChunks(
+  customizations: SummaryV2OpenAiCustomizations,
   email: string,
   files: any[],
   bucket: string,

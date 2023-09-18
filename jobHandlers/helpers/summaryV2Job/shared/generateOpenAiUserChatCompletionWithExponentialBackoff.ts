@@ -1,13 +1,11 @@
-import { OpenAI } from "@/clients/openai_client";
 import { p } from "@/utils/p";
 import { sleep } from "@/utils/sleep";
-import fs from "fs";
 import { generateOpenAiUserChatCompletion } from "./generateOpenAiUserChatCompletion";
 import { Tiktoken, encoding_for_model } from "@dqbd/tiktoken";
-import { SupportedModels } from "@/types/SupportedModels";
+import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
 
 export async function generateOpenAiUserChatCompletionWithExponentialBackoff(
-  model: SupportedModels,
+  model: SupportedOpenAiModels,
   prompt: string,
   delay: number,
   debugFilename: string = "test"
@@ -19,12 +17,6 @@ export async function generateOpenAiUserChatCompletionWithExponentialBackoff(
   );
   const promptTokenCount = encoder.encode(prompt).length;
   console.log("promptTokenCount", promptTokenCount);
-
-  // if (process.env.NODE_ENV !== "production")
-  //   fs.writeFileSync(
-  //     `${__dirname}/../../../../debugQueue/${debugFilename}`,
-  //     prompt
-  //   );
 
   let completion;
   try {

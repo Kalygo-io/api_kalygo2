@@ -1,10 +1,10 @@
 import config from "@/config";
 import prisma from "@/db/prisma_client";
-import { SupportedModels } from "@/types/SupportedModels";
+import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
 
 export async function guard_beforeCallingModel(
   email: string,
-  model: SupportedModels
+  model: SupportedOpenAiModels
 ) {
   console.log("--- guard_beforeCallingModel ---");
 

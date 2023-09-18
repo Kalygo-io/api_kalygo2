@@ -1,11 +1,11 @@
 import { stripe } from "@/clients/stripe_client";
 import config from "@/config";
 import prisma from "@/db/prisma_client";
-import { SupportedModels } from "@/types/SupportedModels";
+import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
 
 export async function guard_beforeRunningCustomRequest(
   email: string,
-  model: SupportedModels
+  model: SupportedOpenAiModels
 ) {
   console.log("--- guard_beforeRunningCustomRequest ---");
 

@@ -1,8 +1,8 @@
 import { OpenAI } from "@/clients/openai_client";
-import { SupportedModels } from "@/types/SupportedModels";
+import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
 
 export async function generateOpenAiUserChatCompletion(
-  model: SupportedModels,
+  model: SupportedOpenAiModels,
   prompt: string
 ) {
   const completion = await OpenAI.createChatCompletion({

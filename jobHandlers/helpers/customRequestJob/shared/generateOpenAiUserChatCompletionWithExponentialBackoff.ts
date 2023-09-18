@@ -4,10 +4,10 @@ import { sleep } from "@/utils/sleep";
 import fs from "fs";
 import { generateOpenAiUserChatCompletion } from "./generateOpenAiUserChatCompletion";
 import { Tiktoken, encoding_for_model } from "@dqbd/tiktoken";
-import { SupportedModels } from "@/types/SupportedModels";
+import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
 
 export async function generateOpenAiUserChatCompletionWithExponentialBackoff(
-  model: SupportedModels = "gpt-3.5-turbo",
+  model: SupportedOpenAiModels = "gpt-3.5-turbo",
   prompt: string,
   delay: number,
   debugFilename: string = "test"

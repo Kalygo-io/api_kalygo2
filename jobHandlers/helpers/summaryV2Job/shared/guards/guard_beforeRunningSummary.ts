@@ -1,11 +1,12 @@
 import { stripe } from "@/clients/stripe_client";
 import config from "@/config";
 import prisma from "@/db/prisma_client";
-import { SupportedModels } from "@/types/SupportedModels";
+import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
+import { SupportedReplicateModels } from "@/types/SupportedReplicateModels";
 
 export async function guard_beforeRunningSummary(
   email: string,
-  model: SupportedModels
+  model: SupportedOpenAiModels | SupportedReplicateModels
 ) {
   let account = await prisma.account.findFirst({
     where: {

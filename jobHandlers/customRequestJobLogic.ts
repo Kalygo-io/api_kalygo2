@@ -4,7 +4,7 @@ import { eachFileInChunks } from "./helpers/customRequestJob/variations/eachFile
 import { eachFileOverall } from "./helpers/customRequestJob/variations/eachFileOverall";
 import { promptAgainstFilesOverall } from "./helpers/customRequestJob/variations/overall";
 import { eachFilePerPage } from "./helpers/customRequestJob/variations/eachFilePerPage";
-import { SupportedModels } from "@/types/SupportedModels";
+import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
 
 export async function customRequestJobLogic(
   params: {
@@ -13,7 +13,7 @@ export async function customRequestJobLogic(
     email: string;
     customizations: CustomRequestCustomizations;
     language: string;
-    model: SupportedModels;
+    model: SupportedOpenAiModels;
     locale: string;
   },
   job: any,

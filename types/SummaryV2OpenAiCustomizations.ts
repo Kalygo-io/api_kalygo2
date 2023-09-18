@@ -1,10 +1,10 @@
 import { SummaryMode } from "@prisma/client";
-import { SupportedModels } from "./SupportedModels";
+import { SupportedOpenAiModels } from "./SupportedOpenAiModels";
 
-export type SummaryV2Customizations = {
+export type SummaryV2OpenAiCustomizations = {
   format: "bullet-points" | "paragraph";
   mode: SummaryMode;
   length: string;
   language: string;
-  model: SupportedModels;
+  model: SupportedOpenAiModels;
 };

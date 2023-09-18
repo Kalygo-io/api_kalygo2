@@ -8,21 +8,21 @@ import { generateBulletPointsPromptPrefix } from "./generateBulletPointsPromptPr
 import { generatePromptPrefix } from "./generatePromptPrefix";
 import { sleep } from "@/utils/sleep";
 import CONFIG from "@/config";
-import { SummaryV2Customizations } from "@/types/SummaryV2Customizations";
+import { SummaryV2OpenAiCustomizations } from "@/types/SummaryV2OpenAiCustomizations";
 import { p } from "@/utils/p";
 import { convertFilesToTextFormat } from "@/utils/convertFilesToTextFormat";
 import { isChunkValidForModelContext } from "@/utils/isChunkValidForModelContext";
-import { guard_beforeRunningSummary } from "../../shared/guards/guard_beforeRunningSummary";
-import { checkout } from "../../shared/checkout";
+import { guard_beforeRunningSummary } from "../../../shared/guards/guard_beforeRunningSummary";
+import { checkout } from "../../../shared/checkout";
 import { breakUpNextChunk } from "./breakUpNextChunk";
-import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
+import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
 import config from "@/config";
-import { guard_beforeCallingModel } from "../../shared/guards/guard_beforeCallingModel";
+import { guard_beforeCallingModel } from "../../../shared/guards/guard_beforeCallingModel";
 
 const tpmDelay = 60000;
 
-export async function summarizeEachFileOverall(
-  customizations: SummaryV2Customizations,
+export async function openAiSummarizeEachFileOverall(
+  customizations: SummaryV2OpenAiCustomizations,
   email: string,
   files: any[],
   bucket: string,

@@ -7,7 +7,8 @@ export async function generateReplicateChatCompletion(
 ) {
   const completion = await replicateClient.run(model, {
     input: {
-      prompt: "Who is Donald Trump?",
+      prompt,
+      max_new_tokens: 4096,
     },
   });
 

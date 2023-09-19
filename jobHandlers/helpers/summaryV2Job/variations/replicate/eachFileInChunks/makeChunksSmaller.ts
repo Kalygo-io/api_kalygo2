@@ -1,10 +1,8 @@
-import { Tiktoken } from "@dqbd/tiktoken";
-
 export function makeChunksSmaller(
   chunks: string[],
   promptPrefix: string,
   context: number,
-  encoder: Tiktoken
+  encoder: any
 ): string[] {
   let newChunks = [];
   for (let i = 0; i < chunks.length; i++) {

@@ -1,24 +1,22 @@
-import fs from "fs";
 import prisma from "@/db/prisma_client";
-import { Tiktoken, encoding_for_model } from "@dqbd/tiktoken";
 import { summaryJobComplete_SES_Config } from "@/emails/v2/summaryJobComplete";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { sesClient } from "@/clients/ses_client";
 import { generatePromptPrefix } from "./generatePromptPrefix";
 import { sleep } from "@/utils/sleep";
 import CONFIG from "@/config";
-import { SummaryV2OpenAiCustomizations } from "@/types/SummaryV2OpenAiCustomizations";
 import { convertFilesToTextFormat } from "@/utils/convertFilesToTextFormat";
-import { areChunksValidForModelContext } from "@/utils/areChunksValidForModelContext";
+import { areChunksValidForModelContextLlama } from "@/utils/areChunksValidForModelContextLlama";
 import { p } from "@/utils/p";
 import { guard_beforeRunningSummary } from "../../../shared/guards/guard_beforeRunningSummary";
 import { makeChunksSmaller } from "./makeChunksSmaller";
 import { checkout } from "../../../shared/checkout";
-import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
+import { generateReplicateChatCompletionWithExponentialBackoff } from "../../../shared/generateReplicateChatCompletionWithExponentialBackoff";
 import { SummaryMode } from "@prisma/client";
 import { guard_beforeCallingModel } from "../../../shared/guards/guard_beforeCallingModel";
 import config from "@/config";
 import { SummaryV2ReplicateCustomizations } from "@/types/SummaryV2ReplicateCustomizations";
+import llamaTokenizer from "@/utils/llama-tokenizer";
 
 const tpmDelay = 60000;
 
@@ -46,9 +44,8 @@ export async function replicateSummarizeEachFileInChunks(
       model
     );
     // -v-v- TRACK I/O TOKENS FOR BILLING -v-v-
-    // const encoder: Tiktoken = encoding_for_model(
-    //   model === "gpt-3.5-turbo-16k" ? "gpt-3.5-turbo" : model
-    // );
+    console.log("instantiating llamaTokenizer");
+    const encoder = llamaTokenizer;
     let inputTokens = 0;
     let outputTokens = 0;
     // -v-v- CONVERT ALL FILES TO TEXT-BASED FORMAT -v-v-
@@ -65,142 +62,161 @@ export async function replicateSummarizeEachFileInChunks(
     // prettier-ignore
     let summaryForEachFile: { file: string, summary: { chunk: number; chunkSummary: string }[] }[] = [];
     let tpmAccum: number = 0; // for tracking TPM ie: tokens / minute
-    // prettier-ignore
-    for (let fIndex = 0; fIndex < filesToText.length; fIndex++) { // processing ONE of the files at a time...
+    for (let fIndex = 0; fIndex < filesToText.length; fIndex++) {
+      // processing ONE of the files at a time...
       const originalNameOfFile = filesToText[fIndex].originalName;
-      lastFileBeforeFailing = originalNameOfFile // for debugging
+      lastFileBeforeFailing = originalNameOfFile; // for debugging
       // prettier-ignore
       p("*** file to be processed ***", originalNameOfFile);
       // -v-v- LOGIC BELOW IS TO BREAK THE DATA IN EACH FILE INTO CHUNKS SO THAT THE PROMPT_PREFIX PLUS THE_CHUNK IS WITHIN THE MODEL INPUT TOKEN LIMIT -v-v-
       chunks = [filesToText[fIndex].text];
-      // while (
-      //   !areChunksValidForModelContext(
-      //     chunks, // check if the file is small enough to be prepended with the PROMPT_PREFIX and not trigger input token limit
-      //     CONFIG.models[model].context,
-      //     encoder
-      //   )
-      // ) {
-      //   // -v-v- PROMPT_PREFIX PLUS THE_FILE IS TOO BIG SO MUST BREAK INTO SMALLER CHUNKS -v-v-
-      //   p("in while loop..."); // for console debugging...
-      //   let newChunks = makeChunksSmaller(chunks, promptPrefix, CONFIG.models[model].context, encoder);
-      //   chunks = newChunks;
-      // }
-
+      while (
+        !areChunksValidForModelContextLlama(
+          chunks, // check if the file is small enough to be prepended with the PROMPT_PREFIX and not trigger input token limit
+          CONFIG.models[model].context,
+          encoder
+        )
+      ) {
+        // -v-v- PROMPT_PREFIX PLUS THE_FILE IS TOO BIG SO MUST BREAK INTO SMALLER CHUNKS -v-v-
+        p("in while loop..."); // for console debugging...
+        let newChunks = makeChunksSmaller(
+          chunks,
+          promptPrefix,
+          CONFIG.models[model].context,
+          encoder
+        );
+        chunks = newChunks;
+      }
       // vvv DEBUG vvv
-      console.log("DEBUGGING CHUNKS...")
-      console.log("CHUNKS COUNT", chunks.length)
-      
-      // for (let i = 0; i < chunks.length; i++) {
-      //   console.log("CHUNK #", i)
-      //   console.log('charCount of chunk', chunks[i].length)
-      //   const promptTokenCount = encoder.encode(chunks[i]).length;
-      //   console.log('promptTokenCount', promptTokenCount)
-      // }
+      console.log("DEBUGGING CHUNKS...");
+      console.log("CHUNKS COUNT", chunks.length);
+      for (let i = 0; i < chunks.length; i++) {
+        console.log("CHUNK #", i);
+        console.log("charCount of chunk", chunks[i].length);
+        const promptTokenCount = encoder.encode(chunks[i]).length;
+        console.log("promptTokenCount", promptTokenCount);
+      }
       // ^^^ DEBUG ^^^
+
+      console.log("DEBUGGING CHUNKS...");
+      console.log("CHUNKS COUNT", chunks.length);
 
       // -v-v- WE NOW HAVE THE FILE IN CHUNKS THAT WILL NOT EXCEED THE MODEL CONTEXT LIMIT -v-v-
       // -v-v- SO WE LOOP OVER THE CHUNKS AND STORE THE SUMMARY OF EACH CHUNK -v-v-
-      // let summarizedChunksOfCurrentFile: { chunk: number; chunkSummary: string; }[] = [];
-      // for (let i = 0; i < chunks.length; i++) {
-      //   const prompt = `${promptPrefix} ${chunks[i]}`;
-      //   const promptTokenCount = encoder.encode(prompt).length;
+      let summarizedChunksOfCurrentFile: {
+        chunk: number;
+        chunkSummary: string;
+      }[] = [];
+      for (let i = 0; i < chunks.length; i++) {
+        const prompt = `${promptPrefix} ${chunks[i]}`;
+        const promptTokenCount = encoder.encode(prompt).length;
 
-      //   // *** Deducting cost of INPUT TOKENS from credit balance ***
-      //   const inputTokenCost =
-      //     (promptTokenCount /
-      //       config.models[model].pricing.input.perTokens) *
-      //     config.models[model].pricing.input.rate;
-      //   console.log(
-      //     "Cost of processing INPUT_TOKENS - now deducting from credits balance...",
-      //     inputTokenCost,
-      //     account?.UsageCredits?.amount
-      //   );
+        // *** Deducting cost of INPUT TOKENS from credit balance ***
+        const inputTokenCost =
+          (promptTokenCount / config.models[model].pricing.input.perTokens) *
+          config.models[model].pricing.input.rate;
+        console.log(
+          "Cost of processing INPUT_TOKENS - now deducting from credits balance...",
+          inputTokenCost,
+          account?.UsageCredits?.amount
+        );
 
-      //   // ***
-      //   await prisma.usageCredits.update({
-      //     data: {
-      //       amount: {
-      //         decrement: inputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
-      //       },
-      //     },
-      //     where: {
-      //       accountId: account?.id,
-      //     },
-      //   });
-      //   // ***
+        // ***
+        await prisma.usageCredits.update({
+          data: {
+            amount: {
+              decrement: inputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+            },
+          },
+          where: {
+            accountId: account?.id,
+          },
+        });
+        // ***
 
-      //   inputTokens += promptTokenCount; // track input tokens
-      //   tpmAccum += promptTokenCount; // accumulate input tokens
-      //   p(`token length of prompt for chunk ${i}`, promptTokenCount);
-      //   p("inputTokens", inputTokens);
-      //   p("outputTokens", outputTokens);
-      //   p("tpmAccum", tpmAccum);
-      //   // -v-v- IF WE NOW HAVE EXCEEDED THE TOKENS / MINUTE LIMIT WE WILL PAUSE -v-v-
-      //   // prettier-ignore
-      //   if (tpmAccum > CONFIG.models[model].tpm - CONFIG.tpmBuffer) { // tpmBuffer is to control how close to the rate limit you want to get
-      //     await sleep(tpmDelay);
-      //     tpmAccum = 0;
-      //   }
-      //   // prettier-ignore
-      //   p(`calling OpenAI to summarize chunk ${i} of file ${originalNameOfFile}...`);
-      //   lastChunkBeforeFailing = i
-      //   // -v-v- GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
-      //   await guard_beforeCallingModel(email, model);
-      //   // -v-v- CALL THE A.I. MODEL -v-v-
-      //   const completion = await generateOpenAiUserChatCompletionWithExponentialBackoff(model, prompt, tpmDelay, `chunk${i}`)
-      //   const completionText: string = completion.data?.choices[0]?.message?.content || "ERROR: No Content"
-      //   // prettier-ignore
-      //   p(`snippet of last OpenAI completion - '${completionText.slice(0,16)}'`);
-      //   // prettier-ignore
-      //   // -v-v- TRACK THE OUTPUT TOKENS -v-v-
-      //   const outputTokenCount = encoder.encode(completionText).length;
-      //   // *** Deducting cost of OUTPUT_TOKENS from credit balance ***
-      //   const outputTokenCost =
-      //     (outputTokenCount / config.models[model].pricing.output.perTokens) *
-      //     config.models[model].pricing.output.rate;
-      //   console.log(
-      //     "Cost of OUTPUT_TOKENS - now deducting from credits balance...",
-      //     outputTokenCost,
-      //     account?.UsageCredits?.amount
-      //   );
+        inputTokens += promptTokenCount; // track input tokens
+        tpmAccum += promptTokenCount; // accumulate input tokens
+        p(`token length of prompt for chunk ${i}`, promptTokenCount);
+        p("inputTokens", inputTokens);
+        p("outputTokens", outputTokens);
+        p("tpmAccum", tpmAccum);
+        // -v-v- IF WE NOW HAVE EXCEEDED THE TOKENS / MINUTE LIMIT WE WILL PAUSE -v-v-
+        // prettier-ignore
+        if (tpmAccum > CONFIG.models[model].tpm - CONFIG.tpmBuffer) { // tpmBuffer is to control how close to the rate limit you want to get
+          await sleep(tpmDelay);
+          tpmAccum = 0;
+        }
+        // prettier-ignore
+        p(`calling OpenAI to summarize chunk ${i} of file ${originalNameOfFile}...`);
+        lastChunkBeforeFailing = i;
+        // -v-v- GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
+        await guard_beforeCallingModel(email, model);
+        // -v-v- CALL THE A.I. MODEL -v-v-
+        const completion =
+          await generateReplicateChatCompletionWithExponentialBackoff(
+            model,
+            prompt,
+            tpmDelay
+          );
 
-      //   // ***
-      //   const updatedAccountCreditsAmount = await prisma.usageCredits.update({
-      //     data: {
-      //       amount: {
-      //         decrement: outputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
-      //       },
-      //     },
-      //     where: {
-      //       accountId: account?.id,
-      //     },
-      //   });
-      //   // ***
+        console.log("DEBUG LLaMa 2 completion", completion);
 
-      //   if (
-      //     updatedAccountCreditsAmount.amount <
-      //     config.models[model].minimumCreditsRequired
-      //   ) {
-      //     throw new Error("402");
-      //   }
+        const completionText: string =
+          // @ts-ignore
+          completion?.join("") || "ERROR: No Content";
+        // prettier-ignore
+        p(`snippet of last REPLICATE completion - '${completionText.slice(0,16)}'`);
+        // prettier-ignore
+        // -v-v- TRACK THE OUTPUT TOKENS -v-v-
+        const outputTokenCount = encoder.encode(completionText).length;
+        // *** Deducting cost of OUTPUT_TOKENS from credit balance ***
+        const outputTokenCost =
+          (outputTokenCount / config.models[model].pricing.output.perTokens) *
+          config.models[model].pricing.output.rate;
+        console.log(
+          "Cost of OUTPUT_TOKENS - now deducting from credits balance...",
+          outputTokenCost,
+          account?.UsageCredits?.amount
+        );
 
-      //   outputTokens += outputTokenCount; // track output tokens
-      //   tpmAccum += outputTokenCount; // accumulate output tokens
-      //   // -v-v- STORE THE COMPLETION OF EACH CHUNK OF THE FILE -v-v-
-      //   // prettier-ignore
-      //   summarizedChunksOfCurrentFile.push({ chunk: i, chunkSummary: completionText });
-      //   p("job.progress()", job.progress()); // for console debugging
-      //   p("i", i, "chunks.length", chunks.length); // for console debugging
-      //   // prettier-ignore
-      //   p(`this collection of chunks represents ${Math.floor(100 / files.length)}% of the total progress`); // for console debugging
-      //   // prettier-ignore
-      //   job.progress(job.progress() + ((1 / chunks.length) * (100 / files.length))); // UPDATE THE PROGRESS BAR
-      //   p("after job.progress() update", job.progress());
-      // }
+        // ***
+        const updatedAccountCreditsAmount = await prisma.usageCredits.update({
+          data: {
+            amount: {
+              decrement: outputTokenCost * 100, // * 100 as Usage credits are denominated in pennies
+            },
+          },
+          where: {
+            accountId: account?.id,
+          },
+        });
+        // ***
+
+        if (
+          updatedAccountCreditsAmount.amount <
+          config.models[model].minimumCreditsRequired
+        ) {
+          throw new Error("402");
+        }
+
+        outputTokens += outputTokenCount; // track output tokens
+        tpmAccum += outputTokenCount; // accumulate output tokens
+        // -v-v- STORE THE COMPLETION OF EACH CHUNK OF THE FILE -v-v-
+        // prettier-ignore
+        summarizedChunksOfCurrentFile.push({ chunk: i, chunkSummary: completionText });
+        p("job.progress()", job.progress()); // for console debugging
+        p("i", i, "chunks.length", chunks.length); // for console debugging
+        // prettier-ignore
+        p(`this collection of chunks represents ${Math.floor(100 / files.length)}% of the total progress`); // for console debugging
+        // prettier-ignore
+        job.progress(job.progress() + ((1 / chunks.length) * (100 / files.length))); // UPDATE THE PROGRESS BAR
+        p("after job.progress() update", job.progress());
+      }
       // -v-v- BUILD THE FINAL ANSWER THE CALLER WANTS -v-v-
       // prettier-ignore
-      // summaryForEachFile.push({ file: filesToText[fIndex].originalName, summary: summarizedChunksOfCurrentFile, });
+      summaryForEachFile.push({ file: filesToText[fIndex].originalName, summary: summarizedChunksOfCurrentFile, });
     }
+
     // -v-v- SAVE THE FINAL ANSWER TO DB -v-v-
     p("saving completionForEachFile to DB...");
     const timeFinalSummaryWasGenerated = Date.now(); // to help provide a tts aka time-to-summary quote
@@ -250,15 +266,15 @@ export async function replicateSummarizeEachFileInChunks(
     } catch (e) {}
     // -v-v- CHARGE THE CALLER FOR THE FANTASTIC SERVICE -v-v-
     p("*** CHECKOUT ***");
-    // await checkout(
-    //   inputTokens,
-    //   outputTokens,
-    //   CONFIG.models[model].pricing,
-    //   account,
-    //   "usd",
-    //   "SummaryV2",
-    //   customerId
-    // );
+    await checkout(
+      inputTokens,
+      outputTokens,
+      CONFIG.models[model].pricing,
+      account,
+      "usd",
+      "SummaryV2",
+      customerId
+    );
     job.progress(100);
     p("DONE");
     const end = Date.now();
@@ -269,16 +285,6 @@ export async function replicateSummarizeEachFileInChunks(
     p("ERROR", (e as Error).toString());
 
     if (process.env.NODE_ENV !== "production") {
-      // fs.writeFileSync(
-      //   `${__dirname}/../../../../debugQueue/failed.txt`,
-      //   chunks.join(),
-      //   {
-      //     encoding: "utf8",
-      //     flag: "w",
-      //     mode: 0o655,
-      //   }
-      // );
-
       done(e as Error, {
         lastFileBeforeFailing,
         lastChunkBeforeFailing,

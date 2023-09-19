@@ -11,6 +11,9 @@ import { SummaryV2OpenAiCustomizations } from "@/types/SummaryV2OpenAiCustomizat
 import { SummaryV2ReplicateCustomizations } from "@/types/SummaryV2ReplicateCustomizations";
 import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
 import { SupportedReplicateModels } from "@/types/SupportedReplicateModels";
+import { replicateSummarizeEachFileOverall } from "./helpers/summaryV2Job/variations/replicate/eachFileOverall";
+import { replicateSummarizeFilesOverall } from "./helpers/summaryV2Job/variations/replicate/overall";
+import { replicateSummarizeEachFilePerPage } from "./helpers/summaryV2Job/variations/replicate/eachFilePerPage";
 
 export async function summaryV2JobLogic(
   params: {
@@ -125,6 +128,57 @@ export async function summaryV2JobLogic(
       switch (summarizationType) {
         case SummaryMode.EACH_FILE_IN_CHUNKS:
           replicateSummarizeEachFileInChunks(
+            {
+              format,
+              length,
+              language,
+              model: replicateModel,
+              mode,
+            },
+            email,
+            files,
+            bucket,
+            job,
+            locale,
+            done
+          );
+          break;
+        case SummaryMode.EACH_FILE_OVERALL:
+          replicateSummarizeEachFileOverall(
+            {
+              format,
+              length,
+              language,
+              model: replicateModel,
+              mode,
+            },
+            email,
+            files,
+            bucket,
+            job,
+            locale,
+            done
+          );
+          break;
+        case SummaryMode.OVERALL:
+          replicateSummarizeFilesOverall(
+            {
+              format,
+              length,
+              language,
+              model: replicateModel,
+              mode,
+            },
+            email,
+            files,
+            bucket,
+            job,
+            locale,
+            done
+          );
+          break;
+        case SummaryMode.EACH_FILE_PER_PAGE:
+          replicateSummarizeEachFilePerPage(
             {
               format,
               length,

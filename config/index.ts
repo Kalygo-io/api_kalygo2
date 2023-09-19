@@ -74,6 +74,24 @@ export default {
         },
       },
     },
+    "meta/llama-2-70b-chat:02e509c789964a7ea8736978a43525956ef40397be9033abf9fd2badfe68c9e3":
+      {
+        minimumCreditsRequired: 10,
+        context: 4096,
+        tpm: 90000,
+        rpm: -1, // TODO
+        pricing: {
+          markUp: 1.5,
+          input: {
+            rate: 0.0015, // USD
+            perTokens: 1000,
+          },
+          output: {
+            rate: 0.002, // USD
+            perTokens: 1000,
+          },
+        },
+      },
     "text-embedding-ada-002": {
       minimumCreditsRequired: 10,
       context: 0,

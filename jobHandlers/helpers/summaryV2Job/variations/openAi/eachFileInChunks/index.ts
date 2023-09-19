@@ -148,7 +148,7 @@ export async function openAiSummarizeEachFileInChunks(
         // -v-v- GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
         await guard_beforeCallingModel(email, model);
         // -v-v- CALL THE A.I. MODEL -v-v-
-        const completion = await generateOpenAiUserChatCompletionWithExponentialBackoff(model, prompt, tpmDelay, `chunk${i}`)
+        const completion = await generateOpenAiUserChatCompletionWithExponentialBackoff(model, prompt, tpmDelay)
         const completionText: string = completion.data?.choices[0]?.message?.content || "ERROR: No Content"
         // prettier-ignore
         p(`snippet of last OpenAI completion - '${completionText.slice(0,16)}'`);

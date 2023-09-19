@@ -7,8 +7,7 @@ import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
 export async function generateOpenAiUserChatCompletionWithExponentialBackoff(
   model: SupportedOpenAiModels,
   prompt: string,
-  delay: number,
-  debugFilename: string = "test"
+  delay: number
 ) {
   console.log("model", model);
   console.log("prompt.length", prompt.length);

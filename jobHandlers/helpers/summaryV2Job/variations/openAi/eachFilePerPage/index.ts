@@ -68,7 +68,7 @@ export async function openAiSummarizeEachFilePerPage(
       let partsOfCurrentFile = filesToText[fIndex].partsOfFile.length;
       for (let part = 0; part < partsOfCurrentFile; part++) {
         const textInPartOfFile = filesToText[fIndex].partsOfFile[part].text;
-        console.log(textInPartOfFile);
+        // console.log(textInPartOfFile);
         console.log("___ --- ___");
 
         let promptPrefix = generatePromptPrefix({
@@ -181,7 +181,7 @@ export async function openAiSummarizeEachFilePerPage(
           // -v-v- UPDATE PROGRESS BAR -v-v-
           // prettier-ignore
           // prettier-ignore
-          job.progress(job.progress() + ((part / partsOfCurrentFile) * (90 / files.length)));
+          job.progress((part / partsOfCurrentFile) * (90 / files.length));
           p("progress:", job.progress());
         } else {
           throw new Error(

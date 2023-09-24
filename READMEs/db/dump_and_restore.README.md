@@ -8,3 +8,7 @@ psql -h localhost -U postgres -p 5432 kalygo < dump.sql
 # Restoring dumped DB into dockerized Postgres DB
 
 cat db_backups/kalygo_8_23_2023.sql | docker exec -i kalygo-test psql -U postgres -d kalygo
+
+## BACKUP DB WITH ANSIBLE
+
+ansible-playbook --inventory inventory.prod --key-file "./*.pem" backup_db.yml

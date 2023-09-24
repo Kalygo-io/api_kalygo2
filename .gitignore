@@ -24,6 +24,7 @@ cicd.staging.yaml
 cicd.prod.yml
 cicd.prod.yaml
 cicd_example.yml
+backup_db.yml
 
 # ecosystem.config.js.bk
 ecosystem.config.prod.js

@@ -8,6 +8,7 @@ import { changePlan } from "./changePlan";
 import { deleteAccount } from "./deleteAccount";
 import { cancelSubscription } from "./cancelSubscription";
 import { getAccountPaymentMethods } from "./getAccountPaymentMethods";
+import { getAccountById } from "./getAccountById";
 import { getPurchaseHistory } from "./getPurchaseHistory";
 import { getAccessGroups } from "./getAccessGroups";
 import { getPrompts } from "./getPrompts";
@@ -18,6 +19,7 @@ export {
   buyCredits,
   createStripeAccount,
   getAccount,
+  getAccountById,
   getPrompts,
   deleteAccount,
   patchAccount,

@@ -9,6 +9,7 @@ import {
   deleteAccount,
   cancelSubscription,
   getAccountPaymentMethods,
+  getAccountById,
   getPurchaseHistory,
   getAccessGroups,
   getAccountWithAccessGroups,
@@ -16,7 +17,7 @@ import {
 } from "./handlers";
 
 import { Router } from "express";
-import { authenticateToken } from "@middleware/index";
+import { authenticateToken, isAdmin } from "@middleware/index";
 import { buyCredits } from "./handlers/buyCredits";
 
 const router = Router();
@@ -46,6 +47,8 @@ router
 router.route("/buy-credits").post(authenticateToken, buyCredits);
 router.route("/change-plan").patch(authenticateToken, changePlan);
 router.route("/").get(authenticateToken, getAccount);
+router.route("/:id").get([authenticateToken, isAdmin], getAccountById);
+
 router
   .route("/get-account-with-access-groups")
   .get(authenticateToken, getAccountWithAccessGroups);

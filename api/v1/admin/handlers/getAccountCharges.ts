@@ -32,12 +32,11 @@ export async function getAccountCharges(
     });
 
     stripeCharges = [...response.data];
-    while (response.has_more) {
-      const lastChargeInResponse = response.data[response.data.length - 1];
+    while (response.next_page) {
       response = await stripe.charges.search({
         query: `email:\'${customerSearchResults?.data[0]?.id}\'`,
         limit: 100,
-        starting_after: lastChargeInResponse.id,
+        page: response.next_page,
       });
 
       stripeCharges = [...stripeCharges, ...response.data];

@@ -18,7 +18,12 @@ function errorMiddleware(
   const stack = error.stack || "";
 
   if (process.env.NODE_ENV === "production") {
-    response.status(status).send();
+    // response.status(status).send();
+    response.status(status).json({
+      status,
+      message,
+      stack,
+    });
   } else {
     response.status(status).json({
       status,

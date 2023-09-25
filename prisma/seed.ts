@@ -7,23 +7,31 @@ async function main() {
   await prisma.accessGroup.upsert({
     update: {
       name: "Public",
-      visible: true,
+      createdById: null,
     },
     where: {
       id: 1,
     },
     create: {
-      name: "public",
-      createdById: 1,
-      visible: true,
+      name: "Public",
+      createdById: null,
     },
   });
 
-  //   await prisma.accessGroup.delete({
-  //     where: {
-  //       id: 3,
-  //     },
-  //   });
+  await prisma.accessGroup.upsert({
+    update: {
+      name: "Admin",
+      createdById: null,
+    },
+    where: {
+      id: 2,
+    },
+    create: {
+      name: "Admin",
+      createdById: null,
+      id: 2,
+    },
+  });
 
   accessGroups = await prisma.accessGroup.findMany({});
   console.log("accessGroups", accessGroups);

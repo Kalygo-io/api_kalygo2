@@ -323,7 +323,6 @@ export async function replicateSummarizeFilesOverall(
         },
       });
       // ***
-
       outputTokens += outputTokenCount; // track output tokens
       tpmAccum += outputTokenCount; // accumulate output tokens
       // prettier-ignore

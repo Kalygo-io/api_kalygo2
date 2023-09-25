@@ -11,3 +11,4 @@ curl -X POST http://localhost:3000/api/v1/mailing/join
    ## TIPS
 
    - need to seed db with the "Public" access group with id 1 ie: `npx prisma db seed`
+   - need to seed db with the "Admin" access group with id 2 ie: `npx prisma db seed`

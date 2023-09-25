@@ -38,3 +38,8 @@ DELETE FROM "Account" WHERE id=26;
 ##
 
 npx prisma db seed
+
+##
+
+INSERT INTO AccountsAndAccessGroups ("accountId", "accessGroupId", "createdById")
+VALUES (1,10,1);

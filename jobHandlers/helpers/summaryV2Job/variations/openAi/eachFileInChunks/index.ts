@@ -221,23 +221,6 @@ export async function openAiSummarizeEachFileInChunks(
       },
     });
 
-    const accessGroup = await prisma.accessGroup.create({
-      data: {
-        name: `summaryV2_${summaryV2Record.id}`,
-        createdById: account?.id!,
-      },
-    });
-
-    await prisma.summariesAndAccessGroups.create({
-      data: {
-        accessGroupId: accessGroup.id,
-        summaryId: summaryV2Record.id,
-        createdBy: account?.email!,
-      },
-    });
-
-    // ^^^ add Summary to caller's Access Group ^^^
-
     // -v-v- SEND AN EMAIL NOTIFICATION -v-v-
     p("send email notification...");
     try {

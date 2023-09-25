@@ -35,7 +35,7 @@ export async function getAccountCharges(
     while (response.has_more) {
       const lastChargeInResponse = response.data[response.data.length - 1];
       response = await stripe.charges.search({
-        query: `email:\'${account?.email}\'`,
+        query: `email:\'${customerSearchResults?.data[0]?.id}\'`,
         limit: 100,
         starting_after: lastChargeInResponse.id,
       });

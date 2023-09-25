@@ -47,11 +47,13 @@ router
 router.route("/buy-credits").post(authenticateToken, buyCredits);
 router.route("/change-plan").patch(authenticateToken, changePlan);
 router.route("/").get(authenticateToken, getAccount);
-router.route("/:id").get([authenticateToken, isAdmin], getAccountById);
 
 router
   .route("/get-account-with-access-groups")
   .get(authenticateToken, getAccountWithAccessGroups);
+
+router.route("/:id").get([authenticateToken, isAdmin], getAccountById);
+
 router.route("/").patch(authenticateToken, patchAccount);
 router.route("/").delete(authenticateToken, deleteAccount);
 

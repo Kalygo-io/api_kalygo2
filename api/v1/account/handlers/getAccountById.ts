@@ -30,7 +30,13 @@ export async function getAccountById(
     // res.status(200).json(account);
 
     res.status(200).json({
-      ...pick(account, ["email", "subscriptionPlan", "firstName", "lastName"]),
+      ...pick(account, [
+        "email",
+        "subscriptionPlan",
+        "firstName",
+        "lastName",
+        "id",
+      ]),
       // subscriptions: subscriptions,
       // stripeDefaultSource: newStripeCustomer.default_source,
       summaryCredits: get(account, "SummaryCredits.amount", 0),

@@ -7,6 +7,7 @@ import {
   getAccountsWithCard,
   getLogins,
   getCharges,
+  getAccountCharges,
 } from "./handlers";
 import { authenticateToken } from "@/middleware";
 import { isAdmin } from "@/middleware";
@@ -20,6 +21,11 @@ router
   .route("/get-accounts-with-card")
   .get(authenticateToken, isAdmin, getAccountsWithCard);
 router.route("/get-charges").get(authenticateToken, isAdmin, getCharges);
+
+router
+  .route("/get-account-charges")
+  .get(authenticateToken, isAdmin, getAccountCharges);
+
 router.route("/get-logins").get(authenticateToken, isAdmin, getLogins);
 router
   .route("/allocate-summary-credits")

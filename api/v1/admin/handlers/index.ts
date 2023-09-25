@@ -6,6 +6,7 @@ import { getLogins } from "./getLogins";
 import { getAccounts } from "./getAccounts";
 import { getAccountsWithCard } from "./getAccountsWithCard";
 import { getCharges } from "./getCharges";
+import { getAccountCharges } from "./getAccountCharges";
 import { checkAdminFrontend } from "./checkAdminFrontend";
 
 export {
@@ -13,6 +14,7 @@ export {
   getAccounts,
   getAccountsWithCard,
   getCharges,
+  getAccountCharges,
   getLogins,
   allocateSummaryCredits,
   allocateSearchCredits,

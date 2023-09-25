@@ -42,7 +42,7 @@ model Account {
   MemberedAccessGroups   AccountsAndAccessGroups[] @relation("Membered")
   Prompts                Prompt[]
   CreatedAccessGroups    AccountsAndAccessGroups[] @relation("Created")
-  AccessGroup            AccessGroup[]
+  AccessGroups           AccessGroup[]
 }
 
 model Summary {

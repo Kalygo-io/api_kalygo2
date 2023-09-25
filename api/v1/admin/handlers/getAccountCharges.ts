@@ -34,7 +34,7 @@ export async function getAccountCharges(
     stripeCharges = [...response.data];
     while (response.next_page) {
       response = await stripe.charges.search({
-        query: `email:\'${customerSearchResults?.data[0]?.id}\'`,
+        query: `customer:\'${customerSearchResults?.data[0]?.id}\'`,
         limit: 100,
         page: response.next_page,
       });

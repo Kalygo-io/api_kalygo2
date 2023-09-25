@@ -18,9 +18,16 @@ export async function getAccountCharges(
       },
     });
 
+    const customerSearchResults = await stripe.customers.search({
+      query: `email:\'${account?.email}\'`,
+      limit: 1,
+    });
+
+    console.log("customerSearchResults", customerSearchResults);
+
     let stripeCharges: any[] = [];
     let response = await stripe.charges.search({
-      query: `email:\'${account?.email}\'`,
+      query: `customer:\'${customerSearchResults?.data[0]?.id}\'`,
       limit: 100,
     });
 

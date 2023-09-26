@@ -23,9 +23,20 @@ export async function getAccessGroup(
         id: parseInt(id),
         createdById: account?.id!,
       },
+      include: {
+        Files: true,
+        Members: {
+          include: {
+            account: true,
+          },
+        },
+        SummariesAndAccessGroups: true,
+        CustomRequestsAndAccessGroups: true,
+        PromptsAndAccessGroups: true,
+      },
     });
 
-    res.status(200).send(record);
+    res.status(200).json(record);
   } catch (e) {
     next(e);
   }

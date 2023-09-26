@@ -6,6 +6,7 @@ import {
   deleteAccountFromAccessGroup,
   addAccountToAccessGroup,
   deleteCustomRequestFromAccessGroup,
+  deletePromptFromAccessGroup,
 } from "./handlers";
 import { Router } from "express";
 import { authenticateToken } from "@middleware/index";
@@ -32,6 +33,10 @@ router
     isAccessGroupOwner,
     deleteCustomRequestFromAccessGroup
   );
+
+router
+  .route("/delete-prompt-from-access-group/:id")
+  .delete(authenticateToken, isAccessGroupOwner, deletePromptFromAccessGroup);
 
 router
   .route("/add-account-to-access-group/:id")

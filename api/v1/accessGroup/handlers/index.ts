@@ -3,6 +3,7 @@ import { deleteAccessGroup } from "./delete";
 import { deleteAccountFromAccessGroup } from "./deleteAccountFromAccessGroup";
 import { deleteSummaryFromAccessGroup } from "./deleteSummaryFromAccessGroup";
 import { deleteCustomRequestFromAccessGroup } from "./deleteCustomRequestFromAccessGroup";
+import { deletePromptFromAccessGroup } from "./deletePromptFromAccessGroup";
 import { getAccessGroup } from "./get";
 import { addAccountToAccessGroup } from "./addAccountToAccessGroup";
 
@@ -13,5 +14,6 @@ export {
   deleteAccountFromAccessGroup,
   deleteSummaryFromAccessGroup,
   deleteCustomRequestFromAccessGroup,
+  deletePromptFromAccessGroup,
   getAccessGroup,
 };

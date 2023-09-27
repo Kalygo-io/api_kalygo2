@@ -15,7 +15,11 @@ export async function viewQueue(
       "waiting",
       "completed",
       "failed",
+      "delayed",
+      "paused",
     ]);
+
+    let delayedJobs = await jobQueue.getDelayed();
 
     // console.log("activeJobs", activeJobs);
 
@@ -26,6 +30,7 @@ export async function viewQueue(
 
     res.status(200).send({
       activeJobs,
+      delayedJobs,
     });
   } catch (e) {
     next(e);

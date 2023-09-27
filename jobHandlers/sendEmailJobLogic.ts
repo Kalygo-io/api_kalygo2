@@ -1,26 +1,73 @@
-import { ScanningMode } from "@prisma/client";
-import { CustomRequestCustomizations } from "@/types/CustomRequestCustomizations";
-import { eachFileInChunks } from "./helpers/customRequestJob/variations/eachFileInChunks";
-import { eachFileOverall } from "./helpers/customRequestJob/variations/eachFileOverall";
-import { promptAgainstFilesOverall } from "./helpers/customRequestJob/variations/overall";
-import { eachFilePerPage } from "./helpers/customRequestJob/variations/eachFilePerPage";
-import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
+import { funStationaryTheme_SES_Config } from "@/emails/v2/funStationaryThemedEmailTemplate";
+import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
+import { sesClient } from "@/clients/ses_client";
 
 export async function sendEmailJobLogic(
   params: {
+    recipientEmail: string;
     locale: string;
+    campaign: string;
+    subject: string;
+    emailPreviewText: string;
+    logoOnclickUrl: string;
+    logoImageUrl: string;
+    greeting: string;
+    paragraphs: Record<string, string>;
+    ending: string;
+    endingSignature: string;
   },
   job: any,
   done: (err?: Error | null, result?: any) => void
 ) {
   try {
     console.log("processing sendEmailJobLogic with params...", params);
-    // const { files, bucket, email, customizations, language, locale } = params;
-    // console.log(bucket, files, email, customizations, language);
-    // if (!bucket || !files || !email || !customizations || !language) {
-    //   done(new Error("Invalid Data"));
-    //   return;
-    // }
+    const {
+      recipientEmail,
+      locale,
+      campaign,
+      subject,
+      emailPreviewText,
+      logoOnclickUrl,
+      logoImageUrl,
+      greeting,
+      paragraphs,
+      ending,
+      endingSignature,
+    } = params;
+
+    if (
+      !recipientEmail ||
+      !locale ||
+      !campaign ||
+      !subject ||
+      !emailPreviewText ||
+      !logoOnclickUrl ||
+      !logoImageUrl ||
+      !greeting ||
+      !paragraphs ||
+      !ending ||
+      !endingSignature
+    ) {
+      done(new Error("Invalid Data"));
+      return;
+    }
+
+    const emailConfig = funStationaryTheme_SES_Config(
+      campaign,
+      [recipientEmail],
+      subject,
+      "messageAsText",
+      emailPreviewText,
+      logoOnclickUrl,
+      logoImageUrl,
+      greeting,
+      paragraphs,
+      ending,
+      endingSignature
+    );
+    await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
+
+    done(null, {});
   } catch (e: any) {
     done(new Error(e ? e.message : "Something went wrong"));
   }

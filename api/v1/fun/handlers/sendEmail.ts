@@ -19,9 +19,10 @@ export async function sendEmail(
     console.log("POST send-email");
 
     const {
+      scheduledAtUnixMilliseconds,
+      campaign,
       recipientEmails,
       subject,
-
       emailPreviewText,
       logoOnclickUrl,
       logoImageUrl,
@@ -30,6 +31,13 @@ export async function sendEmail(
       ending,
       endingSignature,
     } = req.body;
+
+    console.log("scheduledAtUnixMilliseconds", scheduledAtUnixMilliseconds);
+
+    console.log(
+      "Is this email scheduled for the future?",
+      new Date().getTime() < scheduledAtUnixMilliseconds
+    );
 
     // let locale: string = req?.i18n?.language?.substring(0, 2) || "en";
     let messageAsText = `${greeting}\n\n`;
@@ -50,6 +58,7 @@ export async function sendEmail(
 
     for (let i = 0; i < recipientEmails.length; i++) {
       const emailConfig = funStationaryTheme_SES_Config(
+        campaign,
         // @ts-ignore
         [recipientEmails[i]],
         subject,

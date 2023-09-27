@@ -3,6 +3,7 @@ const TEMPLATE = `FUN_STATIONARY_THEME`;
 import { SendEmailCommandInput } from "@aws-sdk/client-ses";
 
 export function funStationaryTheme_SES_Config(
+  campaign: string,
   recipients: string[],
   subject: string,
   messageAsText: string,
@@ -71,7 +72,7 @@ export function funStationaryTheme_SES_Config(
       },
       {
         Name: "Campaign",
-        Value: "3_month_Milestone_Organic_Users_Feedback_Request",
+        Value: campaign,
       },
     ],
   };

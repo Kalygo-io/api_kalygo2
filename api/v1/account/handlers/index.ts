@@ -15,6 +15,7 @@ import { getPrompts } from "./getPrompts";
 import { getAccountWithAccessGroups } from "./getAccountWithAccessGroups";
 import { buyCredits } from "./buyCredits";
 import { uploadContextDocument } from "./uploadContextDocument";
+import { uploadAvatar } from "./uploadAvatar";
 import { getContextDocuments } from "./getContextDocuments";
 import { deleteContextDocument } from "./deleteContextDocument";
 import { downloadContextDocument } from "./downloadContextDocument";
@@ -37,6 +38,7 @@ export {
   getAccessGroups,
   getAccountWithAccessGroups,
   getContextDocuments,
+  uploadAvatar,
   uploadContextDocument,
   deleteContextDocument,
   downloadContextDocument,

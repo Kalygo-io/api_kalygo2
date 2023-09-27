@@ -44,6 +44,7 @@ model Account {
   CreatedAccessGroups    AccountsAndAccessGroups[] @relation("Created")
   AccessGroups           AccessGroup[]
   AccountContext         File[]                    @relation("AccountContext")
+  ProfilePicture         File?                     @relation("ProfilePicture")
 }
 
 model Summary {
@@ -113,6 +114,9 @@ model File {
 
   AccountContext   Account? @relation("AccountContext", fields: [accountContextId], references: [id])
   accountContextId Int?
+
+  AccountForPicture   Account? @relation("ProfilePicture", fields: [accountForPictureId], references: [id])
+  accountForPictureId Int?     @unique
 }
 
 model VectorSearch {

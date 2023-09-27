@@ -18,6 +18,7 @@ import {
   getContextDocuments,
   deleteContextDocument,
   downloadContextDocument,
+  uploadAvatar,
 } from "./handlers";
 
 import { Router } from "express";
@@ -67,6 +68,10 @@ router
     [authenticateToken, isAdmin, multerS3Middleware.single("contextDocument")],
     uploadContextDocument
   );
+
+router
+  .route("/upload-avatar")
+  .post([authenticateToken, multerS3Middleware.single("avatar")], uploadAvatar);
 
 router
   .route("/get-context-documents/:accountId")

@@ -3,6 +3,7 @@ import { stripe } from "@/clients/stripe_client";
 import pick from "lodash.pick";
 import { Request, Response, NextFunction } from "express";
 import get from "lodash.get";
+import { s3Client, getSignedUrl, GetObjectCommand } from "@/clients/s3_client";
 
 export async function getAccount(
   req: Request,
@@ -25,6 +26,7 @@ export async function getAccount(
         VectorSearchCredits: true,
         CustomRequestCredits: true,
         UsageCredits: true,
+        ProfilePicture: true,
       },
     });
 
@@ -38,8 +40,21 @@ export async function getAccount(
     };
 
     if (!customerSearchResults.data[0]) {
+      let url;
+      if (account?.ProfilePicture?.key) {
+        const command = new GetObjectCommand({
+          Bucket: process.env.S3_DOCUMENTS_BUCKET,
+          Key: account?.ProfilePicture?.key,
+        });
+        // @ts-ignore
+        url = await getSignedUrl(s3Client, command, {
+          expiresIn: 3600,
+        });
+      }
+
       res.status(200).json({
         ...pick(account, [
+          "id",
           "email",
           "firstName",
           "lastName",
@@ -51,6 +66,7 @@ export async function getAccount(
         vectorSearchCredits: get(account, "VectorSearchCredits.amount", 0),
         customRequestCredits: get(account, "CustomRequestCredits.amount", 0),
         usageCredits: get(account, "UsageCredits.amount"),
+        profilePicture: null,
       });
     } else {
       console.log("account", account);
@@ -59,8 +75,21 @@ export async function getAccount(
         customer: customerSearchResults.data[0].id,
       });
 
+      let url;
+      if (account?.ProfilePicture?.key) {
+        const command = new GetObjectCommand({
+          Bucket: process.env.S3_DOCUMENTS_BUCKET,
+          Key: account?.ProfilePicture?.key,
+        });
+        // @ts-ignore
+        url = await getSignedUrl(s3Client, command, {
+          expiresIn: 3600,
+        });
+      }
+
       res.status(200).json({
         ...pick(account, [
+          "id",
           "email",
           "firstName",
           "lastName",
@@ -72,6 +101,7 @@ export async function getAccount(
         vectorSearchCredits: get(account, "VectorSearchCredits.amount", 0),
         customRequestCredits: get(account, "CustomRequestCredits.amount", 0),
         usageCredits: get(account, "UsageCredits.amount"),
+        profilePicture: url,
       });
     }
   } catch (e) {

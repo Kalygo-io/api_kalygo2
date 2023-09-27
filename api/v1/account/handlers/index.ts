@@ -14,6 +14,10 @@ import { getAccessGroups } from "./getAccessGroups";
 import { getPrompts } from "./getPrompts";
 import { getAccountWithAccessGroups } from "./getAccountWithAccessGroups";
 import { buyCredits } from "./buyCredits";
+import { uploadContextDocument } from "./uploadContextDocument";
+import { getContextDocuments } from "./getContextDocuments";
+import { deleteContextDocument } from "./deleteContextDocument";
+import { downloadContextDocument } from "./downloadContextDocument";
 
 export {
   buyCredits,
@@ -32,4 +36,8 @@ export {
   getPurchaseHistory,
   getAccessGroups,
   getAccountWithAccessGroups,
+  getContextDocuments,
+  uploadContextDocument,
+  deleteContextDocument,
+  downloadContextDocument,
 };

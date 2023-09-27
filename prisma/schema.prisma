@@ -43,6 +43,7 @@ model Account {
   Prompts                Prompt[]
   CreatedAccessGroups    AccountsAndAccessGroups[] @relation("Created")
   AccessGroups           AccessGroup[]
+  AccountContext         File[]                    @relation("AccountContext")
 }
 
 model Summary {
@@ -99,15 +100,19 @@ model Rating {
 
 model File {
   id              Int            @id @default(autoincrement())
-  summary         SummaryV2      @relation(fields: [summaryId], references: [id])
-  summaryId       Int
+  summary         SummaryV2?     @relation(fields: [summaryId], references: [id])
+  summaryId       Int?
   bucket          String
   key             String
+  originalName    String
   hash            String?
   createdAt       DateTime?      @default(now())
   CustomRequest   CustomRequest? @relation(fields: [customRequestId], references: [id])
   customRequestId Int?
   AccessGroups    AccessGroup[]
+
+  AccountContext   Account? @relation("AccountContext", fields: [accountContextId], references: [id])
+  accountContextId Int?
 }
 
 model VectorSearch {

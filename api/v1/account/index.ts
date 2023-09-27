@@ -14,11 +14,16 @@ import {
   getAccessGroups,
   getAccountWithAccessGroups,
   getPrompts,
+  uploadContextDocument,
+  getContextDocuments,
+  deleteContextDocument,
+  downloadContextDocument,
 } from "./handlers";
 
 import { Router } from "express";
 import { authenticateToken, isAdmin } from "@middleware/index";
 import { buyCredits } from "./handlers/buyCredits";
+import { multerS3Middleware } from "@middleware/index";
 
 const router = Router();
 
@@ -56,5 +61,23 @@ router.route("/:id").get([authenticateToken, isAdmin], getAccountById);
 
 router.route("/").patch(authenticateToken, patchAccount);
 router.route("/").delete(authenticateToken, deleteAccount);
+router
+  .route("/upload-context-document")
+  .post(
+    [authenticateToken, isAdmin, multerS3Middleware.single("contextDocument")],
+    uploadContextDocument
+  );
+
+router
+  .route("/get-context-documents/:accountId")
+  .get([authenticateToken, isAdmin], getContextDocuments);
+
+router
+  .route("/delete-context-document")
+  .delete([authenticateToken, isAdmin], deleteContextDocument);
+
+router
+  .route("/download-context-document")
+  .post([authenticateToken, isAdmin], downloadContextDocument);
 
 export default router;

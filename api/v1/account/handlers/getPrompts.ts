@@ -17,7 +17,11 @@ export async function getPrompts(
         email: req.user.email,
       },
       include: {
-        Prompts: true,
+        Prompts: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
       },
     });
     console.log("account", account?.email);

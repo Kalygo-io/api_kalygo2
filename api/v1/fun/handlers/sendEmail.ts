@@ -68,17 +68,17 @@ export async function sendEmail(
 
       res.status(200).send();
     } else {
-      let messageAsText = `${greeting}\n\n`;
+      let messageAsText = `${greeting}\\n\\n`;
       for (let i = 1; i < 11; i++) {
         console.log("paragraphs[i]", paragraphs[i]);
 
         if (!paragraphs[i]) {
           delete paragraphs[i];
         } else {
-          messageAsText += `${paragraphs[i]}\n\n`;
+          messageAsText += `${paragraphs[i]}\\n\\n`;
         }
       }
-      messageAsText += `${ending}\n${endingSignature}`;
+      messageAsText += `${ending}\\n${endingSignature}`;
 
       console.log("messageAsText", messageAsText);
 
@@ -90,7 +90,8 @@ export async function sendEmail(
           // @ts-ignore
           [recipientEmails[i]],
           subject,
-          "messageAsText",
+          messageAsText,
+          // "Hey\\nasdf",
           emailPreviewText,
           logoOnclickUrl,
           logoImageUrl,

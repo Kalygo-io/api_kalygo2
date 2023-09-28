@@ -47,9 +47,10 @@ export function funStationaryTheme_SES_Config(
     },
     Source: "Kalygo <team@kalygo.io>",
     Template: TEMPLATE,
+    // \"MESSAGE_AS_TEXT\": \"${messageAsText}\",
     TemplateData: `{
         \"SUBJECT"\: \"${subject}\",
-        \"MESSAGE_AS_TEXT\": \"${messageAsText}\",
+        ${messageAsText ? `\"MESSAGE_AS_TEXT\":\"${messageAsText}\",` : ""}
         \"EMAIL_PREVIEW_TEXT\": \"${emailPreviewText}\",
         \"LOGO_ONCLICK_URL\": \"${logoOnclickUrl}\",
         \"LOGO_IMAGE_URL\": \"${logoImageUrl}\",

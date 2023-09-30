@@ -1,4 +1,4 @@
-import { getPrompt, deletePrompt } from "./handlers";
+import { getPrompt, deletePrompt, searchForPrompts } from "./handlers";
 
 import { Router } from "express";
 import { authenticateToken } from "@middleware/index";
@@ -14,6 +14,7 @@ router.route("/prompt/:id").delete(authenticateToken, deletePrompt);
 router.route("/prompt/:id").get(authenticateToken, getPrompt);
 
 router.route("/get-public-prompt/:id").get([isPromptPublic], getPublicPrompt);
+router.route("/prompts/search").post([authenticateToken], searchForPrompts);
 
 router.route("/rate-prompt/:id").post([authenticateToken], ratePrompt);
 

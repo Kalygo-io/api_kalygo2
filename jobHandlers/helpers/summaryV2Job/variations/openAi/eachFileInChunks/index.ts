@@ -221,6 +221,22 @@ export async function openAiSummarizeEachFileInChunks(
       },
     });
 
+    // Save the files for reference
+    for (let i = 0; i < files.length; i++) {
+      console.log("--- ___ ---");
+
+      await prisma.file.create({
+        data: {
+          summaryId: summaryV2Record.id,
+          originalName: files[i].originalname,
+          bucket: files[i].bucket,
+          key: files[i].key,
+          hash: files[i].etag,
+          ownerId: account?.id,
+        },
+      });
+    }
+
     // -v-v- SEND AN EMAIL NOTIFICATION -v-v-
     p("send email notification...");
     try {

@@ -27,6 +27,7 @@ export async function getAccount(
         CustomRequestCredits: true,
         UsageCredits: true,
         ProfilePicture: true,
+        Files: true,
       },
     });
 
@@ -59,6 +60,7 @@ export async function getAccount(
           "firstName",
           "lastName",
           "subscriptionPlan",
+          "Files",
         ]),
         subscriptions: subscriptions,
         stripeDefaultSource: null,
@@ -94,6 +96,7 @@ export async function getAccount(
           "firstName",
           "lastName",
           "subscriptionPlan",
+          "Files",
         ]),
         subscriptions: subscriptions,
         stripeDefaultSource: customerSearchResults.data[0]?.default_source,

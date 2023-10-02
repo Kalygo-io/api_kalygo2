@@ -46,6 +46,7 @@ model Account {
   AccessGroups           AccessGroup[]
   AccountContext         File[]                    @relation("AccountContext")
   ProfilePicture         File?                     @relation("ProfilePicture")
+  Files                  File[]
 }
 
 model Summary {
@@ -104,6 +105,8 @@ model File {
   id              Int            @id @default(autoincrement())
   summary         SummaryV2?     @relation(fields: [summaryId], references: [id])
   summaryId       Int?
+  Owner           Account?       @relation(fields: [ownerId], references: [id])
+  ownerId         Int?
   bucket          String
   key             String
   originalName    String

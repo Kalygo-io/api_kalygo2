@@ -7,7 +7,6 @@ open -a Docker
 ## Launch a PostgreSQL container
 
 - docker pull postgres:15
-- docker run --name kalygo-test -e POSTGRES_PASSWORD=mysecretpassword -d postgres -p 5432:5432
 - docker run --name kalygo-test -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 postgres
 - docker ps
 

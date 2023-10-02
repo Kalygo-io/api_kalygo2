@@ -321,6 +321,24 @@ DATA: ${contextForFile}`;
         prompt: prompt,
       },
     });
+
+    // -v-v- STORE FILES FOR REFERENCE -v-v-
+    for (let i = 0; i < files.length; i++) {
+      console.log("--- ___ ---");
+
+      await prisma.file.create({
+        data: {
+          customRequestId: customRequestRecord.id,
+          originalName: files[i].originalname,
+          bucket: files[i].bucket,
+          key: files[i].key,
+          hash: files[i].etag,
+          ownerId: account?.id,
+        },
+      });
+    }
+    // -^-^- STORE FILES FOR REFERENCE -^-^-
+
     // -v-v- SAVE THE FINAL PROMPT TO DB -v-v-
     if (finalPrompt) {
       // -v-v- SAVE THE PROMPT TO DB -v-v-

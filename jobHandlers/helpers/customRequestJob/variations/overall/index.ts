@@ -342,6 +342,21 @@ CONTEXT OF EACH FILE: ${chunks[0]}`;
         prompt: prompt,
       },
     });
+    // -v-v- STORE FILES FOR REFERENCE -v-v-
+    for (let i = 0; i < files.length; i++) {
+      console.log("--- ___ ---");
+
+      await prisma.file.create({
+        data: {
+          customRequestId: customRequestRecord.id,
+          originalName: files[i].originalname,
+          bucket: files[i].bucket,
+          key: files[i].key,
+          hash: files[i].etag,
+          ownerId: account?.id,
+        },
+      });
+    }
     // -v-v- SAVE THE FINAL PROMPT TO DB -v-v-
     if (overallPrompt) {
       // -v-v- SAVE THE PROMPT TO DB -v-v-

@@ -207,6 +207,21 @@ export async function eachFilePerPage(
         prompt: prompt,
       },
     });
+    // -v-v- STORE FILES FOR REFERENCE -v-v-
+    for (let i = 0; i < files.length; i++) {
+      console.log("--- ___ ---");
+
+      await prisma.file.create({
+        data: {
+          customRequestId: customRequestRecord.id,
+          originalName: files[i].originalname,
+          bucket: files[i].bucket,
+          key: files[i].key,
+          hash: files[i].etag,
+          ownerId: account?.id,
+        },
+      });
+    }
     // -v-v- SEND AN EMAIL NOTIFICATION -v-v-
     p("send an email notification...");
     job.progress(95);

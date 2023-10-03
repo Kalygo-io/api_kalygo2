@@ -19,6 +19,8 @@ import {
   deleteContextDocument,
   downloadContextDocument,
   uploadAvatar,
+  downloadFile,
+  deleteFile,
 } from "./handlers";
 
 import { Router } from "express";
@@ -87,5 +89,8 @@ router
 router
   .route("/download-context-document")
   .post([authenticateToken, isAdmin], downloadContextDocument);
+
+router.route("/download-file/:id").get([authenticateToken], downloadFile);
+router.route("/delete-file").delete([authenticateToken], deleteFile);
 
 export default router;

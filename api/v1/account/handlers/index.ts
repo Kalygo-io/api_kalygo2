@@ -19,6 +19,8 @@ import { uploadAvatar } from "./uploadAvatar";
 import { getContextDocuments } from "./getContextDocuments";
 import { deleteContextDocument } from "./deleteContextDocument";
 import { downloadContextDocument } from "./downloadContextDocument";
+import { downloadFile } from "./downloadFile";
+import { deleteFile } from "./deleteFile";
 
 export {
   buyCredits,
@@ -42,4 +44,6 @@ export {
   uploadContextDocument,
   deleteContextDocument,
   downloadContextDocument,
+  downloadFile,
+  deleteFile,
 };

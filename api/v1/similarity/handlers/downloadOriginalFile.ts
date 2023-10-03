@@ -44,7 +44,7 @@ export async function downloadOriginalFile(
             return res.status(500).json({ error: err });
           } else {
             res.attachment(vectorSearch.bucketKey); // sets correct header (fixes your issue )
-            //if all is fine, bucket and file exist, it will return file to client
+            // if all is fine, bucket and file exist, it will return file to client
             let getObjectResponse = await s3.getObject({
               Bucket: vectorSearch.bucket,
               Key: vectorSearch.bucketKey,

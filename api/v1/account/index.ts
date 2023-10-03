@@ -25,6 +25,7 @@ import { Router } from "express";
 import { authenticateToken, isAdmin } from "@middleware/index";
 import { buyCredits } from "./handlers/buyCredits";
 import { multerS3Middleware } from "@middleware/index";
+import { getFiles } from "./handlers/getFiles";
 
 const router = Router();
 
@@ -44,6 +45,8 @@ router
   .get(authenticateToken, getPurchaseHistory);
 
 router.route("/get-prompts").get(authenticateToken, getPrompts);
+
+router.route("/get-files").get(authenticateToken, getFiles);
 
 router.route("/get-access-groups").get(authenticateToken, getAccessGroups);
 

@@ -103,7 +103,7 @@ model Rating {
 
 model File {
   id              Int            @id @default(autoincrement())
-  summary         SummaryV2?     @relation(fields: [summaryId], references: [id])
+  Summary         SummaryV2?     @relation(fields: [summaryId], references: [id])
   summaryId       Int?
   Owner           Account?       @relation(fields: [ownerId], references: [id])
   ownerId         Int?

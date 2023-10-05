@@ -1,4 +1,3 @@
-import fs from "fs";
 import prisma from "@/db/prisma_client";
 import { Tiktoken, encoding_for_model } from "@dqbd/tiktoken";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";

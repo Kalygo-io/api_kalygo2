@@ -2,8 +2,12 @@
   "signup": {
     "subject": "Verificar e-mail",
     "message-as-text": "Verificar e-mail",
-    "greeting": "Bem-vindo a Kalygo",
+    "greeting": "Bem-vindo ao Kalygo",
     "message": "Link de verificação: {{verification_link}}",
+    "click-the-button-below": "Clique no botão abaixo para verificar seu e-mail.",
+    "click-to-verify": "Clique para verificar",
+    "need-help": "Preciso de ajuda?",
+    "contact-support": "Contate o suporte",
     "ending": ""
   },
   "resetPassword": {
@@ -25,24 +29,38 @@
     "message-as-text": "Seu resumo foi gerado",
     "greeting": "Seu resumo foi gerado",
     "message": "Ver resumo:",
-    "view-summary": "View Summary",
-    "email_preview": "Your summary has been generated",
+    "view-summary": "Ver resumo",
+    "email_preview": "Seu resumo foi gerado",
     "ending": ""
   },
   "vectorSearchJobComplete": {
-    "subject": "Seus resultados de pesquisa de vetores foram gerados",
-    "message-as-text": "Seus resultados de pesquisa de vetores foram gerados",
-    "greeting": "Seus resultados de pesquisa de vetores foram gerados",
+    "subject": "Os resultados da sua pesquisa vetorial foram gerados",
+    "message-as-text": "Os resultados da sua pesquisa vetorial foram gerados",
+    "greeting": "Os resultados da sua pesquisa vetorial foram gerados",
+    "message": "Ver resultados:",
+    "ending": ""
+  },
+  "ragJobComplete": {
+    "subject": "Seu R.A.G. resultados foram gerados",
+    "message-as-text": "Seu R.A.G. resultados foram gerados",
+    "greeting": "Seu R.A.G. resultados foram gerados",
     "message": "Ver resultados:",
     "ending": ""
   },
   "customRequestJobComplete": {
-    "subject": "Your custom request results have been generated",
-    "message-as-text": "Your custom request results have been generated",
-    "greeting": "Your custom request results have been generated",
-    "email_preview": "Your custom request results have been generated",
-    "message": "View results:",
-    "view_custom_request": "View custom request",
+    "subject": "Os resultados da sua solicitação personalizada foram gerados",
+    "message-as-text": "Os resultados da sua solicitação personalizada foram gerados",
+    "greeting": "Os resultados da sua solicitação personalizada foram gerados",
+    "email_preview": "Os resultados da sua solicitação personalizada foram gerados",
+    "message": "Ver resultados:",
+    "view_custom_request": "Ver solicitação personalizada",
+    "ending": ""
+  },
+  "purchasedCredits": {
+    "subject": "Os créditos foram adquiridos para sua conta",
+    "message-as-text": "Os créditos foram adquiridos para sua conta",
+    "greeting": "{{usage_credits}} créditos foram adquiridos para sua conta",
+    "message": "Se não foi você, entre em contato com support@kalygo.io imediatamente.",
     "ending": ""
   }
 }

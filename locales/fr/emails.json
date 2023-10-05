@@ -4,6 +4,10 @@
     "message-as-text": "Vérifier les courriels",
     "greeting": "Bienvenue à Kalygo",
     "message": "Lien de vérification: {{verification_link}}",
+    "click-the-button-below": "Cliquez sur le bouton ci-dessous pour vérifier votre email.",
+    "click-to-verify": "Cliquez pour vérifier",
+    "need-help": "Besoin d'aide?",
+    "contact-support": "Contactez le support",
     "ending": ""
   },
   "resetPassword": {
@@ -17,32 +21,46 @@
     "subject": "Mot de passe mis à jour",
     "message-as-text": "Mot de passe mis à jour",
     "greeting": "",
-    "message": "Votre mot de passe a été récemment mis à jour. Si ce n'était pas vous, veuillez contacter immédiatement support@kalygo.io.",
+    "message": "Votre mot de passe a été récemment mis à jour. Si ce n'est pas votre cas, veuillez contacter immédiatement support@kalygo.io.",
     "ending": ""
   },
   "summaryJobComplete": {
     "subject": "Votre résumé a été généré",
     "message-as-text": "Votre résumé a été généré",
     "greeting": "Votre résumé a été généré",
-    "message": "Afficher le résumé:",
-    "view-summary": "View Summary",
-    "email_preview": "Your summary has been generated",
+    "message": "Voir le résumé:",
+    "view-summary": "Afficher le résumé",
+    "email_preview": "Votre résumé a été généré",
     "ending": ""
   },
   "vectorSearchJobComplete": {
-    "subject": "Les résultats de votre recherche vectorielle ont été générés",
+    "subject": "Les résultats de votre recherche de vecteurs ont été générés",
     "message-as-text": "Les résultats de votre recherche vectorielle ont été générés",
     "greeting": "Les résultats de votre recherche vectorielle ont été générés",
     "message": "Afficher les résultats:",
     "ending": ""
   },
+  "ragJobComplete": {
+    "subject": "Votre R.A.G. les résultats ont été générés",
+    "message-as-text": "Votre R.A.G. les résultats ont été générés",
+    "greeting": "Votre R.A.G. les résultats ont été générés",
+    "message": "Voir les résultats:",
+    "ending": ""
+  },
   "customRequestJobComplete": {
-    "subject": "Your custom request results have been generated",
-    "message-as-text": "Your custom request results have been generated",
-    "greeting": "Your custom request results have been generated",
-    "email_preview": "Your custom request results have been generated",
-    "message": "View results:",
-    "view_custom_request": "View custom request",
+    "subject": "Les résultats de votre demande personnalisée ont été générés",
+    "message-as-text": "Les résultats de votre demande personnalisée ont été générés",
+    "greeting": "Les résultats de votre demande personnalisée ont été générés",
+    "email_preview": "Les résultats de votre demande personnalisée ont été générés",
+    "message": "Voir les résultats:",
+    "view_custom_request": "Afficher la demande personnalisée",
+    "ending": ""
+  },
+  "purchasedCredits": {
+    "subject": "Des crédits ont été achetés pour votre compte",
+    "message-as-text": "Des crédits ont été achetés pour votre compte",
+    "greeting": "{{usage_credits}} crédits ont été achetés pour votre compte",
+    "message": "Si ce n'est pas votre cas, veuillez contacter immédiatement support@kalygo.io.",
     "ending": ""
   }
 }

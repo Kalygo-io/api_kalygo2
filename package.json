@@ -21,7 +21,7 @@
     "credits:giveVectorSearchCredits": "ts-node -r tsconfig-paths/register scripts/giveVectorSearchCredits.ts",
     "credits:giveUsageCredits": "ts-node -r tsconfig-paths/register scripts/giveUsageCredits.ts",
     "credits:customRequestCredits": "ts-node -r tsconfig-paths/register scripts/giveCustomRequestCredits.ts",
-    "generateTranslations": "node scripts/generateTranslations",
+    "gt": "node scripts/generateTranslations",
     "deleteAccount": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/deleteAccount",
     "splitBySpace": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/splitBySpace",
     "encodeText": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/encodeText"
@@ -61,6 +61,7 @@
     "chromadb": "^1.5.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "csvtojson": "^2.0.10",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-winston": "^4.2.0",

@@ -4,6 +4,10 @@
     "message-as-text": "Verificar correo electrónico",
     "greeting": "Bienvenido a Kalygo",
     "message": "Enlace de verificación: {{verification_link}}",
+    "click-the-button-below": "Haga clic en el botón a continuación para verificar su correo electrónico.",
+    "click-to-verify": "Haga clic para verificar",
+    "need-help": "¿Necesitas ayuda?",
+    "contact-support": "Soporte de contacto",
     "ending": ""
   },
   "resetPassword": {
@@ -25,14 +29,21 @@
     "message-as-text": "Su resumen ha sido generado",
     "greeting": "Su resumen ha sido generado",
     "message": "Ver resumen:",
-    "view-summary": "View Summary",
-    "email_preview": "Your summary has been generated",
+    "view-summary": "Ver resumen",
+    "email_preview": "Su resumen ha sido generado",
     "ending": ""
   },
   "vectorSearchJobComplete": {
-    "subject": "Sus resultados de búsqueda de vectores han sido generados",
-    "message-as-text": "Sus resultados de búsqueda de vectores han sido generados",
-    "greeting": "Sus resultados de búsqueda de vectores han sido generados",
+    "subject": "Se han generado los resultados de su búsqueda de vectores.",
+    "message-as-text": "Se han generado los resultados de su búsqueda de vectores.",
+    "greeting": "Se han generado los resultados de su búsqueda de vectores.",
+    "message": "Ver resultados:",
+    "ending": ""
+  },
+  "ragJobComplete": {
+    "subject": "Tu R.A.G. se han generado resultados",
+    "message-as-text": "Tu R.A.G. se han generado resultados",
+    "greeting": "Tu R.A.G. se han generado resultados",
     "message": "Ver resultados:",
     "ending": ""
   },
@@ -43,6 +54,13 @@
     "email_preview": "Your custom request results have been generated",
     "message": "View results:",
     "view_custom_request": "View custom request",
+    "ending": ""
+  },
+  "purchasedCredits": {
+    "subject": "Se compraron créditos para su cuenta",
+    "message-as-text": "Se compraron créditos para su cuenta",
+    "greeting": "{{usage_credits}} créditos se compraron para tu cuenta.",
+    "message": "Si no fue así, comuníquese con support@kalygo.io de inmediato.",
     "ending": ""
   }
 }

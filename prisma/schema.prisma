@@ -47,6 +47,7 @@ model Account {
   AccountContext         File[]                    @relation("AccountContext")
   ProfilePicture         File?                     @relation("ProfilePicture")
   Files                  File[]
+  RAGRequest             RagRequest[]
 }
 
 model Summary {
@@ -132,6 +133,19 @@ model VectorSearch {
   bucketKey   String
   query       String
   results     Json
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
+}
+
+model RagRequest {
+  id          Int       @id @default(autoincrement())
+  requester   Account   @relation(fields: [requesterId], references: [id])
+  requesterId Int
+  filename    String    @default("")
+  bucket      String
+  bucketKey   String
+  prompt      String
+  completion  String
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @updatedAt
 }

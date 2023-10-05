@@ -11,21 +11,26 @@ export async function joinMailingList(
   try {
     console.log("joinMailingList");
 
-    axios.post(
-      "https://hooks.zapier.com/hooks/catch/13166575/3dzuxn1/",
-      {
+    await prisma.mailingList.create({
+      data: {
         email: req.body.email,
       },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    });
+
+    // axios.post(
+    //   "https://hooks.zapier.com/hooks/catch/13166575/3dzuxn1/",
+    //   {
+    //     email: req.body.email,
+    //   },
+    //   {
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //   }
+    // );
 
     res.status(200).send();
   } catch (e) {
     next(e);
   }
 }
-

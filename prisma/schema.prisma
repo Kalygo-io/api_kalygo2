@@ -11,6 +11,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model MailingList {
+  id    Int    @id @default(autoincrement())
+  email String @unique
+}
+
 model Account {
   id                     Int                       @id @default(autoincrement())
   email                  String                    @unique

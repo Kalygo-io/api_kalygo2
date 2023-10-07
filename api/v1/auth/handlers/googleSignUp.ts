@@ -30,6 +30,7 @@ export async function googleSignUp(
           // lastName: lastName,
           isGoogleAccount: true,
           emailVerified: true,
+          referralCode: req.body.referralCode || "",
         },
       });
       const customer: any = await stripe.customers.create({

@@ -54,6 +54,7 @@ model Account {
   Files                  File[]
   RAGRequest             RagRequest[]
   ReferralCodes          ReferralCode[]
+  referralCode           String                    @default("")
 }
 
 model ReferralCode {

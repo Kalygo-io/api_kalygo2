@@ -12,7 +12,7 @@ import config from "@/config";
 
 export async function signUp(req: Request, res: Response, next: NextFunction) {
   try {
-    const { email, password } = req.body;
+    const { email, password, referralCode } = req.body;
 
     if (process.env.NODE_ENV === "staging")
       throw new Error("Sign up not supported in staging");
@@ -31,6 +31,7 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
         email,
         passwordHash,
         emailVerificationToken,
+        referralCode: referralCode || "",
       },
     });
 

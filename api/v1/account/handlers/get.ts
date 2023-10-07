@@ -61,6 +61,7 @@ export async function getAccount(
           "lastName",
           "subscriptionPlan",
           "Files",
+          "referralCode",
         ]),
         subscriptions: subscriptions,
         stripeDefaultSource: null,

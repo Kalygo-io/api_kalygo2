@@ -36,6 +36,7 @@ export async function getAccountById(
         "firstName",
         "lastName",
         "id",
+        "referralCode",
       ]),
       summaryCredits: get(account, "SummaryCredits.amount", 0),
       vectorSearchCredits: get(account, "VectorSearchCredits.amount", 0),

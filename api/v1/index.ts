@@ -16,6 +16,7 @@ import queue from "./queue";
 import fun from "./fun";
 import prompt from "./prompt";
 import accessGroup from "./accessGroup";
+import referral from "./referral";
 
 const router = express.Router();
 
@@ -28,6 +29,7 @@ router.use("/admin", admin);
 router.use("/mailingList", mailingList);
 router.use("/account", account);
 router.use("/feedback", feedback);
+router.use("/referral", referral);
 router.use("/fun", fun);
 
 router.use(customRequest);
@@ -37,6 +39,7 @@ router.use(similaritySearch);
 router.use(rag);
 router.use(queue);
 router.use(prompt);
+router.use(accessGroup);
 router.use(accessGroup);
 
 export default router;

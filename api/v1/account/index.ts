@@ -21,6 +21,7 @@ import {
   uploadAvatar,
   downloadFile,
   deleteFile,
+  getReferralCodes,
 } from "./handlers";
 
 import { Router } from "express";
@@ -47,6 +48,7 @@ router
   .get(authenticateToken, getPurchaseHistory);
 
 router.route("/get-prompts").get(authenticateToken, getPrompts);
+router.route("/get-referral-codes").get(authenticateToken, getReferralCodes);
 
 router.route("/get-files").get(authenticateToken, getFiles);
 

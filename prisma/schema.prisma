@@ -53,6 +53,15 @@ model Account {
   ProfilePicture         File?                     @relation("ProfilePicture")
   Files                  File[]
   RAGRequest             RagRequest[]
+  ReferralCodes          ReferralCode[]
+}
+
+model ReferralCode {
+  Account   Account?  @relation(fields: [accountId], references: [id])
+  accountId Int?
+  code      String    @unique
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model Summary {

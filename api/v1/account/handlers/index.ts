@@ -12,6 +12,7 @@ import { getAccountById } from "./getAccountById";
 import { getPurchaseHistory } from "./getPurchaseHistory";
 import { getAccessGroups } from "./getAccessGroups";
 import { getPrompts } from "./getPrompts";
+import { getReferralCodes } from "./getReferralCodes";
 import { getAccountWithAccessGroups } from "./getAccountWithAccessGroups";
 import { buyCredits } from "./buyCredits";
 import { uploadContextDocument } from "./uploadContextDocument";
@@ -28,6 +29,7 @@ export {
   getAccount,
   getAccountById,
   getPrompts,
+  getReferralCodes,
   deleteAccount,
   patchAccount,
   addStripeCard,

@@ -17,6 +17,7 @@ import fun from "./fun";
 import prompt from "./prompt";
 import accessGroup from "./accessGroup";
 import referral from "./referral";
+import ocr from "./ocr";
 
 const router = express.Router();
 
@@ -31,6 +32,7 @@ router.use("/account", account);
 router.use("/feedback", feedback);
 router.use("/referral", referral);
 router.use("/fun", fun);
+router.use("/ocr", ocr);
 
 router.use(customRequest);
 router.use(download);

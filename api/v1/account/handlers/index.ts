@@ -22,8 +22,12 @@ import { deleteContextDocument } from "./deleteContextDocument";
 import { downloadContextDocument } from "./downloadContextDocument";
 import { downloadFile } from "./downloadFile";
 import { deleteFile } from "./deleteFile";
+import { addApiKey } from "./addApiKey";
+import { getApiKey } from "./getApiKey";
 
 export {
+  addApiKey,
+  getApiKey,
   buyCredits,
   createStripeAccount,
   getAccount,

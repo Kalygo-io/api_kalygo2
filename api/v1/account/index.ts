@@ -22,6 +22,8 @@ import {
   downloadFile,
   deleteFile,
   getReferralCodes,
+  addApiKey,
+  getApiKey,
 } from "./handlers";
 
 import { Router } from "express";
@@ -35,6 +37,9 @@ const router = Router();
 router
   .route("/create-stripe-account")
   .get(authenticateToken, createStripeAccount);
+
+// router.route("/add-api-key").post(addApiKey);
+// router.route("/get-api-key").get(getApiKey);
 
 router.route("/add-stripe-card").post(authenticateToken, addStripeCard);
 router.route("/delete-stripe-card").delete(authenticateToken, deleteStripeCard);

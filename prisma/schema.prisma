@@ -42,6 +42,7 @@ model Account {
   OpenAiCharges          OpenAiCharges[]
   Roles                  Role[]
   SummaryV2              SummaryV2[]
+  SummaryV3              SummaryV3[]
   Ratings                Rating[]
   SmartSearch            SmartSearch[]
   UsageCredits           UsageCredits?
@@ -95,6 +96,24 @@ model SummaryV2 {
   SummariesAndAccessGroups SummariesAndAccessGroups[]
 }
 
+model SummaryV3 {
+  id                       Int                        @id @default(autoincrement())
+  requester                Account                    @relation(fields: [requesterId], references: [id])
+  requesterId              Int
+  Files                    File[]
+  Ratings                  Rating[]
+  mode                     SummaryMode                @default(PRIOR_TO_TRACKING_MODE)
+  summary                  Json
+  title                    String                     @default("")
+  model                    String
+  format                   String
+  language                 String
+  batchId                  String                     @default("")
+  createdAt                DateTime?                  @default(now())
+  updatedAt                DateTime?                  @updatedAt
+  SummariesAndAccessGroups SummariesAndAccessGroups[]
+}
+
 model Rating {
   id              Int            @id @default(autoincrement())
   ratingType      RatingType     @default(SummaryV2)
@@ -110,6 +129,8 @@ model Rating {
   smartSearchId   Int?
   Prompt          Prompt?        @relation(fields: [promptId], references: [id])
   promptId        Int?
+  SummaryV3       SummaryV3?     @relation(fields: [summaryV3Id], references: [id])
+  summaryV3Id     Int?
 
   @@unique([accountId, smartSearchId])
   @@unique([accountId, summaryV2Id])
@@ -135,8 +156,10 @@ model File {
   AccountContext   Account? @relation("AccountContext", fields: [accountContextId], references: [id])
   accountContextId Int?
 
-  AccountForPicture   Account? @relation("ProfilePicture", fields: [accountForPictureId], references: [id])
-  accountForPictureId Int?     @unique
+  AccountForPicture   Account?   @relation("ProfilePicture", fields: [accountForPictureId], references: [id])
+  accountForPictureId Int?       @unique
+  SummaryV3           SummaryV3? @relation(fields: [summaryV3Id], references: [id])
+  summaryV3Id         Int?
 }
 
 model VectorSearch {
@@ -294,6 +317,8 @@ model SummariesAndAccessGroups {
   accessGroupId Int // relation scalar field (used in the `@relation` attribute above)
   createdAt     DateTime    @default(now())
   createdBy     String
+  SummaryV3     SummaryV3?  @relation(fields: [summaryV3Id], references: [id])
+  summaryV3Id   Int?
 
   @@id([summaryId, accessGroupId])
 }

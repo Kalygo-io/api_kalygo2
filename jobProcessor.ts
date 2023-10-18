@@ -2,6 +2,7 @@ import { jobQueue } from "@/clients/bull_client";
 import { QueueJobTypes } from "@/types/JobTypes";
 import { summaryJobLogic } from "@/jobHandlers/summaryJobLogic";
 import { summaryV2JobLogic } from "@/jobHandlers/summaryV2JobLogic";
+import { summaryV3JobLogic } from "./jobHandlers/summaryV3JobLogic";
 import { vectorSearchJobLogic } from "@/jobHandlers/vectorSearchLogic";
 import { customRequestJobLogic } from "@/jobHandlers/customRequestJobLogic";
 import { sendEmailJobLogic } from "@/jobHandlers/sendEmailJobLogic";
@@ -22,6 +23,10 @@ jobQueue.process(async function (job, done) {
       case QueueJobTypes.SummaryV2:
         console.log("QueueJobTypes.SummaryV2");
         await summaryV2JobLogic(params, job, done);
+        break;
+      case QueueJobTypes.SummaryV3:
+        console.log("QueueJobTypes.SummaryV3");
+        await summaryV3JobLogic(params, job, done);
         break;
       case QueueJobTypes.VectorSearch:
         console.log("QueueJobTypes.VectorSearch");

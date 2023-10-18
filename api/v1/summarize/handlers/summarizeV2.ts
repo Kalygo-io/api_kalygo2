@@ -3,6 +3,8 @@ import { jobQueue } from "@/clients/bull_client";
 import { QueueJobTypes } from "@/types/JobTypes";
 import { SummaryMode } from "@prisma/client";
 
+import { v4 } from "uuid";
+
 export async function summarizeV2(
   req: Request,
   res: Response,
@@ -12,6 +14,7 @@ export async function summarizeV2(
     console.log("POST summarizeV2");
     console.log("req.files", req.files);
     console.log("req.body", req.body);
+
     let locale: string = req?.i18n?.language?.substring(0, 2) || "en";
 
     if (req.body.mode === SummaryMode.FILE_OVERALL) {

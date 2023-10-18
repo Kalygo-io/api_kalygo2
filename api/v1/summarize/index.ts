@@ -9,6 +9,9 @@ import {
   rateSummaryV2,
   addToAccessGroup,
   removeFromAccessGroup,
+  summarizeV3,
+  getSummaryV3,
+  getSummariesV3,
 } from "./handlers";
 
 import { Router } from "express";
@@ -32,11 +35,24 @@ router
     summarizeV2
   );
 
+router
+  .route("/summarize-v3")
+  .post(
+    [
+      multerS3Middleware.array("documents"),
+      authenticateToken,
+      canCallerPushToQueue,
+    ],
+    summarizeV3
+  );
+
 router.route("/account-summaries").get([authenticateToken], accountSummaries);
 router.route("/summaries-v2").get([authenticateToken], getSummariesV2);
+router.route("/summaries-v3").get([authenticateToken], getSummariesV3);
 
 router.route("/get-summary/:id").get([authenticateToken], getSummary);
 router.route("/get-summary-v2/:id").get([authenticateToken], getSummaryV2);
+router.route("/get-summary-v3/:id").get([authenticateToken], getSummaryV3);
 router
   .route("/get-public-summary-v2/:id")
   .get([isSummaryPublic], getPublicSummaryV2);

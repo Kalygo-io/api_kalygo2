@@ -62,7 +62,9 @@ export async function logIn(
             secure: true,
           })
           .send();
-      } else res.status(401).send();
+      } else {
+        res.status(401).send();
+      }
     } else {
       res.status(404).send();
     }

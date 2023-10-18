@@ -297,6 +297,7 @@ export async function openAiSummarizeFileOverall(
         model: model,
         language: language,
         format: format,
+        batchId: batchId,
       },
     });
 

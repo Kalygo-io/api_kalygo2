@@ -92,6 +92,7 @@ export async function summaryV2JobLogic(
             files[0],
             bucket,
             job,
+            "SummaryV2",
             locale,
             done
           );

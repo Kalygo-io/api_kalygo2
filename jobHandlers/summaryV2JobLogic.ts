@@ -41,13 +41,6 @@ export async function summaryV2JobLogic(
     const { mode, format, length, language, model } = customizations;
     const summarizationType = mode;
 
-    console.log(
-      "<--- summarizationType --->",
-      summarizationType,
-      SummaryMode.FILE_OVERALL,
-      summarizationType === SummaryMode.FILE_OVERALL
-    );
-
     if (["gpt-3.5-turbo", "gpt-3.5-turbo-16k", "gpt-4"].includes(model)) {
       const openAiModel: SupportedOpenAiModels = model as SupportedOpenAiModels;
 
@@ -87,8 +80,6 @@ export async function summaryV2JobLogic(
           );
           break;
         case SummaryMode.FILE_OVERALL:
-          console.log("HERE?");
-
           openAiSummarizeFileOverall(
             {
               format,

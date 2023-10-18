@@ -4,9 +4,8 @@ import { openAiSummarizeEachFileOverall } from "@/jobHandlers/helpers/summaryV2J
 import { openAiSummarizeEachFileInChunks } from "@/jobHandlers/helpers/summaryV2Job/variations/openAi/eachFileInChunks";
 import { openAiSummarizeFilesOverall } from "@/jobHandlers/helpers/summaryV2Job/variations/openAi/overall";
 import { openAiSummarizeEachFilePerPage } from "@/jobHandlers/helpers/summaryV2Job/variations/openAi/eachFilePerPage";
-
+import { openAiSummarizeFileOverall } from "@/jobHandlers/helpers/summaryV2Job/variations/openAi/fileOverall";
 import { replicateSummarizeEachFileInChunks } from "@/jobHandlers/helpers/summaryV2Job/variations/replicate/eachFileInChunks";
-
 import { SummaryV2OpenAiCustomizations } from "@/types/SummaryV2OpenAiCustomizations";
 import { SummaryV2ReplicateCustomizations } from "@/types/SummaryV2ReplicateCustomizations";
 import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
@@ -42,6 +41,13 @@ export async function summaryV2JobLogic(
     const { mode, format, length, language, model } = customizations;
     const summarizationType = mode;
 
+    console.log(
+      "<--- summarizationType --->",
+      summarizationType,
+      SummaryMode.FILE_OVERALL,
+      summarizationType === SummaryMode.FILE_OVERALL
+    );
+
     if (["gpt-3.5-turbo", "gpt-3.5-turbo-16k", "gpt-4"].includes(model)) {
       const openAiModel: SupportedOpenAiModels = model as SupportedOpenAiModels;
 
@@ -74,6 +80,25 @@ export async function summaryV2JobLogic(
             },
             email,
             files,
+            bucket,
+            job,
+            locale,
+            done
+          );
+          break;
+        case SummaryMode.FILE_OVERALL:
+          console.log("HERE?");
+
+          openAiSummarizeFileOverall(
+            {
+              format,
+              length,
+              language,
+              model: openAiModel,
+              mode,
+            },
+            email,
+            files[0],
             bucket,
             job,
             locale,
@@ -115,6 +140,7 @@ export async function summaryV2JobLogic(
           );
           break;
         default:
+          console.log("WHY?");
           throw new Error("TODO");
       }
     } else if (

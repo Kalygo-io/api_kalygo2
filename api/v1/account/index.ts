@@ -24,6 +24,7 @@ import {
   getReferralCodes,
   addApiKey,
   getApiKey,
+  getBatchOfJobs,
 } from "./handlers";
 
 import { Router } from "express";
@@ -69,6 +70,8 @@ router.route("/").get(authenticateToken, getAccount);
 router
   .route("/get-account-with-access-groups")
   .get(authenticateToken, getAccountWithAccessGroups);
+
+router.route("/get-batch-of-jobs/:id").get(authenticateToken, getBatchOfJobs);
 
 router.route("/:id").get([authenticateToken, isAdmin], getAccountById);
 

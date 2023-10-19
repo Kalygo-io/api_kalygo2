@@ -2,14 +2,22 @@ import prisma from "@db/prisma_client";
 import pick from "lodash.pick";
 import { Request, Response, NextFunction } from "express";
 import get from "lodash.get";
+import {
+  GetSecretValueCommand,
+  secretsManagerClient,
+} from "@/clients/aws_secrets_manager_client";
 
-export async function getAccountWithAccessGroups(
+export async function getBatchOfJobs(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    console.log("GET account-with-access-groups");
+    console.log("GET /api/v1/get-batch-of-jobs");
+
+    const batchId = req.params.id;
+
+    console.log("---> batchId <---", batchId);
 
     // fetch account by email
     let account = await prisma.account.findFirst({
@@ -22,21 +30,17 @@ export async function getAccountWithAccessGroups(
       },
     });
 
-    let publicAccessGroup = await prisma.accessGroup.findFirstOrThrow({
+    console.log("account?.id", account?.id);
+
+    const summaryV3InBatch = await prisma.summaryV3.findMany({
       where: {
-        // @ts-ignore
-        id: 1,
-        name: "Public",
+        requesterId: account?.id,
+        batchId: batchId,
       },
     });
 
-    res.status(200).json({
-      ...pick(account, ["email", "firstName", "lastName"]),
-      accessGroups: [publicAccessGroup, ...get(account, "AccessGroups", [])],
-    });
+    res.status(200).json({ summaryV3: summaryV3InBatch });
   } catch (e) {
-    console.log("ERROR in getAccountWithAccessGroups", e);
-
     next(e);
   }
 }

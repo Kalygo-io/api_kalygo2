@@ -72,8 +72,6 @@ export async function getAccount(
         profilePicture: null,
       });
     } else {
-      console.log("account", account);
-
       subscriptions = await stripe.subscriptions.list({
         customer: customerSearchResults.data[0].id,
       });

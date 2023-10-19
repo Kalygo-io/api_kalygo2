@@ -9,6 +9,7 @@ import { deleteAccount } from "./deleteAccount";
 import { cancelSubscription } from "./cancelSubscription";
 import { getAccountPaymentMethods } from "./getAccountPaymentMethods";
 import { getAccountById } from "./getAccountById";
+import { getBatchOfJobs } from "./getBatchOfJobs";
 import { getPurchaseHistory } from "./getPurchaseHistory";
 import { getAccessGroups } from "./getAccessGroups";
 import { getPrompts } from "./getPrompts";
@@ -32,6 +33,7 @@ export {
   createStripeAccount,
   getAccount,
   getAccountById,
+  getBatchOfJobs,
   getPrompts,
   getReferralCodes,
   deleteAccount,

@@ -324,7 +324,6 @@ export async function openAiSummarizeFileOverall(
       await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
       p("email sent");
     } catch (e) {}
-    // -v-v- CHARGE THE CALLER FOR THE FANTASTIC SERVICE -v-v-
     p("*** CHECKOUT ***");
     await checkout(
       inputTokens,
@@ -332,7 +331,7 @@ export async function openAiSummarizeFileOverall(
       CONFIG.models[model].pricing,
       account,
       "usd",
-      "SummaryV3",
+      "SummaryV2",
       customerId
     );
     job.progress(100);

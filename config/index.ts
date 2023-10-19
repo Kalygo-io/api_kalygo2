@@ -18,7 +18,7 @@ export default {
   limit: {
     maxAccounts: 400,
   },
-  tpmBuffer: 200,
+  tpmBuffer: 200, // tpmBuffer is to control how close to the tpm limit you want to get
   queue: {
     timeout: 1000 * 60 * 60, // 1hr
   },

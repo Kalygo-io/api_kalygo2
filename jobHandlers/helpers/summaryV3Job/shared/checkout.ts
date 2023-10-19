@@ -17,10 +17,7 @@ export async function checkout(
       rate: number;
     };
   },
-  account: any,
-  currency: "usd" = "usd",
-  checkoutDescription: string,
-  stripeCustomerId: string
+  account: any
 ) {
   p("inputTokens", inputTokens);
   p("outputTokens", outputTokens);
@@ -29,9 +26,7 @@ export async function checkout(
     (inputTokens / modelPricing.input.perTokens) * modelPricing.input.rate; // ie: OpenAI input token rate for API
   _3rdPartyCharges +=
     (outputTokens / modelPricing.output.perTokens) * modelPricing.output.rate; // ie: OpenAI output token rate for API
-  // -v-v- SUMMARY OF 3rd PARTY CHARGES -v-v-
   p("_3rdPartyCharges", _3rdPartyCharges);
-  // -v-v- MARKUP THE 3rd PARTY CHARGES -v-v-
   let amountToChargeCaller =
     (_3rdPartyCharges * 1.029 + 0.3) * modelPricing.markUp; // Stripe charges 2.9% + 30¢ to run the card
   // prettier-ignore
@@ -39,7 +34,7 @@ export async function checkout(
   p("amountToChargeCaller", amountToChargeCaller); // for console debugging
   const summaryCredits = account?.SummaryCredits?.amount;
   if (summaryCredits && summaryCredits > 0) {
-    p("paid for with free credit...");
+    p("paid for with a free Summarization credit...");
     await prisma.summaryCredits.updateMany({
       where: {
         accountId: account.id,
@@ -48,41 +43,11 @@ export async function checkout(
         amount: summaryCredits - 1,
       },
     });
-  } else {
-    p("Kalygo is credits-based now so disabling charging card via Stripe...");
-    // try {
-    //   await stripe.charges.create({
-    //     amount: Math.floor(amountToChargeCaller * 100), // '* 100' is because Stripe goes by pennies
-    //     currency,
-    //     description: checkoutDescription,
-    //     customer: stripeCustomerId,
-    //   });
-    // } catch (e) {
-    //   console.log("retry charging card...");
-    //   sleep(60000); // linear backoff
-    //   try {
-    //     await stripe.charges.create({
-    //       amount: Math.floor(amountToChargeCaller * 100), // '* 100' is because Stripe goes by pennies
-    //       currency,
-    //       description: checkoutDescription,
-    //       customer: stripeCustomerId,
-    //     });
-    //   } catch (e) {
-    //     sleep(120000); // linear backoff
-    //     await stripe.charges.create({
-    //       amount: Math.floor(amountToChargeCaller * 100), // '* 100' is because Stripe goes by pennies
-    //       currency,
-    //       description: checkoutDescription,
-    //       customer: stripeCustomerId,
-    //     });
-    //   }
-    // }
   }
-
   await prisma.openAiCharges.create({
     data: {
       accountId: account.id,
-      amount: _3rdPartyCharges, // TODO - refine this - here we are tracking the OpenAI API charges
+      amount: _3rdPartyCharges,
     },
   });
 }

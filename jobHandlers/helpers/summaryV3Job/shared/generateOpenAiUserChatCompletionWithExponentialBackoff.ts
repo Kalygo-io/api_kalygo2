@@ -9,6 +9,7 @@ export async function generateOpenAiUserChatCompletionWithExponentialBackoff(
   prompt: string,
   delay: number
 ) {
+  p("call the A.I. model");
   console.log("model", model);
   console.log("prompt.length", prompt.length);
   const encoder: Tiktoken = encoding_for_model(

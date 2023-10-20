@@ -7,4 +7,5 @@ export type SummaryV3OpenAiCustomizations = {
   length: string;
   language: string;
   model: SupportedOpenAiModels;
+  chunkTokenOverlap: number;
 };

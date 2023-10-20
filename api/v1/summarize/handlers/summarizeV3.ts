@@ -15,7 +15,7 @@ export async function summarizeV3(
     console.log("req.body", req.body);
 
     let locale: string = req?.i18n?.language?.substring(0, 2) || "en";
-    const batchId = v4();
+    const batchId = req.body.batchId || v4();
     for (let fIndex = 0; fIndex < (req.files?.length as number); fIndex++) {
       jobQueue.add(
         {
@@ -30,6 +30,8 @@ export async function summarizeV3(
               length: req.body.length,
               language: req.body.language,
               model: req.body.model,
+              chunkTokenOverlap:
+                Number.parseInt(req.body.chunkTokenOverlap) || 0,
             },
             // @ts-ignore
             email: req.user.email,

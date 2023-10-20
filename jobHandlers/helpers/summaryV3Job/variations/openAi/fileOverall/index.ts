@@ -20,6 +20,7 @@ import { SummaryV3OpenAiCustomizations } from "@/types/SummaryV3OpenAiCustomizat
 import { deductCostOfInputTokens } from "./deductCostOfInputTokens";
 import { deductCostOfOutputTokens } from "./deductCostOfOutputTokens";
 import { saveToDb } from "./saveToDb";
+import { getOverlapSegment } from "./getOverlapSegment";
 
 const tpmDelay = 60000;
 
@@ -38,7 +39,10 @@ export async function openAiSummarizeFileOverall(
     const start = Date.now();
     let inputTokens = 0,
       outputTokens = 0;
-    const { format, length, language, model } = customizations;
+
+    const { format, length, language, model, chunkTokenOverlap } =
+      customizations;
+
     job.progress(0);
     // prettier-ignore
     const { account } = await guard_beforeRunningSummary(email, model);
@@ -100,9 +104,23 @@ export async function openAiSummarizeFileOverall(
       summaryForFile = completionText;
       p("currentChunkTokenCount", currentChunkTokenCount);
       p("totalTokenCountInFile", totalTokenCountInFile);
-      // prettier-ignore
-      job.progress(job.progress() + currentChunkTokenCount / totalTokenCountInFile * 90);
-      p("progress:", job.progress());
+      // if additional chunks exist then grab the overlapping text
+      // and prepend it to the subsequent chunk
+      if (chunks.length > 1) {
+        const overlapSegment: string = getOverlapSegment(
+          chunkTokenOverlap,
+          chunks[0],
+          encoder
+        );
+        // prettier-ignore
+        job.progress(job.progress() + (currentChunkTokenCount - chunkTokenOverlap)  / totalTokenCountInFile * 90);
+        p("progress:", job.progress());
+        chunks[1] = overlapSegment + chunks[1];
+      } else {
+        // prettier-ignore
+        job.progress(job.progress() + currentChunkTokenCount / totalTokenCountInFile * 90);
+        p("progress:", job.progress());
+      }
       chunks.shift();
       chunksCounter++;
     }
@@ -137,7 +155,6 @@ export async function openAiSummarizeFileOverall(
       p("snippet of final bullet points", finalBulletPointsCompletionText.slice(0, 16));
       summaryForFile = finalBulletPointsCompletionText;
     }
-    // prettier-ignore
     const { summaryV3Record } = await saveToDb(
       account,
       summaryForFile,

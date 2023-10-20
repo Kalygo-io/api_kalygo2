@@ -24,12 +24,12 @@ import { generateReplicateChatCompletionWithExponentialBackoff } from "../../../
 import { getEncoderForModel } from "../../../shared/getEncoderForModel";
 import { convertFileToTextFormat } from "@/utils/convertFileToTextFormat";
 import { breakOffMaxChunkForContext } from "./breakOffMaxChunkForContext";
-import { SummaryV3OpenAiCustomizations } from "@/types/SummaryV3OpenAiCustomizations";
+import { SummaryV2OpenAiCustomizations } from "@/types/SummaryV2OpenAiCustomizations";
 
 const tpmDelay = 60000;
 
 export async function openAiSummarizeFileOverall(
-  customizations: SummaryV3OpenAiCustomizations,
+  customizations: SummaryV2OpenAiCustomizations,
   email: string,
   file: Record<string, any>,
   bucket: string,
@@ -82,8 +82,6 @@ export async function openAiSummarizeFileOverall(
           CONFIG.models[model].context,
           encoder
         );
-
-        debugger;
       }
       // -v-v- WE HAVE NOW BIT OFF AN ACCEPTABLE CHUNK -v-v-
       tokenAccumWithoutPrefixForFile = encoder.encode(chunks[0]).length;

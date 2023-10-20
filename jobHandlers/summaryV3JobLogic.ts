@@ -12,7 +12,6 @@ import { SupportedReplicateModels } from "@/types/SupportedReplicateModels";
 // import { replicateSummarizeFilesOverall } from "./helpers/summaryV3Job/variations/replicate/overall";
 // import { replicateSummarizeEachFilePerPage } from "./helpers/summaryV3Job/variations/replicate/eachFilePerPage";
 import { SummaryV3OpenAiCustomizations } from "@/types/SummaryV3OpenAiCustomizations";
-import { SummaryV3ReplicateCustomizations } from "@/types/SummaryV3ReplicateCustomizations";
 
 import { SummaryV3Params } from "@/types/SummaryV3Params";
 
@@ -31,7 +30,7 @@ export async function summaryV3JobLogic(
     }
 
     // prettier-ignore
-    const { mode, format, length, language, model } = customizations;
+    const { mode, format, length, language, model, chunkTokenOverlap } = customizations;
     const summarizationType = mode;
 
     if (["gpt-3.5-turbo", "gpt-3.5-turbo-16k", "gpt-4"].includes(model)) {
@@ -80,7 +79,8 @@ export async function summaryV3JobLogic(
               language,
               model: openAiModel,
               mode,
-            },
+              chunkTokenOverlap,
+            } as SummaryV3OpenAiCustomizations,
             email,
             file,
             bucket,

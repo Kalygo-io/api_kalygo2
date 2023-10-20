@@ -7,4 +7,5 @@ export type SummaryV3ReplicateCustomizations = {
   length: string;
   language: string;
   model: SupportedReplicateModels;
+  chunkTokenOverlap: number;
 };

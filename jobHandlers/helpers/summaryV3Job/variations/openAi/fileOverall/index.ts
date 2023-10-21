@@ -17,8 +17,8 @@ import { getEncoderForModel } from "../../../shared/getEncoderForModel";
 import { convertFileToTextFormat } from "@/utils/convertFileToTextFormat";
 import { breakOffMaxChunkForContext } from "./breakOffMaxChunkForContext";
 import { SummaryV3OpenAiCustomizations } from "@/types/SummaryV3OpenAiCustomizations";
-import { deductCostOfInputTokens } from "./deductCostOfInputTokens";
-import { deductCostOfOutputTokens } from "./deductCostOfOutputTokens";
+import { deductCostOfOpenAiInputTokens } from "./deductCostOfOpenAiInputTokens";
+import { deductCostOfOpenAiOutputTokens } from "./deductCostOfOpenAiOutputTokens";
 import { saveToDb } from "./saveToDb";
 import { getOverlapSegment } from "./getOverlapSegment";
 
@@ -39,10 +39,8 @@ export async function openAiSummarizeFileOverall(
     const start = Date.now();
     let inputTokens = 0,
       outputTokens = 0;
-
     const { format, length, language, model, chunkTokenOverlap } =
       customizations;
-
     job.progress(0);
     // prettier-ignore
     const { account } = await guard_beforeRunningSummary(email, model);
@@ -87,7 +85,12 @@ export async function openAiSummarizeFileOverall(
         tpmAccum = 0; // reset the TPM LIMIT
       }
       await guard_beforeCallingModel(email, model); // GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
-      await deductCostOfInputTokens(promptTokenCount, model, config, account);
+      await deductCostOfOpenAiInputTokens(
+        promptTokenCount,
+        model,
+        config,
+        account
+      );
       const completion =
         await generateOpenAiUserChatCompletionWithExponentialBackoff(
           model as SupportedOpenAiModels,
@@ -98,7 +101,12 @@ export async function openAiSummarizeFileOverall(
         completion.data?.choices[0]?.message?.content || "No Content";
       p(`snippet of last OpenAI completion - '${completionText.slice(0, 16)}'`);
       const outputTokenCount = encoder.encode(completionText).length;
-      deductCostOfOutputTokens(outputTokenCount, model, config, account);
+      await deductCostOfOpenAiOutputTokens(
+        outputTokenCount,
+        model,
+        config,
+        account
+      );
       outputTokens += outputTokenCount; // track output tokens
       tpmAccum += outputTokenCount; // accumulate total tokens
       summaryForFile = completionText;
@@ -113,7 +121,7 @@ export async function openAiSummarizeFileOverall(
           encoder
         );
         // prettier-ignore
-        job.progress(job.progress() + (currentChunkTokenCount - chunkTokenOverlap)  / totalTokenCountInFile * 90);
+        job.progress(job.progress() + (currentChunkTokenCount - chunkTokenOverlap)  / totalTokenCountInFile * 90); // HACK BUT WORKS : )
         p("progress:", job.progress());
         chunks[1] = overlapSegment + chunks[1];
       } else {
@@ -128,7 +136,7 @@ export async function openAiSummarizeFileOverall(
       // prettier-ignore
       const prompt = generateBulletPointsPromptPrefix({ length, language, }, summaryForFile);
       const promptTokenCount = encoder.encode(prompt).length;
-      deductCostOfInputTokens(promptTokenCount, model, config, account);
+      deductCostOfOpenAiInputTokens(promptTokenCount, model, config, account);
       p("finalBulletPointsPromptTokenCount", promptTokenCount);
       inputTokens += promptTokenCount;
       tpmAccum += promptTokenCount;
@@ -148,7 +156,12 @@ export async function openAiSummarizeFileOverall(
       const outputTokenCount = encoder.encode(
         finalBulletPointsCompletionText
       ).length;
-      deductCostOfOutputTokens(outputTokenCount, model, config, account);
+      await deductCostOfOpenAiOutputTokens(
+        outputTokenCount,
+        model,
+        config,
+        account
+      );
       outputTokens += outputTokenCount; // track output tokens
       tpmAccum += outputTokenCount; // accumulate total tokens
       // prettier-ignore
@@ -164,23 +177,15 @@ export async function openAiSummarizeFileOverall(
       batchId,
       file
     );
-    p("sending email notification...");
     job.progress(95);
-    try {
-      const emailConfig = summaryJobComplete_SES_Config(
-        email,
-        `${process.env.FRONTEND_HOSTNAME}/dashboard/summary-v3?summary-v3-id=${summaryV3Record.id}`,
-        locale
-      );
-      await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
-      p("email sent");
-    } catch (e) {}
-    p("*** CHECKOUT ***");
     await checkout(
       inputTokens,
       outputTokens,
       CONFIG.models[model].pricing,
-      account
+      account,
+      email,
+      summaryV3Record.id,
+      locale
     );
     job.progress(100);
     const end = Date.now();

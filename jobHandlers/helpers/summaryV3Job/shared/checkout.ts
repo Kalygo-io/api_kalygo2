@@ -1,7 +1,10 @@
+import { sesClient } from "@/clients/ses_client";
 import { stripe } from "@/clients/stripe_client";
 import prisma from "@/db/prisma_client";
+import { summaryJobComplete_SES_Config } from "@/emails/v2/summaryJobComplete";
 import { p } from "@/utils/p";
 import { sleep } from "@/utils/sleep";
+import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 
 export async function checkout(
   inputTokens: number,
@@ -17,8 +20,12 @@ export async function checkout(
       rate: number;
     };
   },
-  account: any
+  account: any,
+  callerEmail: string,
+  summaryV3RecordId: number,
+  locale: string
 ) {
+  p("*** CHECKOUT ***");
   p("inputTokens", inputTokens);
   p("outputTokens", outputTokens);
   let _3rdPartyCharges = 0;
@@ -50,4 +57,14 @@ export async function checkout(
       amount: _3rdPartyCharges,
     },
   });
+  p("sending email notification...");
+  try {
+    const emailConfig = summaryJobComplete_SES_Config(
+      callerEmail,
+      `${process.env.FRONTEND_HOSTNAME}/dashboard/summary-v3?summary-v3-id=${summaryV3RecordId}`,
+      locale
+    );
+    await sesClient.send(new SendTemplatedEmailCommand(emailConfig));
+    p("email sent");
+  } catch (e) {}
 }

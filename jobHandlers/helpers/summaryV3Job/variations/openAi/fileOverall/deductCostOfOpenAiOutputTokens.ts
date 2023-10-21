@@ -1,7 +1,7 @@
 import prisma from "@/db/prisma_client";
 import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
 
-export async function deductCostOfOutputTokens(
+export async function deductCostOfOpenAiOutputTokens(
   outputTokenCount: number,
   model: SupportedOpenAiModels,
   config: any,

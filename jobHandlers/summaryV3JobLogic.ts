@@ -4,6 +4,7 @@ import { SummaryMode } from "@prisma/client";
 // import { openAiSummarizeEachFileInChunks } from "@/jobHandlers/helpers/summaryV3Job/variations/openAi/eachFileInChunks";
 // import { openAiSummarizeFilesOverall } from "@/jobHandlers/helpers/summaryV3Job/variations/openAi/overall";
 // import { openAiSummarizeEachFilePerPage } from "@/jobHandlers/helpers/summaryV3Job/variations/openAi/eachFilePerPage";
+import { openAiSummarizeFileInChunks } from "@/jobHandlers/helpers/summaryV3Job/variations/openAi/fileInChunks";
 import { openAiSummarizeFileOverall } from "@/jobHandlers/helpers/summaryV3Job/variations/openAi/fileOverall";
 import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
 import { SupportedReplicateModels } from "@/types/SupportedReplicateModels";
@@ -23,54 +24,46 @@ export async function summaryV3JobLogic(
   try {
     console.log("processing JOB with params...", params);
     const { file, bucket, email, customizations, locale, batchId } = params;
-    console.log(bucket, file, email, customizations, locale, batchId);
+    // console.log(bucket, file, email, customizations, locale, batchId);
     if (!bucket || !file || !email || !customizations || !locale || !batchId) {
       done(new Error("Invalid Data"));
       return;
     }
 
+    console.log("-!-!-");
+
     // prettier-ignore
     const { mode, format, length, language, model, chunkTokenOverlap } = customizations;
     const summarizationType = mode;
 
+    console.log("-!-!-");
+
     if (["gpt-3.5-turbo", "gpt-3.5-turbo-16k", "gpt-4"].includes(model)) {
       const openAiModel: SupportedOpenAiModels = model as SupportedOpenAiModels;
 
+      console.log("-!-!-", summarizationType, SummaryMode.FILE_IN_CHUNKS);
+
       switch (summarizationType) {
-        // case SummaryMode.EACH_FILE_IN_CHUNKS:
-        //   openAiSummarizeEachFileInChunks(
-        //     {
-        //       format,
-        //       length,
-        //       language,
-        //       model: openAiModel,
-        //       mode,
-        //     },
-        //     email,
-        //     files,
-        //     bucket,
-        //     job,
-        //     locale,
-        //     done
-        //   );
-        //   break;
-        // case SummaryMode.EACH_FILE_OVERALL:
-        //   openAiSummarizeEachFileOverall(
-        //     {
-        //       format,
-        //       length,
-        //       language,
-        //       model: openAiModel,
-        //       mode,
-        //     },
-        //     email,
-        //     files,
-        //     bucket,
-        //     job,
-        //     locale,
-        //     done
-        //   );
-        //   break;
+        case SummaryMode.FILE_IN_CHUNKS:
+          console.log("HERE!");
+          openAiSummarizeFileInChunks(
+            {
+              format,
+              length,
+              language,
+              model: openAiModel,
+              mode,
+              chunkTokenOverlap,
+            } as SummaryV3OpenAiCustomizations,
+            email,
+            file,
+            bucket,
+            job,
+            batchId,
+            locale,
+            done
+          );
+          break;
         case SummaryMode.FILE_OVERALL:
           openAiSummarizeFileOverall(
             {
@@ -125,7 +118,6 @@ export async function summaryV3JobLogic(
         //   );
         //   break;
         default:
-          console.log("WHY?");
           throw new Error("TODO");
       }
     } else if (

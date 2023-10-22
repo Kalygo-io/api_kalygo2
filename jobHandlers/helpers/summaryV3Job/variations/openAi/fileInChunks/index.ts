@@ -47,10 +47,8 @@ export async function openAiSummarizeFileInChunks(
     let summaryForFile: { file: string, summary: { chunk: number; chunkSummary: string }[] };
     let tpmAccum: number = 0;
     const originalNameOfFile = fileToText.originalName;
-    p("*** file to be processed ***", originalNameOfFile);
     // BREAK TEXT INTO CHUNKS SO
-    // PROMPT_PREFIX PLUS THE CHUNK IS
-    // WITHIN THE INPUT TOKEN LIMIT
+    // PROMPT_PREFIX + THE CHUNK IS WITHIN TOKEN LIMIT
     chunks = [fileToText.text];
     while (
       !areChunksWithPromptPrefixValidForModelContext(
@@ -64,12 +62,13 @@ export async function openAiSummarizeFileInChunks(
         chunks,
         promptPrefix,
         CONFIG.models[model].context,
-        encoder
+        encoder,
+        chunkTokenOverlap
       );
       chunks = newChunks;
     }
-    // -v-v- WE NOW HAVE THE FILE IN CHUNKS THAT WILL NOT EXCEED THE MODEL CONTEXT LIMIT -v-v-
-    // -v-v- SO WE LOOP OVER THE CHUNKS AND STORE THE SUMMARY OF EACH CHUNK -v-v-
+    // WE HAVE THE FILE IN CHUNKS THAT DON'T EXCEED THE MODEL CONTEXT LIMIT
+    // SO WE LOOP OVER THE CHUNKS AND STORE THE SUMMARY OF EACH CHUNK
     let summarizedChunksOfFile: {
       chunk: number;
       chunkSummary: string;

@@ -1,6 +1,3 @@
-import { summaryJobComplete_SES_Config } from "@/emails/v2/summaryJobComplete";
-import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
-import { sesClient } from "@/clients/ses_client";
 import { generateBulletPointsPromptPrefix } from "./generateBulletPointsPromptPrefix";
 import { generatePromptPrefix } from "./generatePromptPrefix";
 import { sleep } from "@/utils/sleep";
@@ -20,7 +17,7 @@ import { SummaryV3OpenAiCustomizations } from "@/types/SummaryV3OpenAiCustomizat
 import { deductCostOfOpenAiInputTokens } from "./deductCostOfOpenAiInputTokens";
 import { deductCostOfOpenAiOutputTokens } from "./deductCostOfOpenAiOutputTokens";
 import { saveToDb } from "./saveToDb";
-import { getOverlapSegment } from "./getOverlapSegment";
+import { getOverlapSegment } from "../../../shared/getOverlapSegment";
 
 const tpmDelay = 60000;
 

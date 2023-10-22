@@ -7,7 +7,6 @@ import { p } from "@/utils/p";
 import { convertFilesToTextFormat } from "@/utils/convertFilesToTextFormat";
 import { guard_beforeRunningSummary } from "../../../shared/guards/guard_beforeRunningSummary";
 import { isChunkValidForModelContext } from "@/utils/isChunkValidForModelContext";
-import { breakUpNextChunk } from "./breakUpNextChunk";
 import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
 import { checkout } from "../../../shared/checkout";
 import { breakUpNextChunkForSummaryOfSummaries } from "./breakUpNextChunkForSummaryOfSummaries";
@@ -17,6 +16,8 @@ import { getEncoderForModel } from "../../../shared/getEncoderForModel";
 import { deductCostOfOpenAiInputTokens } from "../../../shared/deductCostOfOpenAiInputTokens";
 import { deductCostOfOpenAiOutputTokens } from "../../../shared/deductCostOfOpenAiOutputTokens";
 import { saveToDb } from "./saveToDb";
+import { breakOffMaxChunkForContext } from "./breakOffMaxChunkForContext";
+import { getOverlapSegment } from "../../../shared/getOverlapSegment";
 
 const tpmDelay = 60000;
 
@@ -35,7 +36,8 @@ export async function openAiSummarizeFilesOverall(
     const start = Date.now();
     let inputTokens = 0,
       outputTokens = 0;
-    const { format, length, language, model } = customizations;
+    const { format, length, language, model, chunkTokenOverlap } =
+      customizations;
     job.progress(0);
     const { account } = await guard_beforeRunningSummary(email, model);
     const encoder = getEncoderForModel(model);
@@ -73,7 +75,12 @@ export async function openAiSummarizeFilesOverall(
             encoder
           )
         ) {
-          chunks = breakUpNextChunk(chunks);
+          chunks = breakOffMaxChunkForContext(
+            promptPrefix,
+            chunks,
+            CONFIG.models[model].context,
+            encoder
+          );
         }
         tokenAccumWithoutPrefixForFile = encoder.encode(chunks[0]).length;
         p("WE HAVE NOW BIT OFF AN ACCEPTABLE CHUNK");
@@ -81,7 +88,6 @@ export async function openAiSummarizeFilesOverall(
         // prettier-ignore
         p("snippet of nextPrompt up for completion...", prompt.slice(0, 16));
         const promptTokenCount = encoder.encode(prompt).length;
-        chunksCounter += 1;
         inputTokens += promptTokenCount; // track input tokens
         tpmAccum += promptTokenCount; // accumulate input tokens
         p(`tokens in chunk ${chunksCounter} of file`, promptTokenCount);
@@ -115,16 +121,28 @@ export async function openAiSummarizeFilesOverall(
           account
         );
         outputTokens += outputTokenCount; // track output tokens
-        tpmAccum += outputTokenCount; // accumulate output tokens
+        tpmAccum += outputTokenCount; // accumulate total token count
         summaryForFile = completionText;
-        // prettier-ignore
-        p("tokenAccumWithoutPrefixForFile", tokenAccumWithoutPrefixForFile);
-        // prettier-ignore
-        p("totalTokenCountInFile", totalTokenCountInFile);
-        // prettier-ignore
-        job.progress(job.progress() + ((tokenAccumWithoutPrefixForFile / totalTokenCountInFile) * (90 / files.length)));
-        console.log(job.progress());
+
+        // if additional chunks exist then grab the overlapping text
+        // and prepend it to the subsequent chunk
+        if (chunks.length > 1) {
+          const overlapSegment: string = getOverlapSegment(
+            chunkTokenOverlap,
+            chunks[0],
+            encoder
+          );
+          // prettier-ignore
+          job.progress(job.progress() + (tokenAccumWithoutPrefixForFile - chunkTokenOverlap)  / totalTokenCountInFile * (90 / files.length)); // HACK BUT WORKS : )
+          p("progress:", job.progress());
+          chunks[1] = overlapSegment + chunks[1];
+        } else {
+          // prettier-ignore
+          job.progress(job.progress() + ((tokenAccumWithoutPrefixForFile / totalTokenCountInFile) * (90 / files.length)));
+          console.log(job.progress());
+        }
         chunks.shift();
+        chunksCounter += 1;
       }
       summariesOfEachFile.push({
         fileName: filesToText[fIndex].originalName,
@@ -145,8 +163,8 @@ export async function openAiSummarizeFilesOverall(
     while (chunks.length > 0) {
       let finalSummarizationPrompt = generateFinalSummarizationPrompt(
         {
-          format: "paragraph",
-          length: "long",
+          format,
+          length,
           language,
         },
         chunks[0],

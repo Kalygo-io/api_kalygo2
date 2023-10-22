@@ -15,6 +15,7 @@ import { SupportedReplicateModels } from "@/types/SupportedReplicateModels";
 import { SummaryV3OpenAiCustomizations } from "@/types/SummaryV3OpenAiCustomizations";
 
 import { SummaryV3Params } from "@/types/SummaryV3Params";
+import { openAiSummarizeFilesOverall } from "./helpers/summaryV3Job/variations/openAi/overall";
 
 export async function summaryV3JobLogic(
   params: SummaryV3Params,
@@ -23,9 +24,10 @@ export async function summaryV3JobLogic(
 ) {
   try {
     console.log("processing JOB with params...", params);
-    const { file, bucket, email, customizations, locale, batchId } = params;
+    const { file, files, bucket, email, customizations, locale, batchId } =
+      params;
     // console.log(bucket, file, email, customizations, locale, batchId);
-    if (!bucket || !file || !email || !customizations || !locale || !batchId) {
+    if (!bucket || !email || !customizations || !locale || !batchId) {
       done(new Error("Invalid Data"));
       return;
     }
@@ -45,7 +47,6 @@ export async function summaryV3JobLogic(
 
       switch (summarizationType) {
         case SummaryMode.FILE_IN_CHUNKS:
-          console.log("HERE!");
           openAiSummarizeFileInChunks(
             {
               format,
@@ -56,7 +57,7 @@ export async function summaryV3JobLogic(
               chunkTokenOverlap,
             } as SummaryV3OpenAiCustomizations,
             email,
-            file,
+            file!,
             bucket,
             job,
             batchId,
@@ -75,7 +76,7 @@ export async function summaryV3JobLogic(
               chunkTokenOverlap,
             } as SummaryV3OpenAiCustomizations,
             email,
-            file,
+            file!,
             bucket,
             job,
             batchId,
@@ -83,23 +84,25 @@ export async function summaryV3JobLogic(
             done
           );
           break;
-        // case SummaryMode.OVERALL:
-        //   openAiSummarizeFilesOverall(
-        //     {
-        //       format,
-        //       length,
-        //       language,
-        //       model: openAiModel,
-        //       mode,
-        //     },
-        //     email,
-        //     files,
-        //     bucket,
-        //     job,
-        //     locale,
-        //     done
-        //   );
-        //   break;
+        case SummaryMode.OVERALL:
+          openAiSummarizeFilesOverall(
+            {
+              format,
+              length,
+              language,
+              model: openAiModel,
+              mode,
+              chunkTokenOverlap,
+            } as SummaryV3OpenAiCustomizations,
+            email,
+            files!,
+            bucket,
+            job,
+            batchId,
+            locale,
+            done
+          );
+          break;
         // case SummaryMode.EACH_FILE_PER_PAGE:
         //   openAiSummarizeEachFilePerPage(
         //     {

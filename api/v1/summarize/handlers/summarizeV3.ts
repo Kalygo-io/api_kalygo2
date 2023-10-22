@@ -3,6 +3,7 @@ import { jobQueue } from "@/clients/bull_client";
 import { QueueJobTypes } from "@/types/JobTypes";
 import { v4 } from "uuid";
 import { SummaryV3Params } from "@/types/SummaryV3Params";
+import { SummaryMode } from "@prisma/client";
 
 export async function summarizeV3(
   req: Request,
@@ -16,14 +17,15 @@ export async function summarizeV3(
 
     let locale: string = req?.i18n?.language?.substring(0, 2) || "en";
     const batchId = req.body.batchId || v4();
-    for (let fIndex = 0; fIndex < (req.files?.length as number); fIndex++) {
+
+    if (req.body.mode === SummaryMode.OVERALL) {
       jobQueue.add(
         {
           jobType: QueueJobTypes.SummaryV3,
           params: {
             batchId,
             bucket: process.env.S3_DOCUMENTS_BUCKET,
-            file: (req.files as any)[fIndex],
+            files: req.files as any,
             customizations: {
               format: req.body.format,
               mode: req.body.mode,
@@ -42,6 +44,34 @@ export async function summarizeV3(
           timeout: 1000 * 60 * 60, // 1 hour before being marked as timed out
         }
       );
+    } else {
+      for (let fIndex = 0; fIndex < (req.files?.length as number); fIndex++) {
+        jobQueue.add(
+          {
+            jobType: QueueJobTypes.SummaryV3,
+            params: {
+              batchId,
+              bucket: process.env.S3_DOCUMENTS_BUCKET,
+              file: (req.files as any)[fIndex],
+              customizations: {
+                format: req.body.format,
+                mode: req.body.mode,
+                length: req.body.length,
+                language: req.body.language,
+                model: req.body.model,
+                chunkTokenOverlap:
+                  Number.parseInt(req.body.chunkTokenOverlap) || 0,
+              },
+              // @ts-ignore
+              email: req.user.email,
+              locale,
+            } as SummaryV3Params,
+          },
+          {
+            timeout: 1000 * 60 * 60, // 1 hour before being marked as timed out
+          }
+        );
+      }
     }
 
     res.status(200).send();

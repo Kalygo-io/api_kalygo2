@@ -86,6 +86,7 @@ model SummaryV2 {
   Files                    File[]
   Ratings                  Rating[]
   mode                     SummaryMode                @default(PRIOR_TO_TRACKING_MODE)
+  scanMode                 ScanningMode               @default(PRIOR_TO_TRACKING_MODE)
   summary                  Json
   title                    String                     @default("")
   model                    String
@@ -103,6 +104,7 @@ model SummaryV3 {
   Files                    File[]
   Ratings                  Rating[]
   mode                     SummaryMode                @default(PRIOR_TO_TRACKING_MODE)
+  scanMode                 ScanningMode               @default(PRIOR_TO_TRACKING_MODE)
   summary                  Json
   title                    String                     @default("")
   model                    String
@@ -380,6 +382,7 @@ enum SummaryMode {
   EACH_FILE_OVERALL
   FILE_OVERALL
   FILE_IN_CHUNKS
+  FILE_PER_PAGE
   EACH_FILE_IN_CHUNKS
   EACH_FILE_PER_PAGE
   EACH_FILE_PER_PAGE_THEN_OVERALL
@@ -390,6 +393,9 @@ enum ScanningMode {
   PRIOR_TO_TRACKING_MODE
   OVERALL
   EACH_FILE_OVERALL
+  FILE_OVERALL
+  FILE_IN_CHUNKS
+  FILE_PER_PAGE
   EACH_FILE_IN_CHUNKS
   EACH_FILE_PER_PAGE
   EACH_FILE_PER_PAGE_THEN_OVERALL

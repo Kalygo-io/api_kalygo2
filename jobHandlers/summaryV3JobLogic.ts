@@ -16,6 +16,7 @@ import { SummaryV3OpenAiCustomizations } from "@/types/SummaryV3OpenAiCustomizat
 
 import { SummaryV3Params } from "@/types/SummaryV3Params";
 import { openAiSummarizeFilesOverall } from "./helpers/summaryV3Job/variations/openAi/overall";
+import { openAiSummarizeFilePerPage } from "./helpers/summaryV3Job/variations/openAi/filePerPage";
 
 export async function summaryV3JobLogic(
   params: SummaryV3Params,
@@ -103,23 +104,23 @@ export async function summaryV3JobLogic(
             done
           );
           break;
-        // case SummaryMode.EACH_FILE_PER_PAGE:
-        //   openAiSummarizeEachFilePerPage(
-        //     {
-        //       format,
-        //       length,
-        //       language,
-        //       model: openAiModel,
-        //       mode,
-        //     },
-        //     email,
-        //     files,
-        //     bucket,
-        //     job,
-        //     locale,
-        //     done
-        //   );
-        //   break;
+        case SummaryMode.FILE_PER_PAGE:
+          openAiSummarizeFilePerPage(
+            {
+              format,
+              length,
+              language,
+              model: openAiModel,
+              mode,
+            } as SummaryV3OpenAiCustomizations,
+            email,
+            file,
+            bucket,
+            job,
+            locale,
+            done
+          );
+          break;
         default:
           throw new Error("TODO");
       }
@@ -206,7 +207,7 @@ export async function summaryV3JobLogic(
         //   );
         //   break;
         default:
-          throw new Error("TODO");
+          throw new Error("TODO add support for Replicate API in Summary V3");
       }
     } else {
       throw new Error("Unsupported Model");

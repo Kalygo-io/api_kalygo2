@@ -12,6 +12,7 @@ import {
   summarizeV3,
   getSummaryV3,
   getSummariesV3,
+  rateSummaryV3,
 } from "./handlers";
 
 import { Router } from "express";
@@ -56,7 +57,9 @@ router.route("/get-summary-v3/:id").get([authenticateToken], getSummaryV3);
 router
   .route("/get-public-summary-v2/:id")
   .get([isSummaryPublic], getPublicSummaryV2);
+
 router.route("/rate-summary-v2/:id").post([authenticateToken], rateSummaryV2);
+router.route("/rate-summary-v3/:id").post([authenticateToken], rateSummaryV3);
 
 router
   .route("/add-summary-to-access-group")

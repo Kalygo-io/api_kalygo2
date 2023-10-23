@@ -113,7 +113,7 @@ export async function openAiSummarizeFileOverall(
       p("totalTokenCountInFile", totalTokenCountInFile);
       // if additional chunks exist then grab the overlapping text
       // and prepend it to the subsequent chunk
-      if (chunks.length > 1 && chunkTokenOverlap > 0) {
+      if (chunks.length > 1) {
         console.log("chunks.length > 1 so getting overlap segment...");
         const overlapSegment: string = getOverlapSegment(
           chunkTokenOverlap,

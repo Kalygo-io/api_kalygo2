@@ -85,7 +85,6 @@ model SummaryV2 {
   requesterId              Int
   Files                    File[]
   Ratings                  Rating[]
-  mode                     SummaryMode                @default(PRIOR_TO_TRACKING_MODE)
   scanMode                 ScanningMode               @default(PRIOR_TO_TRACKING_MODE)
   summary                  Json
   title                    String                     @default("")
@@ -103,7 +102,6 @@ model SummaryV3 {
   requesterId              Int
   Files                    File[]
   Ratings                  Rating[]
-  mode                     SummaryMode                @default(PRIOR_TO_TRACKING_MODE)
   scanMode                 ScanningMode               @default(PRIOR_TO_TRACKING_MODE)
   summary                  Json
   title                    String                     @default("")

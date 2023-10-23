@@ -6,6 +6,8 @@ export function getOverlapSegment(
   chunk: string,
   encoder: Tiktoken
 ): string {
+  console.log("calculating overlapSegment...");
+
   const tokensInChunk = (chunk: string) => encoder.encode(chunk).length;
   let startSegmentIndex = -chunk.length;
   let high = 0;
@@ -14,11 +16,16 @@ export function getOverlapSegment(
       // prettier-ignore
       tokensInChunk(chunk.slice(startSegmentIndex)) < chunkTokenOverlap
     ) {
+      console.log("chunk size is smaller than token overlap...");
+      console.log(tokensInChunk(chunk.slice(startSegmentIndex)));
       startSegmentIndex = Math.floor((high + startSegmentIndex) / 2);
     } else {
+      console.log("chunk size is larger than token overlap...");
+      console.log(tokensInChunk(chunk.slice(startSegmentIndex)));
       high = startSegmentIndex;
       startSegmentIndex = Math.floor(startSegmentIndex / 2);
     }
   }
+  console.log("returning overlap segment...");
   return chunk.slice(startSegmentIndex);
 }

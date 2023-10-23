@@ -63,6 +63,7 @@ export async function openAiSummarizeFileOverall(
         // prettier-ignore
         !isChunkValidForModelContext(`${promptPrefix} ${chunks[0]}`, CONFIG.models[model].context, encoder)
       ) {
+        console.log("breaking off MAX chunk for context...");
         // prettier-ignore
         chunks = breakOffMaxChunkForContext(promptPrefix, chunks, CONFIG.models[model].context, encoder);
       }
@@ -88,6 +89,7 @@ export async function openAiSummarizeFileOverall(
         config,
         account
       );
+      console.log("calling OpenAI...");
       const completion =
         await generateOpenAiUserChatCompletionWithExponentialBackoff(
           model as SupportedOpenAiModels,
@@ -111,7 +113,8 @@ export async function openAiSummarizeFileOverall(
       p("totalTokenCountInFile", totalTokenCountInFile);
       // if additional chunks exist then grab the overlapping text
       // and prepend it to the subsequent chunk
-      if (chunks.length > 1) {
+      if (chunks.length > 1 && chunkTokenOverlap > 0) {
+        console.log("chunks.length > 1 so getting overlap segment...");
         const overlapSegment: string = getOverlapSegment(
           chunkTokenOverlap,
           chunks[0],
@@ -122,10 +125,12 @@ export async function openAiSummarizeFileOverall(
         p("progress:", job.progress());
         chunks[1] = overlapSegment + chunks[1];
       } else {
+        console.log("chunks.length == 1...");
         // prettier-ignore
         job.progress(job.progress() + currentChunkTokenCount / totalTokenCountInFile * 90);
         p("progress:", job.progress());
       }
+      console.log("moving onto the next chunk...");
       chunks.shift();
       chunksCounter++;
     }

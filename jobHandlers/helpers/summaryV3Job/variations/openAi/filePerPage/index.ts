@@ -4,16 +4,12 @@ import { summaryJobComplete_SES_Config } from "@/emails/v2/summaryJobComplete";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { sesClient } from "@/clients/ses_client";
 import { ScanningMode } from "@prisma/client";
-// import { generateBulletPointsPromptPrefix } from "./generateBulletPointsPromptPrefix";
-// import { generatePromptPrefix } from "./generatePromptPrefix";
 import { sleep } from "@/utils/sleep";
 import CONFIG from "@/config";
 import { SummaryV3OpenAiCustomizations } from "@/types/SummaryV3OpenAiCustomizations";
 import { p } from "@/utils/p";
-import { convertFilesToTextFormatWithMetadata } from "@/utils/convertFilesToTextFormatWithMetadata";
 import { guard_beforeRunningSummary } from "../../../shared/guards/guard_beforeRunningSummary";
 import { checkout } from "../../../shared/checkout";
-// import { breakUpNextChunk } from "./breakUpNextChunk";
 import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
 import config from "@/config";
 import { guard_beforeCallingModel } from "../../../shared/guards/guard_beforeCallingModel";
@@ -38,10 +34,7 @@ export async function openAiSummarizeFilePerPage(
     const { format, length, language, model } = customizations;
     job.progress(0);
     // -v-v- CHECK IF CALLER HAS AN ACCOUNT -v-v-
-    const { account, customerId } = await guard_beforeRunningSummary(
-      email,
-      model
-    );
+    const { account } = await guard_beforeRunningSummary(email, model);
     // -v-v- TRACK I/O TOKENS FOR BILLING -v-v-
     const encoder: Tiktoken = encoding_for_model(
       model === "gpt-3.5-turbo-16k" ? "gpt-3.5-turbo" : model

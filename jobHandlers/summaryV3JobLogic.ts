@@ -117,6 +117,7 @@ export async function summaryV3JobLogic(
             file,
             bucket,
             job,
+            batchId,
             locale,
             done
           );

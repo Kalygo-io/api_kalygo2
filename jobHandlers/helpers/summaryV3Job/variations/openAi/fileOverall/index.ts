@@ -14,10 +14,10 @@ import { getEncoderForModel } from "../../../shared/getEncoderForModel";
 import { convertFileToTextFormat } from "@/utils/convertFileToTextFormat";
 import { breakOffMaxChunkForContext } from "./breakOffMaxChunkForContext";
 import { SummaryV3OpenAiCustomizations } from "@/types/SummaryV3OpenAiCustomizations";
-import { deductCostOfOpenAiInputTokens } from "./deductCostOfOpenAiInputTokens";
-import { deductCostOfOpenAiOutputTokens } from "./deductCostOfOpenAiOutputTokens";
 import { saveToDb } from "./saveToDb";
 import { getOverlapSegment } from "../../../shared/getOverlapSegment";
+import { deductCostOfOpenAiOutputTokens } from "../../../shared/deductCostOfOpenAiOutputTokens";
+import { deductCostOfOpenAiInputTokens } from "../../../shared/deductCostOfOpenAiInputTokens";
 
 const tpmDelay = 60000;
 

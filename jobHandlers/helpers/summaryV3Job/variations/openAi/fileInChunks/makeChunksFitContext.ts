@@ -35,11 +35,10 @@ export function makeChunksFitContext(
     const s2 = dataChunk.substring(endSegmentIndex);
     newChunks.splice(i, 1, s1);
     if (s2) {
-      const overlapSegment: string = getOverlapSegment(
-        chunkTokenOverlap,
-        s2,
-        encoder
-      );
+      const overlapSegment: string =
+        chunkTokenOverlap > 0
+          ? getOverlapSegment(chunkTokenOverlap, s2, encoder)
+          : ``;
       newChunks.splice(i, 1, s1);
       newChunks.splice(i + 1, 1, `${overlapSegment}${s2}`);
     }

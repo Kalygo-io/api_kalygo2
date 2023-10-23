@@ -14,6 +14,8 @@ import { getEncoderForModel } from "../../../shared/getEncoderForModel";
 import { deductCostOfOpenAiInputTokens } from "../../../shared/deductCostOfOpenAiInputTokens";
 import { deductCostOfOpenAiOutputTokens } from "../../../shared/deductCostOfOpenAiOutputTokens";
 import { saveToDb } from "./saveToDb";
+import { breakOffMaxChunkForContext } from "./breakOffMaxChunkForContext";
+import { getOverlapSegment } from "../../../shared/getOverlapSegment";
 
 const tpmDelay = 60000;
 
@@ -42,47 +44,54 @@ export async function openAiSummarizeFilePerPage(
       originalName: string;
     } = await convertFileToTextFormatWithMetadata(file, bucket);
     p("splitting text.*.*.");
-    let summaryOfEachPartOfEachFile: {
-      file: string;
-      summariesOfTheParts: string[];
-    };
     let tpmAccum: number = 0;
     const originalNameOfFile = fileToText.originalName;
     p("*** file to be processed ***", originalNameOfFile);
-    let summariesForPartsOfCurrentFile = [];
-    let partsOfCurrentFile = fileToText.partsOfFile.length;
-    for (let part = 0; part < partsOfCurrentFile; part++) {
-      const textInPartOfFile = fileToText.partsOfFile[part].text;
-      console.log("___ --- ___");
-      let promptPrefix = generatePromptPrefix({
-        format,
-        length,
-        language,
-      });
-      if (
-        isChunkValidForModelContext(
-          `${promptPrefix} ${textInPartOfFile}`,
-          CONFIG.models[model].context,
-          encoder
-        )
-      ) {
-        const prompt = `${promptPrefix} ${textInPartOfFile}`;
+    let summariesForPartsOfFile: string[] = [];
+    let pageCountOfFile = fileToText.partsOfFile.length;
+    for (let page = 0; page < pageCountOfFile; page++) {
+      let chunks: string[] = [
+          `${
+            page === 0
+              ? ``
+              : `${getOverlapSegment(
+                  chunkTokenOverlap,
+                  fileToText.partsOfFile[page - 1].text,
+                  encoder
+                )}`
+          } ${fileToText.partsOfFile[page].text}`,
+        ],
+        chunksCounter: number = 0,
+        summaryForPage: string = "";
+
+      while (chunks.length > 0) {
+        const promptPrefix = generatePromptPrefix(
+          { format: "paragraph", length, language },
+          summaryForPage
+        );
+        // CHECK THE PROMPT + THE CHUNK IS WITHIN THE MODEL'S INPUT TOKEN LIMIT
+        while (
+          // prettier-ignore
+          !isChunkValidForModelContext(`${promptPrefix} ${chunks[0]}`, CONFIG.models[model].context, encoder)
+        ) {
+          console.log("breaking off MAX chunk for context...");
+          // prettier-ignore
+          chunks = breakOffMaxChunkForContext(promptPrefix, chunks, CONFIG.models[model].context, encoder);
+        }
+        const prompt = `${promptPrefix} ${chunks[0]}`;
+        // prettier-ignore
+        p("snippet of the next prompt up for completion...", prompt.slice(0, 16));
         const promptTokenCount = encoder.encode(prompt).length;
         inputTokens += promptTokenCount; // track input tokens
-        tpmAccum += promptTokenCount; // accumulate input tokens
-
+        tpmAccum += promptTokenCount; // accumulate total tokens
         // prettier-ignore
-        p(`token length of prompt for next part ${part} of file`, promptTokenCount);
-        p("inputTokens", inputTokens);
-        p("outputTokens", outputTokens);
-        p("tpmAccum", tpmAccum);
-        // -v-v- WE NOW HAVE EXCEEDED THE TOKENS / MINUTE LIMIT SO WE PAUSE -v-v-
+        p(`token length of prompt for next chunk ${chunksCounter} of file`, promptTokenCount);
         // prettier-ignore
+        p("total inputTokens", inputTokens, "total outputTokens", outputTokens, "tpmAccum", tpmAccum);
         if (tpmAccum > CONFIG.models[model].tpm - CONFIG.tpmBuffer) {
-          // tpmBuffer is to control how close to the rate limit you want to get
-          p(`sleeping for ${tpmDelay / 60000} minute(s)`); // for console debugging...
-          await sleep(tpmDelay);
-          tpmAccum = 0;
+          p(`sleeping for ${tpmDelay / 60000} minute(s)`);
+          await sleep(tpmDelay); // pause for model TPM LIMIT
+          tpmAccum = 0; // reset the TPM LIMIT
         }
         await guard_beforeCallingModel(email, model);
         // prettier-ignore
@@ -106,24 +115,21 @@ export async function openAiSummarizeFilePerPage(
           account
         );
         outputTokens += outputTokenCount; // track output tokens
-        // -v-v- STORING THE COMPLETION OF THIS PART OF THE FILE -v-v-
-        summariesForPartsOfCurrentFile.push(completionText);
-        job.progress((part / partsOfCurrentFile) * 90);
+        summariesForPartsOfFile.push(completionText);
+        job.progress((page / pageCountOfFile) * 90);
         p("progress:", job.progress());
-      } else {
-        throw new Error(
-          "Prompt prefix plus text for part of file exceeds context of A.I. model"
-        );
+        console.log("moving onto the next chunk...");
+        chunks.shift();
+        chunksCounter++;
       }
     }
-    summaryOfEachPartOfEachFile = {
-      file: originalNameOfFile,
-      summariesOfTheParts: summariesForPartsOfCurrentFile,
-    };
     p("saving to db...");
     const { summaryV3Record } = await saveToDb(
       account,
-      summaryOfEachPartOfEachFile,
+      {
+        file: originalNameOfFile,
+        summariesOfTheParts: summariesForPartsOfFile,
+      },
       model,
       language,
       format,

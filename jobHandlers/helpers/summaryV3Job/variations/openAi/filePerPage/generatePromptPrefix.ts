@@ -1,11 +1,16 @@
-export function generatePromptPrefix(customizations: {
-  format: string;
-  length: string;
-  language: string;
-}): string {
+export function generatePromptPrefix(
+  customizations: {
+    format: string;
+    length: string;
+    language: string;
+  },
+  summarySoFarForPage: string
+): string {
   const { format, length, language } = customizations;
   return `Provide a detailed summary of the following ORIGINAL_TEXT. This original text is either a complete standalone piece of data or a chunk of a larger amount of data.
           
+          If the ORIGINAL_TEXT is part of a larger amount of data, then the SUMMARY_SO_FAR of the processed data of the rest of the larger amount of data is: ${summarySoFarForPage}
+
           The summary should be:
           
           - Written in ${language}

@@ -24,7 +24,8 @@
     "gt": "node scripts/generateTranslations",
     "deleteAccount": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/deleteAccount",
     "splitBySpace": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/splitBySpace",
-    "encodeText": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/encodeText"
+    "encodeText": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/encodeText",
+    "fixModeColumn": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/copySummaryModeToScanModeColumn"
   },
   "repository": {
     "type": "git",

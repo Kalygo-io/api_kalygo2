@@ -7,8 +7,14 @@ export function getOverlapSegment(
   encoder: Tiktoken
 ): string {
   console.log("calculating overlapSegment...");
+  const tokensInChunk = (chunk: string) => encoder.encode(chunk).length;
+
+  if (tokensInChunk(chunk) < chunkTokenOverlap) {
+    // if chunk is smaller than desired overlap segment length return the chunk
+    return chunk;
+  }
+
   if (chunkTokenOverlap > 0) {
-    const tokensInChunk = (chunk: string) => encoder.encode(chunk).length;
     let startSegmentIndex = -chunk.length;
     let high = 0;
     while (

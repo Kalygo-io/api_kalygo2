@@ -21,7 +21,7 @@ export async function saveToDb(
     data: {
       requesterId: account!.id,
       summary: summaryForFile,
-      scanMode: ScanningMode.FILE_OVERALL,
+      scanMode: ScanningMode.FILE_PER_PAGE,
       model: model,
       language: language,
       format: format,

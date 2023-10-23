@@ -1,4 +1,4 @@
-import { SummaryMode } from "@prisma/client";
+import { ScanningMode } from "@prisma/client";
 
 // import { openAiSummarizeEachFileOverall } from "@/jobHandlers/helpers/summaryV3Job/variations/openAi/eachFileOverall";
 // import { openAiSummarizeEachFileInChunks } from "@/jobHandlers/helpers/summaryV3Job/variations/openAi/eachFileInChunks";
@@ -44,10 +44,10 @@ export async function summaryV3JobLogic(
     if (["gpt-3.5-turbo", "gpt-3.5-turbo-16k", "gpt-4"].includes(model)) {
       const openAiModel: SupportedOpenAiModels = model as SupportedOpenAiModels;
 
-      console.log("-!-!-", summarizationType, SummaryMode.FILE_IN_CHUNKS);
+      console.log("-!-!-", summarizationType, ScanningMode.FILE_IN_CHUNKS);
 
       switch (summarizationType) {
-        case SummaryMode.FILE_IN_CHUNKS:
+        case ScanningMode.FILE_IN_CHUNKS:
           openAiSummarizeFileInChunks(
             {
               format,
@@ -66,7 +66,7 @@ export async function summaryV3JobLogic(
             done
           );
           break;
-        case SummaryMode.FILE_OVERALL:
+        case ScanningMode.FILE_OVERALL:
           openAiSummarizeFileOverall(
             {
               format,
@@ -85,7 +85,7 @@ export async function summaryV3JobLogic(
             done
           );
           break;
-        case SummaryMode.OVERALL:
+        case ScanningMode.OVERALL:
           openAiSummarizeFilesOverall(
             {
               format,
@@ -104,7 +104,7 @@ export async function summaryV3JobLogic(
             done
           );
           break;
-        case SummaryMode.FILE_PER_PAGE:
+        case ScanningMode.FILE_PER_PAGE:
           openAiSummarizeFilePerPage(
             {
               format,
@@ -139,7 +139,7 @@ export async function summaryV3JobLogic(
       );
 
       switch (summarizationType) {
-        // case SummaryMode.EACH_FILE_IN_CHUNKS:
+        // case ScanningMode.EACH_FILE_IN_CHUNKS:
         //   replicateSummarizeEachFileInChunks(
         //     {
         //       format,
@@ -156,7 +156,7 @@ export async function summaryV3JobLogic(
         //     done
         //   );
         //   break;
-        // case SummaryMode.EACH_FILE_OVERALL:
+        // case ScanningMode.EACH_FILE_OVERALL:
         //   replicateSummarizeEachFileOverall(
         //     {
         //       format,
@@ -173,7 +173,7 @@ export async function summaryV3JobLogic(
         //     done
         //   );
         //   break;
-        // case SummaryMode.OVERALL:
+        // case ScanningMode.OVERALL:
         //   replicateSummarizeFilesOverall(
         //     {
         //       format,
@@ -190,7 +190,7 @@ export async function summaryV3JobLogic(
         //     done
         //   );
         //   break;
-        // case SummaryMode.EACH_FILE_PER_PAGE:
+        // case ScanningMode.EACH_FILE_PER_PAGE:
         //   replicateSummarizeEachFilePerPage(
         //     {
         //       format,

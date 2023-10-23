@@ -16,7 +16,7 @@ import { guard_beforeRunningSummary } from "../../../shared/guards/guard_beforeR
 import { makeChunksSmaller } from "./makeChunksSmaller";
 import { checkout } from "../../../shared/checkout";
 import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
-import { SummaryMode } from "@prisma/client";
+import { ScanningMode } from "@prisma/client";
 import { guard_beforeCallingModel } from "../../../shared/guards/guard_beforeCallingModel";
 import config from "@/config";
 import { v4 } from "uuid";
@@ -215,7 +215,7 @@ export async function openAiSummarizeEachFileInChunks(
         requesterId: account!.id,
         summary: summaryForEachFile,
         model: model,
-        mode: SummaryMode.EACH_FILE_IN_CHUNKS,
+        scanMode: ScanningMode.EACH_FILE_IN_CHUNKS,
         language: language,
         format: format,
       },

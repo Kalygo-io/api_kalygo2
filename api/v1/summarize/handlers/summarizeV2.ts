@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { jobQueue } from "@/clients/bull_client";
 import { QueueJobTypes } from "@/types/JobTypes";
-import { SummaryMode } from "@prisma/client";
+import { ScanningMode } from "@prisma/client";
 
 import { v4 } from "uuid";
 
@@ -17,7 +17,7 @@ export async function summarizeV2(
 
     let locale: string = req?.i18n?.language?.substring(0, 2) || "en";
 
-    if (req.body.mode === SummaryMode.FILE_OVERALL) {
+    if (req.body.mode === ScanningMode.FILE_OVERALL) {
       for (let fIndex = 0; fIndex < (req.files?.length as number); fIndex++) {
         jobQueue.add(
           {

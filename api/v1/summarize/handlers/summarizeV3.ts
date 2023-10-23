@@ -3,7 +3,7 @@ import { jobQueue } from "@/clients/bull_client";
 import { QueueJobTypes } from "@/types/JobTypes";
 import { v4 } from "uuid";
 import { SummaryV3Params } from "@/types/SummaryV3Params";
-import { SummaryMode } from "@prisma/client";
+import { ScanningMode } from "@prisma/client";
 
 export async function summarizeV3(
   req: Request,
@@ -18,7 +18,7 @@ export async function summarizeV3(
     let locale: string = req?.i18n?.language?.substring(0, 2) || "en";
     const batchId = req.body.batchId || v4();
 
-    if (req.body.mode === SummaryMode.OVERALL) {
+    if (req.body.mode === ScanningMode.OVERALL) {
       jobQueue.add(
         {
           jobType: QueueJobTypes.SummaryV3,

@@ -12,7 +12,7 @@ async function main() {
   for (let i = 0; i < summaryV3s.length; i++) {
     console.log("--- --- ---");
     console.log("summaryV3s[i]", summaryV3s[i].id);
-    console.log("summaryV3s[i]", summaryV3s[i].mode);
+    // console.log("summaryV3s[i]", summaryV3s[i].mode);
     console.log("summaryV3s[i]", summaryV3s[i].scanMode);
 
     //     if (summaryV3s[i].mode !== "PRIOR_TO_TRACKING_MODE") {

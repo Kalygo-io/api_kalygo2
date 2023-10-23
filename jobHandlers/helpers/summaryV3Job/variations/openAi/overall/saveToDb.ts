@@ -1,7 +1,7 @@
 import prisma from "@/db/prisma_client";
 import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
 import { p } from "@/utils/p";
-import { SummaryMode } from "@prisma/client";
+import { ScanningMode } from "@prisma/client";
 
 export async function saveToDb(
   account: any,
@@ -18,7 +18,7 @@ export async function saveToDb(
     data: {
       requesterId: account!.id,
       summary: summaryOfSummaries,
-      mode: SummaryMode.OVERALL,
+      scanMode: ScanningMode.OVERALL,
       model: model,
       language: language,
       format: format,

@@ -1,7 +1,7 @@
 import prisma from "@/db/prisma_client";
 import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
 import { p } from "@/utils/p";
-import { ScanningMode, SummaryMode } from "@prisma/client";
+import { ScanningMode } from "@prisma/client";
 
 export async function saveToDb(
   account: any,

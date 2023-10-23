@@ -2,7 +2,7 @@ import prisma from "@/db/prisma_client";
 import { summaryJobComplete_SES_Config } from "@/emails/v2/summaryJobComplete";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { sesClient } from "@/clients/ses_client";
-import { SummaryMode } from "@prisma/client";
+import { ScanningMode } from "@prisma/client";
 import { sleep } from "@/utils/sleep";
 import CONFIG from "@/config";
 import { p } from "@/utils/p";
@@ -202,7 +202,7 @@ export async function replicateSummarizeEachFilePerPage(
       data: {
         requesterId: account!.id,
         summary: summaryOfEachPartOfEachFile,
-        mode: SummaryMode.EACH_FILE_PER_PAGE,
+        scanMode: ScanningMode.EACH_FILE_PER_PAGE,
         model: model,
         language: language,
         format: format,

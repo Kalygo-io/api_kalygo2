@@ -2,7 +2,7 @@ import prisma from "@/db/prisma_client";
 import { summaryJobComplete_SES_Config } from "@/emails/v2/summaryJobComplete";
 import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
 import { sesClient } from "@/clients/ses_client";
-import { SummaryMode } from "@prisma/client";
+import { ScanningMode } from "@prisma/client";
 import { generateBulletPointsPromptPrefix } from "./generateBulletPointsPromptPrefix";
 import { generatePromptPrefix } from "./generatePromptPrefix";
 import { sleep } from "@/utils/sleep";
@@ -291,7 +291,7 @@ export async function openAiSummarizeFileOverall(
       data: {
         requesterId: account!.id,
         summary: summaryForFile,
-        mode: SummaryMode.FILE_OVERALL,
+        scanMode: ScanningMode.FILE_OVERALL,
         model: model,
         language: language,
         format: format,

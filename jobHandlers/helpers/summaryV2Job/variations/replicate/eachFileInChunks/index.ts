@@ -12,7 +12,7 @@ import { guard_beforeRunningSummary } from "../../../shared/guards/guard_beforeR
 import { makeChunksSmaller } from "./makeChunksSmaller";
 import { checkout } from "../../../shared/checkout";
 import { generateReplicateChatCompletionWithExponentialBackoff } from "../../../shared/generateReplicateChatCompletionWithExponentialBackoff";
-import { SummaryMode } from "@prisma/client";
+import { ScanningMode } from "@prisma/client";
 import { guard_beforeCallingModel } from "../../../shared/guards/guard_beforeCallingModel";
 import config from "@/config";
 import { SummaryV2ReplicateCustomizations } from "@/types/SummaryV2ReplicateCustomizations";
@@ -230,7 +230,7 @@ export async function replicateSummarizeEachFileInChunks(
         requesterId: account!.id,
         summary: summaryForEachFile,
         model: model,
-        mode: SummaryMode.EACH_FILE_IN_CHUNKS,
+        scanMode: ScanningMode.EACH_FILE_IN_CHUNKS,
         language: language,
         format: format,
       },

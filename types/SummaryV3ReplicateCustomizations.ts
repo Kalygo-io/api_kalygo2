@@ -1,9 +1,9 @@
-import { SummaryMode } from "@prisma/client";
+import { ScanningMode } from "@prisma/client";
 import { SupportedReplicateModels } from "./SupportedReplicateModels";
 
 export type SummaryV3ReplicateCustomizations = {
   format: "bullet-points" | "paragraph";
-  mode: SummaryMode;
+  mode: ScanningMode;
   length: string;
   language: string;
   model: SupportedReplicateModels;

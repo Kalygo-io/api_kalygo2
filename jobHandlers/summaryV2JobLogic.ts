@@ -1,4 +1,4 @@
-import { SummaryMode } from "@prisma/client";
+import { ScanningMode } from "@prisma/client";
 
 import { openAiSummarizeEachFileOverall } from "@/jobHandlers/helpers/summaryV2Job/variations/openAi/eachFileOverall";
 import { openAiSummarizeEachFileInChunks } from "@/jobHandlers/helpers/summaryV2Job/variations/openAi/eachFileInChunks";
@@ -45,7 +45,7 @@ export async function summaryV2JobLogic(
       const openAiModel: SupportedOpenAiModels = model as SupportedOpenAiModels;
 
       switch (summarizationType) {
-        case SummaryMode.EACH_FILE_IN_CHUNKS:
+        case ScanningMode.EACH_FILE_IN_CHUNKS:
           openAiSummarizeEachFileInChunks(
             {
               format,
@@ -62,7 +62,7 @@ export async function summaryV2JobLogic(
             done
           );
           break;
-        case SummaryMode.EACH_FILE_OVERALL:
+        case ScanningMode.EACH_FILE_OVERALL:
           openAiSummarizeEachFileOverall(
             {
               format,
@@ -79,7 +79,7 @@ export async function summaryV2JobLogic(
             done
           );
           break;
-        case SummaryMode.FILE_OVERALL:
+        case ScanningMode.FILE_OVERALL:
           openAiSummarizeFileOverall(
             {
               format,
@@ -97,7 +97,7 @@ export async function summaryV2JobLogic(
             done
           );
           break;
-        case SummaryMode.OVERALL:
+        case ScanningMode.OVERALL:
           openAiSummarizeFilesOverall(
             {
               format,
@@ -114,7 +114,7 @@ export async function summaryV2JobLogic(
             done
           );
           break;
-        case SummaryMode.EACH_FILE_PER_PAGE:
+        case ScanningMode.EACH_FILE_PER_PAGE:
           openAiSummarizeEachFilePerPage(
             {
               format,
@@ -149,7 +149,7 @@ export async function summaryV2JobLogic(
       );
 
       switch (summarizationType) {
-        case SummaryMode.EACH_FILE_IN_CHUNKS:
+        case ScanningMode.EACH_FILE_IN_CHUNKS:
           replicateSummarizeEachFileInChunks(
             {
               format,
@@ -166,7 +166,7 @@ export async function summaryV2JobLogic(
             done
           );
           break;
-        case SummaryMode.EACH_FILE_OVERALL:
+        case ScanningMode.EACH_FILE_OVERALL:
           replicateSummarizeEachFileOverall(
             {
               format,
@@ -183,7 +183,7 @@ export async function summaryV2JobLogic(
             done
           );
           break;
-        case SummaryMode.OVERALL:
+        case ScanningMode.OVERALL:
           replicateSummarizeFilesOverall(
             {
               format,
@@ -200,7 +200,7 @@ export async function summaryV2JobLogic(
             done
           );
           break;
-        case SummaryMode.EACH_FILE_PER_PAGE:
+        case ScanningMode.EACH_FILE_PER_PAGE:
           replicateSummarizeEachFilePerPage(
             {
               format,

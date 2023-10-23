@@ -16,7 +16,7 @@ import { breakUpNextChunk } from "./breakUpNextChunk";
 import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
 import { checkout } from "../../../shared/checkout";
 import { breakUpNextChunkForSummaryOfSummaries } from "./breakUpNextChunkForSummaryOfSummaries";
-import { SummaryMode } from "@prisma/client";
+import { ScanningMode } from "@prisma/client";
 import { guard_beforeCallingModel } from "../../../shared/guards/guard_beforeCallingModel";
 import config from "@/config";
 
@@ -332,7 +332,7 @@ export async function openAiSummarizeFilesOverall(
       data: {
         requesterId: account!.id,
         summary: summaryOfSummaries,
-        mode: SummaryMode.OVERALL,
+        scanMode: ScanningMode.OVERALL,
         title: filesToText.map((f) => f.originalName).join(" "),
         model: model,
         language: language,

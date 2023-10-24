@@ -19,7 +19,7 @@ export async function getPublicSummaryV2(
       },
       include: {
         Ratings: true,
-        SummariesAndAccessGroups: {
+        SummaryV2sAndAccessGroups: {
           include: {
             accessGroup: true,
           },

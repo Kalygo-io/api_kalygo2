@@ -1,20 +1,20 @@
 import { Request, Response, NextFunction } from "express";
 import prisma from "@/db/prisma_client";
 
-export async function addToAccessGroup(
+export async function addSummaryV3ToAccessGroup(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    console.log("GET add-to-access-group");
+    console.log("GET add-summary-v3-to-access-group");
 
-    const { summaryId, accessGroupId } = req.body;
+    const { summaryV3Id, accessGroupId } = req.body;
 
-    await prisma.summariesAndAccessGroups.create({
+    await prisma.summaryV3sAndAccessGroups.create({
       data: {
         accessGroupId: accessGroupId,
-        summaryId: summaryId,
+        summaryV3Id: summaryV3Id,
         // @ts-ignore
         createdBy: req.user.email,
       },

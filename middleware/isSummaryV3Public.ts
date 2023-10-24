@@ -2,7 +2,7 @@ import prisma from "@/db/prisma_client";
 import { RoleTypes } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 
-export async function isSummaryPublic(
+export async function isSummaryV3Public(
   req: Request,
   res: Response,
   next: NextFunction
@@ -12,9 +12,9 @@ export async function isSummaryPublic(
 
   const { id } = req.params;
 
-  const accessGroups = await prisma.summariesAndAccessGroups.findMany({
+  const accessGroups = await prisma.summaryV3sAndAccessGroups.findMany({
     where: {
-      summaryId: id ? Number.parseInt(id) : -1,
+      summaryV3Id: id ? Number.parseInt(id) : -1,
     },
     include: {
       accessGroup: true,

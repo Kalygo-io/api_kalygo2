@@ -80,38 +80,38 @@ model Summary {
 }
 
 model SummaryV2 {
-  id                       Int                        @id @default(autoincrement())
-  requester                Account                    @relation(fields: [requesterId], references: [id])
-  requesterId              Int
-  Files                    File[]
-  Ratings                  Rating[]
-  scanMode                 ScanningMode               @default(PRIOR_TO_TRACKING_MODE)
-  summary                  Json
-  title                    String                     @default("")
-  model                    String
-  format                   String
-  language                 String
-  createdAt                DateTime?                  @default(now())
-  updatedAt                DateTime?                  @updatedAt
-  SummariesAndAccessGroups SummariesAndAccessGroups[]
+  id                        Int                         @id @default(autoincrement())
+  requester                 Account                     @relation(fields: [requesterId], references: [id])
+  requesterId               Int
+  Files                     File[]
+  Ratings                   Rating[]
+  scanMode                  ScanningMode                @default(PRIOR_TO_TRACKING_MODE)
+  summary                   Json
+  title                     String                      @default("")
+  model                     String
+  format                    String
+  language                  String
+  createdAt                 DateTime?                   @default(now())
+  updatedAt                 DateTime?                   @updatedAt
+  SummaryV2sAndAccessGroups SummaryV2sAndAccessGroups[]
 }
 
 model SummaryV3 {
-  id                       Int                        @id @default(autoincrement())
-  requester                Account                    @relation(fields: [requesterId], references: [id])
-  requesterId              Int
-  Files                    File[]
-  Ratings                  Rating[]
-  scanMode                 ScanningMode               @default(PRIOR_TO_TRACKING_MODE)
-  summary                  Json
-  title                    String                     @default("")
-  model                    String
-  format                   String
-  language                 String
-  batchId                  String                     @default("")
-  createdAt                DateTime?                  @default(now())
-  updatedAt                DateTime?                  @updatedAt
-  SummariesAndAccessGroups SummariesAndAccessGroups[]
+  id                        Int                         @id @default(autoincrement())
+  requester                 Account                     @relation(fields: [requesterId], references: [id])
+  requesterId               Int
+  Files                     File[]
+  Ratings                   Rating[]
+  scanMode                  ScanningMode                @default(PRIOR_TO_TRACKING_MODE)
+  summary                   Json
+  title                     String                      @default("")
+  model                     String
+  format                    String
+  language                  String
+  batchId                   String                      @default("")
+  createdAt                 DateTime?                   @default(now())
+  updatedAt                 DateTime?                   @updatedAt
+  SummaryV3sAndAccessGroups SummaryV3sAndAccessGroups[]
 }
 
 model Rating {
@@ -310,17 +310,26 @@ model AccountsAndAccessGroups {
   @@id([accessGroupId, accountId])
 }
 
-model SummariesAndAccessGroups {
-  summary       SummaryV2   @relation(fields: [summaryId], references: [id])
-  summaryId     Int // relation scalar field (used in the `@relation` attribute above)
+model SummaryV2sAndAccessGroups {
+  summaryV2     SummaryV2   @relation(fields: [summaryV2Id], references: [id])
+  summaryV2Id   Int // relation scalar field (used in the `@relation` attribute above)
   accessGroup   AccessGroup @relation(fields: [accessGroupId], references: [id])
   accessGroupId Int // relation scalar field (used in the `@relation` attribute above)
   createdAt     DateTime    @default(now())
   createdBy     String
-  SummaryV3     SummaryV3?  @relation(fields: [summaryV3Id], references: [id])
-  summaryV3Id   Int?
 
-  @@id([summaryId, accessGroupId])
+  @@id([summaryV2Id, accessGroupId])
+}
+
+model SummaryV3sAndAccessGroups {
+  summaryV3     SummaryV3   @relation(fields: [summaryV3Id], references: [id])
+  summaryV3Id   Int // relation scalar field (used in the `@relation` attribute above)
+  accessGroup   AccessGroup @relation(fields: [accessGroupId], references: [id])
+  accessGroupId Int // relation scalar field (used in the `@relation` attribute above)
+  createdAt     DateTime    @default(now())
+  createdBy     String
+
+  @@id([summaryV3Id, accessGroupId])
 }
 
 model CustomRequestsAndAccessGroups {
@@ -354,7 +363,8 @@ model AccessGroup {
   updatedAt                     DateTime?                       @updatedAt
   Files                         File[]
   Members                       AccountsAndAccessGroups[]
-  SummariesAndAccessGroups      SummariesAndAccessGroups[]
+  SummaryV2sAndAccessGroups     SummaryV2sAndAccessGroups[]
+  SummaryV3sAndAccessGroups     SummaryV3sAndAccessGroups[]
   CustomRequestsAndAccessGroups CustomRequestsAndAccessGroups[]
   PromptsAndAccessGroups        PromptsAndAccessGroups[]
 

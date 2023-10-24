@@ -1,7 +1,8 @@
 import {
   createAccessGroup,
   deleteAccessGroup,
-  deleteSummaryFromAccessGroup,
+  deleteSummaryV2FromAccessGroup,
+  deleteSummaryV3FromAccessGroup,
   getAccessGroup,
   deleteAccountFromAccessGroup,
   addAccountToAccessGroup,
@@ -23,8 +24,20 @@ router
   .delete(authenticateToken, isAccessGroupOwner, deleteAccountFromAccessGroup);
 
 router
-  .route("/delete-summary-from-access-group/:id")
-  .delete(authenticateToken, isAccessGroupOwner, deleteSummaryFromAccessGroup);
+  .route("/delete-summary-v2-from-access-group/:id")
+  .delete(
+    authenticateToken,
+    isAccessGroupOwner,
+    deleteSummaryV2FromAccessGroup
+  );
+
+router
+  .route("/delete-summary-v3-from-access-group/:id")
+  .delete(
+    authenticateToken,
+    isAccessGroupOwner,
+    deleteSummaryV3FromAccessGroup
+  );
 
 router
   .route("/delete-custom-request-from-access-group/:id")

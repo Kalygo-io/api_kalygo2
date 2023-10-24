@@ -1,24 +1,24 @@
 import prisma from "@/db/prisma_client";
 import { Request, Response, NextFunction } from "express";
 
-export async function deleteSummaryFromAccessGroup(
+export async function deleteSummaryV2FromAccessGroup(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    console.log("deleteSummaryFromAccessGroup");
+    console.log("deleteSummaryV2FromAccessGroup");
 
     const { id } = req.params;
-    const { summaryId } = req.body;
+    const { summaryV2Id } = req.body;
 
     console.log("accessGroupId", id);
-    console.log("summaryId", summaryId);
+    console.log("summaryV2Id", summaryV2Id);
 
-    await prisma.summariesAndAccessGroups.deleteMany({
+    await prisma.summaryV2sAndAccessGroups.deleteMany({
       where: {
         accessGroupId: parseInt(id),
-        summaryId: parseInt(summaryId),
+        summaryV2Id: parseInt(summaryV2Id),
       },
     });
 

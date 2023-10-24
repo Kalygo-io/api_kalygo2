@@ -5,28 +5,16 @@ import prisma from "@/db/prisma_client";
 import { stripe } from "@/clients/stripe_client";
 import { OpenAI } from "@/clients/openai_client";
 
-export async function getSummaryV3(
+export async function getPublicSummaryV3(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    console.log("GET getSummaryV3");
-
-    const account = await prisma.account.findFirst({
-      where: {
-        // @ts-ignore
-        email: req.user.email,
-      },
-    });
-
-    console.log("account", account);
-    console.log("req.params.id", req.params.id);
+    console.log("GET getPublicSummaryV3");
 
     const summary = await prisma.summaryV3.findFirst({
       where: {
-        // @ts-ignore
-        requesterId: account?.id,
         id: parseInt(req.params.id),
       },
       include: {
@@ -39,12 +27,16 @@ export async function getSummaryV3(
       },
     });
 
+    console.log("summary", summary);
+
     if (summary) {
       res.status(200).json(summary || null);
     } else {
       res.status(404).send();
     }
   } catch (e) {
+    console.log("ERROR in getPublicSummaryV3", e);
+
     next(e);
   }
 }

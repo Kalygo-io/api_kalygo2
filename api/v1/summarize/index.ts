@@ -7,19 +7,22 @@ import {
   getPublicSummaryV2,
   getSummariesV2,
   rateSummaryV2,
-  addToAccessGroup,
-  removeFromAccessGroup,
+  addSummaryV2ToAccessGroup,
+  addSummaryV3ToAccessGroup,
+  removeSummaryV2FromAccessGroup,
+  removeSummaryV3FromAccessGroup,
   summarizeV3,
   getSummaryV3,
   getSummariesV3,
   rateSummaryV3,
+  getPublicSummaryV3,
 } from "./handlers";
 
 import { Router } from "express";
 
 import { authenticateToken } from "@middleware/index";
 import { multerS3Middleware } from "@middleware/index";
-import { isSummaryPublic } from "@middleware/index";
+import { isSummaryV2Public, isSummaryV3Public } from "@middleware/index";
 import { uploadToDiskMiddleware } from "@/middleware/multer-disk";
 import canCallerPushToQueue from "@/middleware/canCallerPushToQueue";
 
@@ -56,18 +59,30 @@ router.route("/get-summary-v2/:id").get([authenticateToken], getSummaryV2);
 router.route("/get-summary-v3/:id").get([authenticateToken], getSummaryV3);
 router
   .route("/get-public-summary-v2/:id")
-  .get([isSummaryPublic], getPublicSummaryV2);
+  .get([isSummaryV2Public], getPublicSummaryV2);
+
+router
+  .route("/get-public-summary-v3/:id")
+  .get([isSummaryV3Public], getPublicSummaryV3);
 
 router.route("/rate-summary-v2/:id").post([authenticateToken], rateSummaryV2);
 router.route("/rate-summary-v3/:id").post([authenticateToken], rateSummaryV3);
 
 router
-  .route("/add-summary-to-access-group")
-  .post([authenticateToken], addToAccessGroup);
+  .route("/add-summary-v2-to-access-group")
+  .post([authenticateToken], addSummaryV2ToAccessGroup);
 
 router
-  .route("/remove-summary-from-access-group")
-  .delete([authenticateToken], removeFromAccessGroup);
+  .route("/add-summary-v3-to-access-group")
+  .post([authenticateToken], addSummaryV3ToAccessGroup);
+
+router
+  .route("/remove-summary-v2-from-access-group")
+  .delete([authenticateToken], removeSummaryV2FromAccessGroup);
+
+router
+  .route("/remove-summary-v3-from-access-group")
+  .delete([authenticateToken], removeSummaryV3FromAccessGroup);
 
 // router.route("/get-summarization-quote").post(
 // [authenticateToken, uploadToDiskMiddleware.array("documents", 3)],

@@ -8,9 +8,12 @@ import { getSummary } from "./getSummary";
 import { getSummaryV2 } from "./getSummaryV2";
 import { getSummaryV3 } from "./getSummaryV3";
 import { getPublicSummaryV2 } from "./getPublicSummaryV2";
+import { getPublicSummaryV3 } from "./getPublicSummaryV3";
 import { rateSummaryV2 } from "./rateSummaryV2";
-import { addToAccessGroup } from "./addToAccessGroup";
-import { removeFromAccessGroup } from "./removeFromAccessGroup";
+import { addSummaryV2ToAccessGroup } from "./addSummaryV2ToAccessGroup";
+import { addSummaryV3ToAccessGroup } from "./addSummaryV3ToAccessGroup";
+import { removeSummaryV2FromAccessGroup } from "./removeSummaryV2FromAccessGroup";
+import { removeSummaryV3FromAccessGroup } from "./removeSummaryV3FromAccessGroup";
 import { rateSummaryV3 } from "./rateSummaryV3";
 
 export {
@@ -24,8 +27,11 @@ export {
   getSummaryV2,
   getSummaryV3,
   getPublicSummaryV2,
+  getPublicSummaryV3,
   rateSummaryV2,
   rateSummaryV3,
-  addToAccessGroup,
-  removeFromAccessGroup,
+  addSummaryV2ToAccessGroup,
+  addSummaryV3ToAccessGroup,
+  removeSummaryV2FromAccessGroup,
+  removeSummaryV3FromAccessGroup,
 };

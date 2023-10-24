@@ -56,6 +56,7 @@ model Account {
   RAGRequest             RagRequest[]
   ReferralCodes          ReferralCode[]
   referralCode           String                    @default("")
+  CustomRequestV2        CustomRequestV2[]
 }
 
 model ReferralCode {
@@ -115,26 +116,30 @@ model SummaryV3 {
 }
 
 model Rating {
-  id              Int            @id @default(autoincrement())
-  ratingType      RatingType     @default(SummaryV2)
-  rating          Int
-  ratingMax       Int
-  SummaryV2       SummaryV2?     @relation(fields: [summaryV2Id], references: [id])
-  summaryV2Id     Int?
-  CustomRequest   CustomRequest? @relation(fields: [customRequestId], references: [id])
-  customRequestId Int?
-  Account         Account?       @relation(fields: [accountId], references: [id])
-  accountId       Int?
-  SmartSearch     SmartSearch?   @relation(fields: [smartSearchId], references: [id])
-  smartSearchId   Int?
-  Prompt          Prompt?        @relation(fields: [promptId], references: [id])
-  promptId        Int?
-  SummaryV3       SummaryV3?     @relation(fields: [summaryV3Id], references: [id])
-  summaryV3Id     Int?
+  id                Int              @id @default(autoincrement())
+  ratingType        RatingType       @default(SummaryV2)
+  rating            Int
+  ratingMax         Int
+  SummaryV2         SummaryV2?       @relation(fields: [summaryV2Id], references: [id])
+  summaryV2Id       Int?
+  CustomRequest     CustomRequest?   @relation(fields: [customRequestId], references: [id])
+  customRequestId   Int?
+  Account           Account?         @relation(fields: [accountId], references: [id])
+  accountId         Int?
+  SmartSearch       SmartSearch?     @relation(fields: [smartSearchId], references: [id])
+  smartSearchId     Int?
+  Prompt            Prompt?          @relation(fields: [promptId], references: [id])
+  promptId          Int?
+  SummaryV3         SummaryV3?       @relation(fields: [summaryV3Id], references: [id])
+  summaryV3Id       Int?
+  CustomRequestV2   CustomRequestV2? @relation(fields: [customRequestV2Id], references: [id])
+  customRequestV2Id Int?
 
   @@unique([accountId, smartSearchId])
   @@unique([accountId, summaryV2Id])
+  @@unique([accountId, summaryV3Id])
   @@unique([accountId, customRequestId])
+  @@unique([accountId, customRequestV2Id])
   @@unique([accountId, promptId])
 }
 
@@ -156,10 +161,12 @@ model File {
   AccountContext   Account? @relation("AccountContext", fields: [accountContextId], references: [id])
   accountContextId Int?
 
-  AccountForPicture   Account?   @relation("ProfilePicture", fields: [accountForPictureId], references: [id])
-  accountForPictureId Int?       @unique
-  SummaryV3           SummaryV3? @relation(fields: [summaryV3Id], references: [id])
+  AccountForPicture   Account?         @relation("ProfilePicture", fields: [accountForPictureId], references: [id])
+  accountForPictureId Int?             @unique
+  SummaryV3           SummaryV3?       @relation(fields: [summaryV3Id], references: [id])
   summaryV3Id         Int?
+  CustomRequestV2     CustomRequestV2? @relation(fields: [customRequestV2Id], references: [id])
+  customRequestV2Id   Int?
 }
 
 model VectorSearch {
@@ -231,6 +238,22 @@ model CustomRequest {
   updatedAt                     DateTime?                       @updatedAt
   Ratings                       Rating[]
   CustomRequestsAndAccessGroups CustomRequestsAndAccessGroups[]
+}
+
+model CustomRequestV2 {
+  id                              Int                               @id @default(autoincrement())
+  requester                       Account                           @relation(fields: [requesterId], references: [id])
+  requesterId                     Int
+  Files                           File[]
+  scanMode                        ScanningMode                      @default(PRIOR_TO_TRACKING_MODE)
+  model                           String?
+  bucket                          String
+  prompt                          String
+  completionResponse              Json
+  createdAt                       DateTime?                         @default(now())
+  updatedAt                       DateTime?                         @updatedAt
+  Ratings                         Rating[]
+  CustomRequestV2sAndAccessGroups CustomRequestV2sAndAccessGroups[]
 }
 
 model SummaryCredits {
@@ -343,6 +366,17 @@ model CustomRequestsAndAccessGroups {
   @@id([customRequestId, accessGroupId])
 }
 
+model CustomRequestV2sAndAccessGroups {
+  customRequestV2   CustomRequestV2 @relation(fields: [customRequestV2Id], references: [id])
+  customRequestV2Id Int // relation scalar field (used in the `@relation` attribute above)
+  accessGroup       AccessGroup     @relation(fields: [accessGroupId], references: [id])
+  accessGroupId     Int // relation scalar field (used in the `@relation` attribute above)
+  createdAt         DateTime        @default(now())
+  createdBy         String
+
+  @@id([customRequestV2Id, accessGroupId])
+}
+
 model PromptsAndAccessGroups {
   prompt        Prompt      @relation(fields: [promptId], references: [id])
   promptId      Int // relation scalar field (used in the `@relation` attribute above)
@@ -355,18 +389,19 @@ model PromptsAndAccessGroups {
 }
 
 model AccessGroup {
-  id                            Int                             @id @default(autoincrement())
-  name                          String
-  createdBy                     Account?                        @relation(fields: [createdById], references: [id])
-  createdById                   Int?
-  createdAt                     DateTime?                       @default(now())
-  updatedAt                     DateTime?                       @updatedAt
-  Files                         File[]
-  Members                       AccountsAndAccessGroups[]
-  SummaryV2sAndAccessGroups     SummaryV2sAndAccessGroups[]
-  SummaryV3sAndAccessGroups     SummaryV3sAndAccessGroups[]
-  CustomRequestsAndAccessGroups CustomRequestsAndAccessGroups[]
-  PromptsAndAccessGroups        PromptsAndAccessGroups[]
+  id                              Int                               @id @default(autoincrement())
+  name                            String
+  createdBy                       Account?                          @relation(fields: [createdById], references: [id])
+  createdById                     Int?
+  createdAt                       DateTime?                         @default(now())
+  updatedAt                       DateTime?                         @updatedAt
+  Files                           File[]
+  Members                         AccountsAndAccessGroups[]
+  SummaryV2sAndAccessGroups       SummaryV2sAndAccessGroups[]
+  SummaryV3sAndAccessGroups       SummaryV3sAndAccessGroups[]
+  CustomRequestsAndAccessGroups   CustomRequestsAndAccessGroups[]
+  CustomRequestV2sAndAccessGroups CustomRequestV2sAndAccessGroups[]
+  PromptsAndAccessGroups          PromptsAndAccessGroups[]
 
   @@unique([name, createdById])
 }

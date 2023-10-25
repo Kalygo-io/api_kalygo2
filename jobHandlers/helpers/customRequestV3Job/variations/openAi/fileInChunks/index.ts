@@ -1,16 +1,13 @@
-import prisma from "@/db/prisma_client";
 import { sleep } from "@/utils/sleep";
 import CONFIG from "@/config";
 import { areChunksWithPromptPrefixValidForModelContext } from "@/utils/areChunksWithPromptPrefixValidForModelContext";
 import { p } from "@/utils/p";
 import { guard_beforeRunningCustomRequest } from "../../../shared/guards/guard_beforeRunningCustomRequest";
-import { makeChunksSmaller } from "./makeChunksSmaller";
 import { checkout } from "../../../shared/checkout";
 import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
-import { ScanningMode } from "@prisma/client";
 import { guard_beforeCallingModel } from "../../../shared/guards/guard_beforeCallingModel";
 import config from "@/config";
-import { CustomRequestV2OpenAiCustomizations } from "@/types/CustomRequestV2OpenAiCustomizations";
+import { CustomRequestV3OpenAiCustomizations } from "@/types/CustomRequestV3OpenAiCustomizations";
 import { getEncoderForModel } from "../../../shared/getEncoderForModel";
 import { convertFileToTextFormat } from "@/utils/convertFileToTextFormat";
 import { saveToDb } from "./saveToDb";
@@ -21,9 +18,9 @@ import { deductCostOfOpenAiOutputTokens } from "../../../shared/deductCostOfOpen
 const tpmDelay = 60000;
 
 export async function openAiFileInChunks(
-  customizations: CustomRequestV2OpenAiCustomizations,
+  customizations: CustomRequestV3OpenAiCustomizations,
   email: string,
-  file: any,
+  file: Record<string, any>,
   job: any,
   batchId: string,
   locale: string,
@@ -33,7 +30,7 @@ export async function openAiFileInChunks(
   let chunks: string[] = [];
 
   try {
-    p("CustomRequestV2 - SCANNING MODE - File In Chunks");
+    p("CustomRequestV3 - SCANNING MODE - File In Chunks");
     const start = Date.now();
     const {
       prompts: { prompt },
@@ -129,11 +126,11 @@ DATA: ${chunks[i]}`;
       file: fileToText.originalName,
       completions: completedChunksOfFile,
     };
-    const { customRequestV2Record } = await saveToDb(
+    const { customRequestV3Record } = await saveToDb(
       account,
       completionsForFile,
       model,
-      locale,
+      prompt,
       batchId,
       file
     );
@@ -141,16 +138,16 @@ DATA: ${chunks[i]}`;
       inputTokens,
       outputTokens,
       CONFIG.models[model].pricing,
-      account,
+      account, // account: any,
       email,
-      customRequestV2Record.id,
+      customRequestV3Record.id,
       locale
     );
     job.progress(100);
     const end = Date.now();
     // prettier-ignore
     console.log(`Execution time: ${end - start} ms or ${(end - start) / 1000 / 60} minutes`);
-    done(null, { customRequestV2Id: customRequestV2Record.id });
+    done(null, { customRequestV3Id: customRequestV3Record.id });
   } catch (e) {
     done(e as Error, {
       lastChunkBeforeFailing,

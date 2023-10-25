@@ -7,12 +7,11 @@ import { vectorSearchJobLogic } from "@/jobHandlers/vectorSearchLogic";
 import { customRequestJobLogic } from "@/jobHandlers/customRequestJobLogic";
 import { sendEmailJobLogic } from "@/jobHandlers/sendEmailJobLogic";
 import { ragRequestJobLogic } from "@/jobHandlers/ragRequestJobLogic";
-import { customRequestV2JobLogic } from "./jobHandlers/customRequestV2JobLogic";
+import { customRequestV3JobLogic } from "./jobHandlers/customRequestV3JobLogic";
 
 jobQueue.process(async function (job, done) {
   try {
     console.log("processing JOB...", job.data);
-    // console.log(process.env.S3_DOCUMENT_BUCKET);
 
     const { jobType, params } = job.data;
 
@@ -38,9 +37,9 @@ jobQueue.process(async function (job, done) {
         console.log("QueueJobTypes.CustomRequest");
         await customRequestJobLogic(params, job, done);
         break;
-      case QueueJobTypes.CustomRequestV2:
-        console.log("QueueJobTypes.CustomRequestV2");
-        await customRequestV2JobLogic(params, job, done);
+      case QueueJobTypes.CustomRequestV3:
+        console.log("QueueJobTypes.CustomRequestV3");
+        await customRequestV3JobLogic(params, job, done);
         break;
       case QueueJobTypes.SendEmail:
         console.log("QueueJobTypes.SendEmail");

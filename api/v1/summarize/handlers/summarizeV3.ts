@@ -18,7 +18,10 @@ export async function summarizeV3(
     let locale: string = req?.i18n?.language?.substring(0, 2) || "en";
     const batchId = req.body.batchId || v4();
 
-    if (req.body.mode === ScanningMode.OVERALL) {
+    if (
+      req.body.mode === ScanningMode.OVERALL &&
+      (req.files?.length as number) <= 10
+    ) {
       jobQueue.add(
         {
           jobType: QueueJobTypes.SummaryV3,
@@ -45,7 +48,7 @@ export async function summarizeV3(
         }
       );
     } else {
-      for (let fIndex = 0; fIndex < (req.files?.length as number); fIndex++) {
+      for (let fIndex = 0; fIndex < 10; fIndex++) {
         jobQueue.add(
           {
             jobType: QueueJobTypes.SummaryV3,

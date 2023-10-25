@@ -16,7 +16,7 @@ export async function saveToDb(
 ) {
   p("saving the LLM output and reference to input file in the db...");
 
-  const customRequestV2Record = await prisma.customRequestV2.create({
+  const customRequestV3Record = await prisma.customRequestV3.create({
     data: {
       requesterId: account!.id,
       completionResponse: completionsForFile,
@@ -36,7 +36,7 @@ export async function saveToDb(
 
   await prisma.file.create({
     data: {
-      customRequestV2Id: customRequestV2Record.id,
+      customRequestV3Id: customRequestV3Record.id,
       originalName: file.originalname,
       bucket: file.bucket,
       key: file.key,
@@ -45,5 +45,5 @@ export async function saveToDb(
     },
   });
 
-  return { customRequestV2Record };
+  return { customRequestV3Record };
 }

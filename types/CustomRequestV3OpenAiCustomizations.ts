@@ -1,7 +1,7 @@
 import { ScanningMode } from "@prisma/client";
 import { SupportedOpenAiModels } from "./SupportedOpenAiModels";
 
-export type CustomRequestV2OpenAiCustomizations = {
+export type CustomRequestV3OpenAiCustomizations = {
   prompts: {
     prompt: string;
     finalPrompt: string | null;

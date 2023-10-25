@@ -4,7 +4,7 @@ export enum QueueJobTypes {
   SummaryV3 = "SummaryV3",
   VectorSearch = "VectorSearch",
   CustomRequest = "CustomRequest",
-  CustomRequestV2 = "CustomRequestV2",
+  CustomRequestV3 = "CustomRequestV3",
   SendEmail = "SendEmail",
   RagRequest = "RagRequest",
 }

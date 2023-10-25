@@ -1,23 +1,31 @@
 import { ScanningMode } from "@prisma/client";
-import { openAiFileInChunks } from "./helpers/customRequestV2Job/variations/openAi/fileInChunks";
+import { openAiFileInChunks } from "./helpers/customRequestV3Job/variations/openAi/fileInChunks";
 import { eachFileOverall } from "./helpers/customRequestJob/variations/eachFileOverall";
 import { promptAgainstFilesOverall } from "./helpers/customRequestJob/variations/overall";
 import { eachFilePerPage } from "./helpers/customRequestJob/variations/eachFilePerPage";
 import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
-import { CustomRequestV2OpenAiCustomizations } from "@/types/CustomRequestV2OpenAiCustomizations";
-import { CustomRequestV2ReplicateCustomizations } from "@/types/CustomRequestV2ReplicateCustomizations";
-import { CustomRequestV2Params } from "@/types/CustomRequestV2Params";
+import { CustomRequestV3OpenAiCustomizations } from "@/types/CustomRequestV3OpenAiCustomizations";
+import { CustomRequestV3ReplicateCustomizations } from "@/types/CustomRequestV3ReplicateCustomizations";
+import { CustomRequestV3Params } from "@/types/CustomRequestV3Params";
 
-export async function customRequestV2JobLogic(
-  params: CustomRequestV2Params,
+export async function customRequestV3JobLogic(
+  params: CustomRequestV3Params,
   job: any,
   done: (err?: Error | null, result?: any) => void
 ) {
   try {
     console.log("processing JOB with params...", params);
-    const { files, email, customizations, locale, batchId, model } = params;
-    console.log(files, email, customizations);
-    if (!files || !email || !customizations) {
+    const {
+      file,
+      files,
+      email,
+      customizations,
+      customizations: { model },
+      locale,
+      batchId,
+    } = params;
+    console.log(file, files, email, customizations, locale, batchId);
+    if (!email || !customizations || !locale || !batchId) {
       done(new Error("Invalid Data"));
       return;
     }
@@ -26,9 +34,9 @@ export async function customRequestV2JobLogic(
       switch (customizations.scanMode) {
         case ScanningMode.FILE_IN_CHUNKS:
           openAiFileInChunks(
-            customizations as CustomRequestV2OpenAiCustomizations,
+            customizations as CustomRequestV3OpenAiCustomizations,
             email,
-            files,
+            file!,
             job,
             batchId,
             locale,

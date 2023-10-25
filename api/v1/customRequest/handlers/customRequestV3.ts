@@ -6,16 +6,16 @@ import { Request, Response, NextFunction } from "express";
 import get from "lodash.get";
 import { QueueJobTypes } from "@/types/JobTypes";
 import { ScanningMode } from "@prisma/client";
-import { CustomRequestV2Params } from "@/types/CustomRequestV2Params";
+import { CustomRequestV3Params } from "@/types/CustomRequestV3Params";
 import { v4 } from "uuid";
 
-export async function customRequestV2(
+export async function customRequestV3(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   try {
-    console.log("POST custom-request-v2");
+    console.log("POST custom-request-v3");
     console.log("req.body.customPrompt", req.body.customPrompt);
     console.log("req.files", req.files as any);
 
@@ -25,7 +25,7 @@ export async function customRequestV2(
     if (req.body.mode === ScanningMode.OVERALL) {
       jobQueue.add(
         {
-          jobType: QueueJobTypes.CustomRequestV2,
+          jobType: QueueJobTypes.CustomRequestV3,
           params: {
             files: req.files as Express.Multer.File[],
             file: null,
@@ -42,7 +42,7 @@ export async function customRequestV2(
             email: req.user.email,
             locale: locale,
             batchId: batchId,
-          } as CustomRequestV2Params,
+          } as CustomRequestV3Params,
         },
         {
           timeout: 1000 * 60 * 60, // 1 hour before being marked as timed out
@@ -52,7 +52,7 @@ export async function customRequestV2(
       for (let fIndex = 0; fIndex < (req.files?.length as number); fIndex++) {
         jobQueue.add(
           {
-            jobType: QueueJobTypes.CustomRequestV2,
+            jobType: QueueJobTypes.CustomRequestV3,
             params: {
               files: null,
               file: (req.files as Express.Multer.File[])[fIndex],
@@ -69,7 +69,7 @@ export async function customRequestV2(
               email: req.user.email,
               locale: locale,
               batchId: batchId,
-            } as CustomRequestV2Params,
+            } as CustomRequestV3Params,
           },
           {
             timeout: 1000 * 60 * 60, // 1 hour before being marked as timed out

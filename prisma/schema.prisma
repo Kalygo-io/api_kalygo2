@@ -56,7 +56,7 @@ model Account {
   RAGRequest             RagRequest[]
   ReferralCodes          ReferralCode[]
   referralCode           String                    @default("")
-  CustomRequestV2        CustomRequestV2[]
+  CustomRequestV3        CustomRequestV3[]
 }
 
 model ReferralCode {
@@ -132,14 +132,14 @@ model Rating {
   promptId          Int?
   SummaryV3         SummaryV3?       @relation(fields: [summaryV3Id], references: [id])
   summaryV3Id       Int?
-  CustomRequestV2   CustomRequestV2? @relation(fields: [customRequestV2Id], references: [id])
-  customRequestV2Id Int?
+  CustomRequestV3   CustomRequestV3? @relation(fields: [customRequestV3Id], references: [id])
+  customRequestV3Id Int?
 
   @@unique([accountId, smartSearchId])
   @@unique([accountId, summaryV2Id])
   @@unique([accountId, summaryV3Id])
   @@unique([accountId, customRequestId])
-  @@unique([accountId, customRequestV2Id])
+  @@unique([accountId, customRequestV3Id])
   @@unique([accountId, promptId])
 }
 
@@ -165,8 +165,8 @@ model File {
   accountForPictureId Int?             @unique
   SummaryV3           SummaryV3?       @relation(fields: [summaryV3Id], references: [id])
   summaryV3Id         Int?
-  CustomRequestV2     CustomRequestV2? @relation(fields: [customRequestV2Id], references: [id])
-  customRequestV2Id   Int?
+  CustomRequestV3     CustomRequestV3? @relation(fields: [customRequestV3Id], references: [id])
+  customRequestV3Id   Int?
 }
 
 model VectorSearch {
@@ -240,7 +240,7 @@ model CustomRequest {
   CustomRequestsAndAccessGroups CustomRequestsAndAccessGroups[]
 }
 
-model CustomRequestV2 {
+model CustomRequestV3 {
   id                              Int                               @id @default(autoincrement())
   requester                       Account                           @relation(fields: [requesterId], references: [id])
   requesterId                     Int
@@ -253,7 +253,7 @@ model CustomRequestV2 {
   createdAt                       DateTime?                         @default(now())
   updatedAt                       DateTime?                         @updatedAt
   Ratings                         Rating[]
-  CustomRequestV2sAndAccessGroups CustomRequestV2sAndAccessGroups[]
+  CustomRequestV3sAndAccessGroups CustomRequestV3sAndAccessGroups[]
 }
 
 model SummaryCredits {
@@ -366,15 +366,15 @@ model CustomRequestsAndAccessGroups {
   @@id([customRequestId, accessGroupId])
 }
 
-model CustomRequestV2sAndAccessGroups {
-  customRequestV2   CustomRequestV2 @relation(fields: [customRequestV2Id], references: [id])
-  customRequestV2Id Int // relation scalar field (used in the `@relation` attribute above)
+model CustomRequestV3sAndAccessGroups {
+  customRequestV3   CustomRequestV3 @relation(fields: [customRequestV3Id], references: [id])
+  customRequestV3Id Int // relation scalar field (used in the `@relation` attribute above)
   accessGroup       AccessGroup     @relation(fields: [accessGroupId], references: [id])
   accessGroupId     Int // relation scalar field (used in the `@relation` attribute above)
   createdAt         DateTime        @default(now())
   createdBy         String
 
-  @@id([customRequestV2Id, accessGroupId])
+  @@id([customRequestV3Id, accessGroupId])
 }
 
 model PromptsAndAccessGroups {
@@ -400,7 +400,7 @@ model AccessGroup {
   SummaryV2sAndAccessGroups       SummaryV2sAndAccessGroups[]
   SummaryV3sAndAccessGroups       SummaryV3sAndAccessGroups[]
   CustomRequestsAndAccessGroups   CustomRequestsAndAccessGroups[]
-  CustomRequestV2sAndAccessGroups CustomRequestV2sAndAccessGroups[]
+  CustomRequestV3sAndAccessGroups CustomRequestV3sAndAccessGroups[]
   PromptsAndAccessGroups          PromptsAndAccessGroups[]
 
   @@unique([name, createdById])
@@ -436,5 +436,6 @@ enum RatingType {
   SummaryV3
   SummaryV2
   CustomRequest
+  CustomRequestV3
   Prompt
 }

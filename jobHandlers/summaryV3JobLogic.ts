@@ -133,11 +133,6 @@ export async function summaryV3JobLogic(
       const replicateModel: SupportedReplicateModels =
         model as SupportedReplicateModels;
 
-      console.log(
-        "process.env.REPLICATE_API_TOKEN!",
-        process.env.REPLICATE_API_TOKEN!
-      );
-
       switch (summarizationType) {
         // case ScanningMode.EACH_FILE_IN_CHUNKS:
         //   replicateSummarizeEachFileInChunks(

@@ -14,7 +14,7 @@ export async function deductCostOfOpenAiInputTokens(
     config.models[model].pricing.input.rate;
   // prettier-ignore
   console.log("Cost of INPUT_TOKENS", inputTokenCost, account?.UsageCredits?.amount);
-  if (!account?.SummaryCredits?.amount) {
+  if (!account?.CustomRequestCredits?.amount) {
     await prisma.usageCredits.update({
       data: {
         amount: {

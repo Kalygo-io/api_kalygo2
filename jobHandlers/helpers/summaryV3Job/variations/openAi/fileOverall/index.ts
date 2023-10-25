@@ -43,7 +43,7 @@ export async function openAiSummarizeFileOverall(
     const { account } = await guard_beforeRunningSummary(email, model);
     const encoder = getEncoderForModel(model);
     // prettier-ignore
-    const fileToText: { text: string; originalName: string; } = await convertFileToTextFormat(file, bucket);
+    const fileToText: { text: string; originalName: string; } = await convertFileToTextFormat(file);
     let tpmAccum: number = 0;
     p("*** name of file ***", fileToText.originalName);
     // prettier-ignore

@@ -5,32 +5,38 @@ import { ScanningMode } from "@prisma/client";
 
 export async function saveToDb(
   account: any,
-  summaryForFile: {
+  completionsForFile: {
     file: string;
-    summary: { chunk: number; chunkSummary: string }[];
+    completions: { chunk: number; completion: string }[];
   },
   model: SupportedOpenAiModels,
-  language: string,
+  prompt: string,
   batchId: string,
   file: any
 ) {
-  p("saving the summary and the reference to the input file to the db...");
+  p("saving the LLM output and reference to input file in the db...");
 
-  const summaryV3Record = await prisma.summaryV3.create({
+  const customRequestV2Record = await prisma.customRequestV2.create({
     data: {
       requesterId: account!.id,
-      summary: summaryForFile,
+      completionResponse: completionsForFile,
       model: model,
       scanMode: ScanningMode.FILE_IN_CHUNKS,
-      language: language,
-      format: "",
       batchId: batchId,
+      prompt: prompt,
+    },
+  });
+
+  await prisma.prompt.create({
+    data: {
+      ownerId: account!.id,
+      prompt: prompt,
     },
   });
 
   await prisma.file.create({
     data: {
-      summaryV3Id: summaryV3Record.id,
+      customRequestV2Id: customRequestV2Record.id,
       originalName: file.originalname,
       bucket: file.bucket,
       key: file.key,
@@ -39,5 +45,5 @@ export async function saveToDb(
     },
   });
 
-  return { summaryV3Record };
+  return { customRequestV2Record };
 }

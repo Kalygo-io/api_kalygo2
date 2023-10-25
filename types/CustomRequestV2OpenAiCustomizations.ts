@@ -7,7 +7,7 @@ export type CustomRequestV2OpenAiCustomizations = {
     finalPrompt: string | null;
     overallPrompt: string | null;
   };
-  mode: ScanningMode;
+  scanMode: ScanningMode;
   model: SupportedOpenAiModels;
   chunkTokenOverlap: number;
 };

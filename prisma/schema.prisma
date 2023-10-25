@@ -247,9 +247,9 @@ model CustomRequestV2 {
   Files                           File[]
   scanMode                        ScanningMode                      @default(PRIOR_TO_TRACKING_MODE)
   model                           String?
-  bucket                          String
   prompt                          String
   completionResponse              Json
+  batchId                         String                            @default("")
   createdAt                       DateTime?                         @default(now())
   updatedAt                       DateTime?                         @updatedAt
   Ratings                         Rating[]

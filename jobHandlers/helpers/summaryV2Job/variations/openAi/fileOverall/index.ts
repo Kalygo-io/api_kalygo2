@@ -50,7 +50,7 @@ export async function openAiSummarizeFileOverall(
     const { account, customerId } = await guard_beforeRunningSummary(email, model);
     const encoder = getEncoderForModel(model);
     // prettier-ignore
-    const fileToText: { text: string; originalName: string; } = await convertFileToTextFormat(file, bucket);
+    const fileToText: { text: string; originalName: string; } = await convertFileToTextFormat(file);
     let tpmAccum: number = 0; // for tracking TPM ie: tokens / minute
     const originalNameOfFile = fileToText.originalName;
     p("*** file to be processed ***", originalNameOfFile);

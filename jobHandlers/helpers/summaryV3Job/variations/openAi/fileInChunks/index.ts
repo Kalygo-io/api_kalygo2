@@ -13,7 +13,7 @@ import { convertFileToTextFormat } from "@/utils/convertFileToTextFormat";
 import { saveToDb } from "./saveToDb";
 import { deductCostOfOpenAiInputTokens } from "../../../shared/deductCostOfOpenAiInputTokens";
 import { deductCostOfOpenAiOutputTokens } from "../../../shared/deductCostOfOpenAiOutputTokens";
-import { areChunksWithPromptPrefixValidForModelContext } from "@/utils/areChunkWithPromptPrefixValidForModelContext";
+import { areChunksWithPromptPrefixValidForModelContext } from "@/utils/areChunksWithPromptPrefixValidForModelContext";
 import { makeChunksFitContext } from "./makeChunksFitContext";
 
 const tpmDelay = 60000;
@@ -41,7 +41,7 @@ export async function openAiSummarizeFileInChunks(
     const { account } = await guard_beforeRunningSummary(email, model);
     const encoder = getEncoderForModel(model);
     const fileToText: { text: string; originalName: string } =
-      await convertFileToTextFormat(file, bucket);
+      await convertFileToTextFormat(file);
     const promptPrefix = generatePromptPrefix({ format, length, language });
     // prettier-ignore
     let summaryForFile: { file: string, summary: { chunk: number; chunkSummary: string }[] };

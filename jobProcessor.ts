@@ -7,6 +7,7 @@ import { vectorSearchJobLogic } from "@/jobHandlers/vectorSearchLogic";
 import { customRequestJobLogic } from "@/jobHandlers/customRequestJobLogic";
 import { sendEmailJobLogic } from "@/jobHandlers/sendEmailJobLogic";
 import { ragRequestJobLogic } from "@/jobHandlers/ragRequestJobLogic";
+import { customRequestV2JobLogic } from "./jobHandlers/customRequestV2JobLogic";
 
 jobQueue.process(async function (job, done) {
   try {
@@ -36,6 +37,10 @@ jobQueue.process(async function (job, done) {
       case QueueJobTypes.CustomRequest:
         console.log("QueueJobTypes.CustomRequest");
         await customRequestJobLogic(params, job, done);
+        break;
+      case QueueJobTypes.CustomRequestV2:
+        console.log("QueueJobTypes.CustomRequestV2");
+        await customRequestV2JobLogic(params, job, done);
         break;
       case QueueJobTypes.SendEmail:
         console.log("QueueJobTypes.SendEmail");

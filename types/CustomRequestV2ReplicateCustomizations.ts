@@ -7,7 +7,7 @@ export type CustomRequestV2ReplicateCustomizations = {
     finalPrompt: string | null;
     overallPrompt: string | null;
   };
-  mode: ScanningMode;
+  scanMode: ScanningMode;
   model: SupportedReplicateModels;
   chunkTokenOverlap: number;
 };

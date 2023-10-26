@@ -26,7 +26,7 @@ export function convertPDFToTextWithMetadata(file: any): Promise<any> {
             page.then(function (page: any) {
               // add page promise
 
-              console.log("page:", page._pageIndex + 1);
+              // console.log("page:", page._pageIndex + 1);
 
               var textContent = page.getTextContent();
               return textContent.then(function (text: any) {

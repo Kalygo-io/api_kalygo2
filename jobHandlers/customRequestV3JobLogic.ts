@@ -2,7 +2,7 @@ import { ScanningMode } from "@prisma/client";
 import { openAiFileInChunks } from "./helpers/customRequestV3Job/variations/openAi/fileInChunks";
 import { openAiFileOverall } from "./helpers/customRequestV3Job/variations/openAi/fileOverall";
 import { openAiOverall } from "./helpers/customRequestV3Job/variations/openAi/overall";
-import { eachFilePerPage } from "./helpers/customRequestJob/variations/eachFilePerPage";
+import { openAiFilePerPage } from "./helpers/customRequestV3Job/variations/openAi/filePerPage";
 import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
 import { CustomRequestV3OpenAiCustomizations } from "@/types/CustomRequestV3OpenAiCustomizations";
 import { CustomRequestV3ReplicateCustomizations } from "@/types/CustomRequestV3ReplicateCustomizations";
@@ -68,17 +68,17 @@ export async function customRequestV3JobLogic(
           );
           break;
 
-        // case ScanningMode.EACH_FILE_PER_PAGE:
-        //   eachFilePerPage(
-        //     customizations,
-        //     email,
-        //     files,
-        //     bucket,
-        //     job,
-        //     locale,
-        //     done
-        //   );
-        //   break;
+        case ScanningMode.FILE_PER_PAGE:
+          openAiFilePerPage(
+            customizations as CustomRequestV3OpenAiCustomizations,
+            email,
+            file!,
+            job,
+            batchId,
+            locale,
+            done
+          );
+          break;
 
         default:
           throw new Error("Unsupported Data Scanning Mode");

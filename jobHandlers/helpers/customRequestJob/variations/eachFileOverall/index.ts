@@ -48,7 +48,7 @@ export async function eachFileOverall(
     const filesToText: {
       text: string;
       originalName: string;
-    }[] = await convertFilesToTextFormat(files, bucket);
+    }[] = await convertFilesToTextFormat(files);
     p("splitting text.*.*."); // for console debugging...
     // -v-v- LOOP OVER THE TEXT-BASED VERSIONS OF EACH FILE -v-v-
     let completionForEachFile: {

@@ -5,24 +5,24 @@ import { ScanningMode } from "@prisma/client";
 
 export async function saveToDb(
   account: any,
-  completionForFile: {
-    file: string;
-    finalCompletionForFile: string;
-  },
+  finalOverallPromptOutputs: {
+    part: number;
+    overallCompletion: string;
+  }[],
   model: SupportedOpenAiModels,
   prompt: string,
-  finalPrompt: string | null,
+  overallPrompt: string | null,
   batchId: string,
-  file: Express.Multer.File & { bucket: string; key: string; etag: string }
+  files: (Express.Multer.File & { bucket: string; key: string; etag: string })[]
 ) {
   p("saving the LLM output and reference to input file in the db...");
 
   const customRequestV3Record = await prisma.customRequestV3.create({
     data: {
       requesterId: account!.id,
-      completionResponse: completionForFile,
+      completionResponse: finalOverallPromptOutputs,
       model: model,
-      scanMode: ScanningMode.FILE_OVERALL,
+      scanMode: ScanningMode.OVERALL,
       batchId: batchId,
       prompt: prompt,
     },
@@ -35,25 +35,28 @@ export async function saveToDb(
     },
   });
 
-  if (finalPrompt) {
+  if (overallPrompt) {
     await prisma.prompt.create({
       data: {
         ownerId: account!.id,
-        prompt: finalPrompt,
+        prompt: overallPrompt,
       },
     });
   }
 
-  await prisma.file.create({
-    data: {
-      customRequestV3Id: customRequestV3Record.id,
-      originalName: file.originalname,
-      bucket: file.bucket,
-      key: file.key,
-      hash: file.etag,
-      ownerId: account?.id,
-    },
-  });
+  // -v-v- STORE FILES FOR REFERENCE -v-v-
+  for (let i = 0; i < files.length; i++) {
+    await prisma.file.create({
+      data: {
+        customRequestV3Id: customRequestV3Record.id,
+        originalName: files[i].originalname,
+        bucket: files[i].bucket,
+        key: files[i].key,
+        hash: files[i].etag,
+        ownerId: account?.id,
+      },
+    });
+  }
 
   return { customRequestV3Record };
 }

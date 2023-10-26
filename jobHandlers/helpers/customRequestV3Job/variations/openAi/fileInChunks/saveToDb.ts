@@ -12,7 +12,7 @@ export async function saveToDb(
   model: SupportedOpenAiModels,
   prompt: string,
   batchId: string,
-  file: any
+  file: Express.Multer.File & { bucket: string; key: string; etag: string }
 ) {
   p("saving the LLM output and reference to input file in the db...");
 

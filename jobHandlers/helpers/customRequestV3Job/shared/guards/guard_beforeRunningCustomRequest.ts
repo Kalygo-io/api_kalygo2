@@ -20,7 +20,7 @@ export async function guard_beforeRunningCustomRequest(
   });
 
   // prettier-ignore
-  const customerSearchResults = await stripe.customers.search({ // FIND EXISTING STRIPE CUSTOMER
+  const customerSearchResults = await stripe.customers.search({
     // @ts-ignore
     query: `email:\'${account.email}\'`,
   });
@@ -35,7 +35,7 @@ export async function guard_beforeRunningCustomRequest(
       config.models[model].minimumCreditsRequired ||
       (account?.CustomRequestCredits?.amount! || 0) > 0)
   ) {
-    console.log("passing guard_beforeRunningSummary...");
+    console.log("passing guard_beforeRunningCustomRequest...");
   } else {
     throw new Error("402");
   }

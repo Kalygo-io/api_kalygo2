@@ -1,7 +1,7 @@
 import { ScanningMode } from "@prisma/client";
 import { openAiFileInChunks } from "./helpers/customRequestV3Job/variations/openAi/fileInChunks";
 import { openAiFileOverall } from "./helpers/customRequestV3Job/variations/openAi/fileOverall";
-import { promptAgainstFilesOverall } from "./helpers/customRequestJob/variations/overall";
+import { openAiOverall } from "./helpers/customRequestV3Job/variations/openAi/overall";
 import { eachFilePerPage } from "./helpers/customRequestJob/variations/eachFilePerPage";
 import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
 import { CustomRequestV3OpenAiCustomizations } from "@/types/CustomRequestV3OpenAiCustomizations";
@@ -25,7 +25,7 @@ export async function customRequestV3JobLogic(
       batchId,
     } = params;
     console.log(file, files, email, customizations, locale, batchId);
-    if (!email || !customizations || !locale || !batchId) {
+    if (!email || !customizations || !locale || !batchId || (!file && !files)) {
       done(new Error("Invalid Data"));
       return;
     }
@@ -56,17 +56,17 @@ export async function customRequestV3JobLogic(
           );
           break;
 
-        // case ScanningMode.OVERALL:
-        //   promptAgainstFilesOverall(
-        //     customizations,
-        //     email,
-        //     files,
-        //     bucket,
-        //     job,
-        //     locale,
-        //     done
-        //   );
-        //   break;
+        case ScanningMode.OVERALL:
+          openAiOverall(
+            customizations as CustomRequestV3OpenAiCustomizations,
+            email,
+            files!,
+            job,
+            batchId,
+            locale,
+            done
+          );
+          break;
 
         // case ScanningMode.EACH_FILE_PER_PAGE:
         //   eachFilePerPage(

@@ -49,7 +49,7 @@ export async function promptAgainstFilesOverall(
     const filesToText: {
       text: string;
       originalName: string;
-    }[] = await convertFilesToTextFormat(files, bucket);
+    }[] = await convertFilesToTextFormat(files);
     p("splitting text.*.*.");
     // -v-v- LOOP OVER THE TEXT-BASED VERSIONS OF EACH FILE -v-v-
     let completionForEachFile: {

@@ -56,7 +56,7 @@ export async function openAiSummarizeEachFileInChunks(
     const filesToText: {
       text: string;
       originalName: string;
-    }[] = await convertFilesToTextFormat(files, bucket);
+    }[] = await convertFilesToTextFormat(files);
     // -v-v- THIS IS THE PROMPT PREFIX THAT WILL BE APPLIED TO EACH CHUNK OF EACH FILE -v-v-
     // prettier-ignore
     const promptPrefix = generatePromptPrefix({ format, length, language });

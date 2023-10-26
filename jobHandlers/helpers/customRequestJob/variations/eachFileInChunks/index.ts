@@ -53,11 +53,10 @@ export async function eachFileInChunks(
     const filesToText: {
       text: string;
       originalName: string;
-    }[] = await convertFilesToTextFormat(files, bucket);
+    }[] = await convertFilesToTextFormat(files);
     // -v-v- THIS IS THE PROMPT PREFIX THAT WILL BE APPLIED TO EACH CHUNK OF EACH FILE -v-v-
     // prettier-ignore
     const promptPrefix = prompt;
-    // const promptPrefix = HACK_testPromptPrefix()
     p(".*.*. splitting text .*.*."); // for console debugging...
     // -v-v- LOOP OVER THE TEXT-BASED VERSIONS OF EACH FILE -v-v-
     // prettier-ignore

@@ -73,7 +73,7 @@ export async function ragRequestJobLogic(
     const filesToText: {
       text: string;
       originalName: string;
-    }[] = await convertFilesToTextFormat([file], file.bucket);
+    }[] = await convertFilesToTextFormat([file]);
 
     const kbArray = await csvtojson({
       noheader: true,

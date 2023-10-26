@@ -12,7 +12,7 @@ export async function convertFilesToTextFormatWithMetadata(
   }[] = [];
 
   for (let fIndex = 0; fIndex < files.length; fIndex++) {
-    console.log("file", files[fIndex].originalname); // for console debugging...
+    console.log("file", files[fIndex].originalname);
     // -v-v- DOWNLOAD EACH FILE FROM S3 -v-v-
     const command = new GetObjectCommand({
       Bucket: bucket,

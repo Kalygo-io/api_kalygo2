@@ -2,17 +2,17 @@ import { s3, GetObjectCommand } from "@/clients/s3_client";
 import { convertPDFToText } from "@/utils/convertPDFToText";
 import { streamToString } from "@/utils/streamToString";
 
-export async function convertFilesToTextFormat(files: any, bucket: string) {
+export async function convertFilesToTextFormat(files: any) {
   const filesToText: {
     text: string;
     originalName: string;
   }[] = [];
 
   for (let fIndex = 0; fIndex < files.length; fIndex++) {
-    console.log("file", files[fIndex].originalname); // for console debugging...
+    console.log("file", files[fIndex].originalname);
     // -v-v- DOWNLOAD EACH FILE FROM S3 -v-v-
     const command = new GetObjectCommand({
-      Bucket: bucket,
+      Bucket: files[fIndex].bucket,
       Key: files[fIndex].key,
     });
     const { Body } = await s3.send(command);

@@ -123,7 +123,7 @@ export async function summaryV3JobLogic(
           );
           break;
         default:
-          throw new Error("TODO");
+          throw new Error("Unsupported Data Scanning Mode");
       }
     } else if (
       [

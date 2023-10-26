@@ -1,53 +1,63 @@
-import { generatePromptPrefix } from "./generatePromptPrefix";
-import { generateFinalSummarizationPrompt } from "./generateFinalSummarizationPrompt";
+import prisma from "@/db/prisma_client";
+import { SendTemplatedEmailCommand } from "@aws-sdk/client-ses";
+import { sesClient } from "@/clients/ses_client";
 import { sleep } from "@/utils/sleep";
 import CONFIG from "@/config";
-import { SummaryV3OpenAiCustomizations } from "@/types/SummaryV3OpenAiCustomizations";
 import { p } from "@/utils/p";
 import { convertFilesToTextFormat } from "@/utils/convertFilesToTextFormat";
-import { guard_beforeRunningSummary } from "../../../shared/guards/guard_beforeRunningSummary";
+import { guard_beforeRunningCustomRequest } from "../../../shared/guards/guard_beforeRunningCustomRequest";
 import { isChunkValidForModelContext } from "@/utils/isChunkValidForModelContext";
 import { generateOpenAiUserChatCompletionWithExponentialBackoff } from "../../../shared/generateOpenAiUserChatCompletionWithExponentialBackoff";
 import { checkout } from "../../../shared/checkout";
-import { breakUpNextChunkForSummaryOfSummaries } from "./breakUpNextChunkForSummaryOfSummaries";
+import { breakUpNextChunkForOverallPrompt } from "./breakUpNextChunkForOverallPrompt";
+import { ScanningMode } from "@prisma/client";
 import { guard_beforeCallingModel } from "../../../shared/guards/guard_beforeCallingModel";
 import config from "@/config";
+import { customRequestJobComplete_SES_Config } from "@/emails/v2/customRequestJobComplete";
+import { CustomRequestV3OpenAiCustomizations } from "@/types/CustomRequestV3OpenAiCustomizations";
 import { getEncoderForModel } from "../../../shared/getEncoderForModel";
+import { breakOffMaxChunkForContext } from "./breakOffMaxChunkForContext";
 import { deductCostOfOpenAiInputTokens } from "../../../shared/deductCostOfOpenAiInputTokens";
 import { deductCostOfOpenAiOutputTokens } from "../../../shared/deductCostOfOpenAiOutputTokens";
-import { saveToDb } from "./saveToDb";
-import { breakOffMaxChunkForContext } from "./breakOffMaxChunkForContext";
 import { getOverlapSegment } from "../../../shared/getOverlapSegment";
+import { saveToDb } from "./saveToDb";
 
 const tpmDelay = 60000;
 
-export async function openAiSummarizeFilesOverall(
-  customizations: SummaryV3OpenAiCustomizations,
+export async function openAiOverall(
+  customizations: CustomRequestV3OpenAiCustomizations,
   email: string,
-  files: any[],
-  bucket: string,
+  files: (Express.Multer.File & {
+    bucket: string;
+    key: string;
+    etag: string;
+  })[],
   job: any,
   batchId: string,
   locale: string,
   done: (err?: Error | null | undefined, result?: any) => void
 ) {
   try {
-    p("Summary v3 OVERALL");
+    p("CustomRequestV3 - All Files Overall");
     const start = Date.now();
-    let inputTokens = 0,
-      outputTokens = 0;
-    const { format, length, language, model, chunkTokenOverlap } =
-      customizations;
+    const {
+      prompts: { prompt, overallPrompt },
+      model,
+      chunkTokenOverlap,
+    } = customizations;
     job.progress(0);
-    const { account } = await guard_beforeRunningSummary(email, model);
+    const { account } = await guard_beforeRunningCustomRequest(email, model);
     const encoder = getEncoderForModel(model);
+    let inputTokens = 0;
+    let outputTokens = 0;
     const filesToText: {
       text: string;
       originalName: string;
     }[] = await convertFilesToTextFormat(files);
-    let summariesOfEachFile: {
+    p("splitting text.*.*.");
+    let completionForEachFile: {
       fileName: string;
-      summary: string;
+      finalCompletionForFile: string;
     }[] = [];
     let tpmAccum = 0;
     for (let fIndex = 0; fIndex < filesToText.length; fIndex++) {
@@ -55,19 +65,20 @@ export async function openAiSummarizeFilesOverall(
       p("*** file to be processed ***", originalNameOfFile);
       let chunks = [filesToText[fIndex].text];
       let chunksCounter = 0;
-      let summaryForFile = "";
+      let contextForFile = "";
       let tokenAccumWithoutPrefixForFile: number = 0;
       const totalTokenCountInFile: number = encoder.encode(chunks[0]).length;
       while (chunks.length > 0) {
         p("processing next chunk of the file...");
-        let promptPrefix = generatePromptPrefix(
-          {
-            format: "paragraph",
-            length: "long",
-            language,
-          },
-          summaryForFile
-        );
+        let promptPrefix = contextForFile
+          ? `${contextForFile && `PREVIOUS CONTEXT: ${contextForFile}`}
+        
+PROMPT: ${prompt}
+
+DATA:`
+          : `PROMPT: ${prompt}
+
+DATA:`;
         while (
           !isChunkValidForModelContext(
             `${promptPrefix} ${chunks[0]}`,
@@ -83,30 +94,29 @@ export async function openAiSummarizeFilesOverall(
           );
         }
         tokenAccumWithoutPrefixForFile = encoder.encode(chunks[0]).length;
-        p("WE HAVE NOW BIT OFF AN ACCEPTABLE CHUNK");
-        const prompt = `${promptPrefix} ${chunks[0]}`;
+        p("WE HAVE NOW BIT OFF AN ACCEPTABLE CHUNK"); // for console debugging...
+        const nextPrompt = `${promptPrefix} ${chunks[0]}`;
         // prettier-ignore
-        p("snippet of nextPrompt up for completion...", prompt.slice(0, 16));
-        const promptTokenCount = encoder.encode(prompt).length;
-        inputTokens += promptTokenCount; // track input tokens
-        tpmAccum += promptTokenCount; // accumulate input tokens
-        p(`tokens in chunk ${chunksCounter} of file`, promptTokenCount);
+        p("snippet of nextPrompt up for completion...", nextPrompt.slice(0, 16));
+        const nextPromptTokenCount = encoder.encode(nextPrompt).length;
+        chunksCounter += 1;
+        inputTokens += nextPromptTokenCount; // track input tokens
+        tpmAccum += nextPromptTokenCount; // accumulate input tokens
+        // prettier-ignore
+        p(`token length of prompt for next chunk ${chunksCounter} of file`, nextPromptTokenCount);
         p("tpmAccum", tpmAccum);
+        // prettier-ignore
         if (tpmAccum > CONFIG.models[model].tpm - CONFIG.tpmBuffer) {
           await sleep(tpmDelay);
           tpmAccum = 0;
         }
         await guard_beforeCallingModel(email, model);
-        await deductCostOfOpenAiInputTokens(
-          promptTokenCount,
-          model,
-          config,
-          account
-        );
+        // prettier-ignore
+        await deductCostOfOpenAiInputTokens(nextPromptTokenCount, model, config, account);
         let completion =
           await generateOpenAiUserChatCompletionWithExponentialBackoff(
             model,
-            prompt,
+            nextPrompt,
             tpmDelay
           );
         const completionText =
@@ -121,81 +131,78 @@ export async function openAiSummarizeFilesOverall(
           account
         );
         outputTokens += outputTokenCount; // track output tokens
-        tpmAccum += outputTokenCount; // accumulate total token count
-        summaryForFile = completionText;
-
-        // if additional chunks exist then grab the overlapping text
-        // and prepend it to the subsequent chunk
+        tpmAccum += outputTokenCount; // accumulate output tokens
+        contextForFile = completionText;
+        // prettier-ignore
+        p("tokenAccumWithoutPrefixForFile", tokenAccumWithoutPrefixForFile);
+        // prettier-ignore
+        p("totalTokenCountInFile", totalTokenCountInFile);
         if (chunks.length > 1) {
+          console.log("chunks.length > 1 so getting overlap segment...");
           const overlapSegment: string = getOverlapSegment(
             chunkTokenOverlap,
             chunks[0],
             encoder
           );
           // prettier-ignore
-          job.progress(job.progress() + (tokenAccumWithoutPrefixForFile - chunkTokenOverlap)  / totalTokenCountInFile * (90 / files.length)); // HACK BUT WORKS : )
+          job.progress(job.progress() + (tokenAccumWithoutPrefixForFile - chunkTokenOverlap)  / totalTokenCountInFile * (90 / files.length));
           p("progress:", job.progress());
           chunks[1] = overlapSegment + chunks[1];
         } else {
           // prettier-ignore
-          job.progress(job.progress() + ((tokenAccumWithoutPrefixForFile / totalTokenCountInFile) * (90 / files.length)));
-          console.log(job.progress());
+          job.progress(job.progress() + tokenAccumWithoutPrefixForFile / totalTokenCountInFile * (90 / files.length));
+          p("progress:", job.progress());
         }
         chunks.shift();
-        chunksCounter += 1;
       }
-      summariesOfEachFile.push({
+      completionForEachFile.push({
         fileName: filesToText[fIndex].originalName,
-        summary: summaryForFile,
+        finalCompletionForFile: contextForFile,
       });
     }
-    const summaryOfEachFileConcatenated: string = summariesOfEachFile
+    const completionsOfEachFileConcatenated: string = completionForEachFile
       .map((i) => {
-        return `Here is the summary of ${i.fileName}: ${i.summary}`;
+        return `Here is the contextual information related to the file ${i.fileName}: ${i.finalCompletionForFile}`;
       })
       .join("\n\n");
-    let chunks = [summaryOfEachFileConcatenated];
-    let summaryOfSummaries: {
+    let chunks = [completionsOfEachFileConcatenated];
+    let finalOverallPromptOutputs: {
       part: number;
-      summary: string;
+      overallCompletion: string;
     }[] = [];
-    let summaryOfSummariesPartCounter = 0;
+    let overallCompletionPartCounter = 0;
     while (chunks.length > 0) {
-      let finalSummarizationPrompt = generateFinalSummarizationPrompt(
-        {
-          format,
-          length,
-          language,
-        },
-        chunks[0],
-        summariesOfEachFile.length
-      );
+      p("outer while...");
+      let finalPrompt = `PROMPT: ${overallPrompt}
+
+CONTEXT OF EACH FILE: ${chunks[0]}`;
+
       while (
         !isChunkValidForModelContext(
-          finalSummarizationPrompt,
+          finalPrompt,
           CONFIG.models[model].context,
           encoder
         )
       ) {
-        breakUpNextChunkForSummaryOfSummaries(chunks, summariesOfEachFile);
+        breakUpNextChunkForOverallPrompt(chunks, completionForEachFile); // TODO: handle case when OVERALL prompt outputs exceeds context
       }
-      const finalPrompt = generateFinalSummarizationPrompt(
-        {
-          format,
-          length,
-          language,
-        },
-        chunks[0], // ***
-        summariesOfEachFile.length
-      );
+
+      p("WE HAVE NOW BIT OFF AN ACCEPTABLE CHUNK");
+
+      finalPrompt = `PROMPT: ${overallPrompt}
+
+CONTEXT OF EACH FILE: ${chunks[0]}`;
+
       p("*** snippet of finalPrompt... ***", finalPrompt.slice(0, 16));
       const finalPromptTokenCount = encoder.encode(finalPrompt).length;
+      p("tokens to be sent", finalPromptTokenCount);
       inputTokens += encoder.encode(finalPrompt).length;
       tpmAccum += encoder.encode(finalPrompt).length;
       if (tpmAccum > CONFIG.models[model].tpm - CONFIG.tpmBuffer) {
         await sleep(tpmDelay);
         tpmAccum = 0;
       }
+
       await guard_beforeCallingModel(email, model);
       await deductCostOfOpenAiInputTokens(
         finalPromptTokenCount,
@@ -212,39 +219,48 @@ export async function openAiSummarizeFilesOverall(
       const completionText =
         completion.data?.choices[0]?.message?.content || "No Content";
       const outputTokenCount = encoder.encode(completionText).length;
-      deductCostOfOpenAiOutputTokens(outputTokenCount, model, config, account);
+
+      await deductCostOfOpenAiOutputTokens(
+        outputTokenCount,
+        model,
+        config,
+        account
+      );
+
       outputTokens += outputTokenCount; // track output tokens
       tpmAccum += outputTokenCount; // accumulate output tokens
       // prettier-ignore
       p("snippet of completion of FINAL request...", completionText.slice(0, 16));
       // prettier-ignore
-      summaryOfSummaries.push({ part: summaryOfSummariesPartCounter, summary: completionText });
+      finalOverallPromptOutputs.push({ part: overallCompletionPartCounter, overallCompletion: completionText });
       chunks.shift();
-      summaryOfSummariesPartCounter++;
+      overallCompletionPartCounter++;
     }
-    const { summaryV3Record } = await saveToDb(
+
+    const { customRequestV3Record } = await saveToDb(
       account,
-      summaryOfSummaries,
+      finalOverallPromptOutputs,
       model,
-      language,
-      format,
+      prompt,
+      overallPrompt,
       batchId,
       files
     );
+
     await checkout(
       inputTokens,
       outputTokens,
       CONFIG.models[model].pricing,
       account,
       email,
-      summaryV3Record.id,
+      customRequestV3Record.id,
       locale
     );
     job.progress(100);
     const end = Date.now();
     // prettier-ignore
     console.log(`Execution time: ${end - start} ms or ${(end - start) / 1000 / 60} minutes`);
-    done(null, { summaryV3Id: summaryV3Record.id });
+    done(null, { customRequestV3Id: customRequestV3Record.id });
   } catch (e) {
     done(e as Error, null);
   }

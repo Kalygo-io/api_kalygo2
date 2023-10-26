@@ -24,7 +24,7 @@ const tpmDelay = 60000;
 export async function openAiSummarizeFileOverall(
   customizations: SummaryV3OpenAiCustomizations,
   email: string,
-  file: Record<string, any>,
+  file: Express.Multer.File & { bucket: string; key: string; etag: string },
   bucket: string,
   job: any,
   batchId: string,
@@ -136,7 +136,7 @@ export async function openAiSummarizeFileOverall(
     }
     if (format === "bullet-points") {
       // prettier-ignore
-      const prompt = generateBulletPointsPromptPrefix({ length, language, }, summaryForFile);
+      const prompt = generateBulletPointsPromptPrefix({ length, language, }, summaryForFile); // TODO - handle scenario where summaryForFile exceeds context
       const promptTokenCount = encoder.encode(prompt).length;
       deductCostOfOpenAiInputTokens(promptTokenCount, model, config, account);
       p("finalBulletPointsPromptTokenCount", promptTokenCount);

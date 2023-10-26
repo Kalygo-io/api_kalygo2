@@ -1,14 +1,18 @@
 import { getRag, ragRequestWithQueue } from "./handlers";
 
 import { Router } from "express";
-import { authenticateToken, multerS3Middleware } from "@middleware/index";
+import {
+  authenticateToken,
+  isAdmin,
+  multerS3Middleware,
+} from "@middleware/index";
 
 const router = Router();
 
 router
   .route("/rag-request-with-queue")
   .post(
-    [authenticateToken, multerS3Middleware.single("file")],
+    [authenticateToken, isAdmin, multerS3Middleware.single("file")],
     ragRequestWithQueue
   );
 

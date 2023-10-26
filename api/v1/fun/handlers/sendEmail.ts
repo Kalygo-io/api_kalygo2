@@ -79,11 +79,8 @@ export async function sendEmail(
         }
       }
       messageAsText += `${ending}\\n${endingSignature}`;
-
       console.log("messageAsText", messageAsText);
-
       console.log("*** paragraphs ***", paragraphs);
-
       for (let i = 0; i < recipientEmails.length; i++) {
         const emailConfig = funStationaryTheme_SES_Config(
           campaign,
@@ -91,7 +88,6 @@ export async function sendEmail(
           [recipientEmails[i]],
           subject,
           messageAsText,
-          // "Hey\\nasdf",
           emailPreviewText,
           logoOnclickUrl,
           logoImageUrl,

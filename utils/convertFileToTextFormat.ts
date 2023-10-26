@@ -2,7 +2,9 @@ import { s3, GetObjectCommand } from "@/clients/s3_client";
 import { convertPDFToText } from "@/utils/convertPDFToText";
 import { streamToString } from "@/utils/streamToString";
 
-export async function convertFileToTextFormat(file: any) {
+export async function convertFileToTextFormat(
+  file: Express.Multer.File & { bucket: string; key: string; etag: string }
+) {
   let fileToText: {
     text: string;
     originalName: string;

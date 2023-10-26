@@ -82,7 +82,7 @@ export async function checkout(
   await prisma.openAiCharges.create({
     data: {
       accountId: account.id,
-      amount: _3rdPartyCharges, // TODO - refine this - here we are tracking the OpenAI API charges
+      amount: _3rdPartyCharges,
     },
   });
 }

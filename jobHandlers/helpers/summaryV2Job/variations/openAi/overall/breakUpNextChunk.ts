@@ -4,7 +4,7 @@ export function breakUpNextChunk(chunks: string[]): string[] {
   // prettier-ignore
   p("breaking up next chunk of file as it is too large for model context..."); // for console debugging...
   const dataChunk = chunks[0];
-  let middle = Math.floor(dataChunk.length / 2); // TODO - is there a more finesse way to split the chunk then simply in half?
+  let middle = Math.floor(dataChunk.length / 2);
   let before = middle;
   let after = middle + 1;
   if (middle - before < after - middle) {

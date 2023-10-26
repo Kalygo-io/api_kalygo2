@@ -17,7 +17,7 @@ export function makeChunksSmaller(
     );
 
     if (encoder.encode(promptWithDataChunk).length > context) {
-      let middle = Math.floor(chunks[i].length / 2); // TODO - is there a more finesse way to split the chunk then simply in half?
+      let middle = Math.floor(chunks[i].length / 2);
       let before = middle;
       let after = middle + 1;
       if (middle - before < after - middle) {

@@ -66,10 +66,7 @@ export async function ragRequestJobLogic(
     // });
 
     // -v-v- CHECK IF CALLER HAS AN ACCOUNT -v-v-
-    const { account, customerId } = await guard_beforeRunningRagRequest(
-      email,
-      model
-    );
+    const { account } = await guard_beforeRunningRagRequest(email, model);
 
     console.log("account -> w/ credits info ->", account);
 
@@ -183,7 +180,7 @@ export async function ragRequestJobLogic(
     try {
       const emailConfig = ragJobComplete_SES_Config(
         email,
-        `${process.env.FRONTEND_HOSTNAME}/dashboard/rag-request-result?rag-request-id=${ragRequestRecord.id}`, // TODO
+        `${process.env.FRONTEND_HOSTNAME}/dashboard/rag-request-result?rag-request-id=${ragRequestRecord.id}`,
         locale
       );
       await sesClient.send(new SendTemplatedEmailCommand(emailConfig));

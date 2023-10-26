@@ -1,6 +1,6 @@
 import { ScanningMode } from "@prisma/client";
 import { openAiFileInChunks } from "./helpers/customRequestV3Job/variations/openAi/fileInChunks";
-import { eachFileOverall } from "./helpers/customRequestJob/variations/eachFileOverall";
+import { openAiFileOverall } from "./helpers/customRequestV3Job/variations/openAi/fileOverall";
 import { promptAgainstFilesOverall } from "./helpers/customRequestJob/variations/overall";
 import { eachFilePerPage } from "./helpers/customRequestJob/variations/eachFilePerPage";
 import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
@@ -44,17 +44,17 @@ export async function customRequestV3JobLogic(
           );
           break;
 
-        // case ScanningMode.EACH_FILE_OVERALL:
-        //   eachFileOverall(
-        //     customizations,
-        //     email,
-        //     files,
-        //     bucket,
-        //     job,
-        //     locale,
-        //     done
-        //   );
-        //   break;
+        case ScanningMode.FILE_OVERALL:
+          openAiFileOverall(
+            customizations as CustomRequestV3OpenAiCustomizations,
+            email,
+            file!,
+            job,
+            batchId,
+            locale,
+            done
+          );
+          break;
 
         // case ScanningMode.OVERALL:
         //   promptAgainstFilesOverall(
@@ -81,14 +81,14 @@ export async function customRequestV3JobLogic(
         //   break;
 
         default:
-          throw new Error("TODO");
+          throw new Error("Unsupported Data Scanning Mode");
       }
     } else if (
       [
         "meta/llama-2-70b-chat:02e509c789964a7ea8736978a43525956ef40397be9033abf9fd2badfe68c9e3",
       ].includes(model)
     ) {
-      throw new Error("TODO");
+      throw new Error("Unsupported Data Scanning Mode");
     } else {
       throw new Error("Unsupported Model");
     }

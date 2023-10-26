@@ -18,7 +18,7 @@ export async function deductCostOfOpenAiOutputTokens(
     account?.UsageCredits?.amount
   );
   // ***
-  if (!account?.SummaryCredits?.amount) {
+  if (!account?.CustomRequestCredits?.amount) {
     await prisma.usageCredits.update({
       data: {
         amount: {

@@ -132,7 +132,6 @@ export async function summaryV2JobLogic(
           );
           break;
         default:
-          console.log("WHY?");
           throw new Error("TODO");
       }
     } else if (
@@ -213,7 +212,7 @@ export async function summaryV2JobLogic(
           );
           break;
         default:
-          throw new Error("TODO");
+          throw new Error("Unsupported Data Scanning Mode");
       }
     } else {
       throw new Error("Unsupported Model");

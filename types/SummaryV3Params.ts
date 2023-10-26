@@ -4,8 +4,14 @@ import { SummaryV3ReplicateCustomizations } from "./SummaryV3ReplicateCustomizat
 export type SummaryV3Params = {
   batchId: string;
   bucket: string;
-  file: Record<string, any> | null;
-  files: Record<string, any>[] | null;
+  file:
+    | (Express.Multer.File & { bucket: string; key: string; etag: string })
+    | null;
+  files: (Express.Multer.File & {
+    bucket: string;
+    key: string;
+    etag: string;
+  })[];
   customizations:
     | SummaryV3OpenAiCustomizations
     | SummaryV3ReplicateCustomizations;

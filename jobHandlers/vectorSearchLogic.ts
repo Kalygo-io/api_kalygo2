@@ -192,7 +192,7 @@ export async function vectorSearchJobLogic(
     try {
       const emailConfig = vectorSearchJobComplete_SES_Config(
         email,
-        `${process.env.FRONTEND_HOSTNAME}/dashboard/vector-search-result?vector-search-id=${vectorSearchRecord.id}`, // TODO
+        `${process.env.FRONTEND_HOSTNAME}/dashboard/vector-search-result?vector-search-id=${vectorSearchRecord.id}`,
         language
       );
       await sesClient.send(new SendTemplatedEmailCommand(emailConfig));

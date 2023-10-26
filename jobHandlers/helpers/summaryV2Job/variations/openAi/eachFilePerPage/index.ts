@@ -119,7 +119,7 @@ export async function openAiSummarizeEachFilePerPage(
           );
           console.log(
             "Now deducting from 'Cost of INPUT_TOKENS' from credits balance if no free credits exist..."
-          ); // TODO collapse 'FREE CREDITS' and 'USAGE CREDITS' into one system
+          );
           // ***
           if (!account?.SummaryCredits?.amount) {
             await prisma.usageCredits.update({

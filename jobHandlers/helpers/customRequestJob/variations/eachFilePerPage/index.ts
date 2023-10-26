@@ -111,7 +111,7 @@ export async function eachFilePerPage(
           );
           console.log(
             "Now deducting from 'Cost of INPUT_TOKENS' from credits balance if no free credits exist..."
-          ); // TODO collapse 'FREE CREDITS' and 'USAGE CREDITS' into one system
+          );
           // ***
           if (!account?.CustomRequestCredits?.amount) {
             await prisma.usageCredits.update({
@@ -128,7 +128,7 @@ export async function eachFilePerPage(
           // ***
 
           // -v-v- CALL THE A.I. MODEL -v-v-
-          p("call the A.I. model"); // for console debugging...
+          p("call the A.I. model");
           let completion =
             await generateOpenAiUserChatCompletionWithExponentialBackoff(
               model,

@@ -23,7 +23,7 @@ export async function checkout(
   },
   account: any,
   callerEmail: string,
-  customRequestV2RecordId: number,
+  customRequestV3RecordId: number,
   locale: string
 ) {
   p("*** CHECKOUT ***");
@@ -63,7 +63,7 @@ export async function checkout(
   try {
     const emailConfig = customRequestJobComplete_SES_Config(
       callerEmail,
-      `${process.env.FRONTEND_HOSTNAME}/dashboard/custom-request-v2-result?custom-request-v2-id=${customRequestV2RecordId}`,
+      `${process.env.FRONTEND_HOSTNAME}/dashboard/custom-request-v3-result?custom-request-v3-id=${customRequestV3RecordId}`,
       locale
     );
     await sesClient.send(new SendTemplatedEmailCommand(emailConfig));

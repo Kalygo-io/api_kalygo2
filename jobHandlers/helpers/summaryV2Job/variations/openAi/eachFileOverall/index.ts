@@ -69,7 +69,7 @@ export async function openAiSummarizeEachFileOverall(
       let tokenAccumWithoutPrefixForFile: number = 0;
       const totalTokenCountInFile: number = encoder.encode(chunks[0]).length;
       // -v-v- IF A CHUNK OF THE FILE IS TOO LARGE FOR THE MODEL'S INPUT CONTEXT... -v-v-
-      // -v-v- WE WILL SHIFT IT OFF THE CHUNKS ARRAY AND UNSHIFT IT BACK ON BROKEN IN HALF. -v-v- // TODO is there a more finesse way of breaking the oversized chunk up?
+      // -v-v- WE WILL SHIFT IT OFF THE CHUNKS ARRAY AND UNSHIFT IT BACK ON BROKEN IN HALF. -v-v-
       // -v-v- WE WILL BE SEQUENTIALLY MOVING THROUGH THE FILE DATA AND INCLUDING... -v-v-
       // -v-v- THE COMPLETION OF PREVIOUSLY PROCESSED CHUNKS WITH EACH SUBSEQUENT PROMPT. -v-v-
       while (chunks.length > 0) {

@@ -3,8 +3,12 @@ import { CustomRequestV3ReplicateCustomizations } from "./CustomRequestV3Replica
 import { SupportedOpenAiModels } from "./SupportedOpenAiModels";
 
 export type CustomRequestV3Params = {
-  files: Express.Multer.File[] | null;
-  file: Express.Multer.File | null;
+  files:
+    | (Express.Multer.File & { bucket: string; key: string; etag: string })[]
+    | null;
+  file:
+    | (Express.Multer.File & { bucket: string; key: string; etag: string })
+    | null;
   customizations:
     | CustomRequestV3OpenAiCustomizations
     | CustomRequestV3ReplicateCustomizations;

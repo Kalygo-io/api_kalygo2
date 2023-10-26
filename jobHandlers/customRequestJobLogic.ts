@@ -78,7 +78,7 @@ export async function customRequestJobLogic(
         break;
 
       default:
-        throw new Error("TODO");
+        throw new Error("Unsuppported Data Scanning Mode");
     }
   } catch (e: any) {
     done(new Error(e ? e.message : "Something went wrong"));

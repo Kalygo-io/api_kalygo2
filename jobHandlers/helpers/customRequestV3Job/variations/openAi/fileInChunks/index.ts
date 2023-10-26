@@ -20,7 +20,7 @@ const tpmDelay = 60000;
 export async function openAiFileInChunks(
   customizations: CustomRequestV3OpenAiCustomizations,
   email: string,
-  file: Record<string, any>,
+  file: Express.Multer.File & { bucket: string; key: string; etag: string },
   job: any,
   batchId: string,
   locale: string,
@@ -30,7 +30,7 @@ export async function openAiFileInChunks(
   let chunks: string[] = [];
 
   try {
-    p("CustomRequestV3 - SCANNING MODE - File In Chunks");
+    p("CustomRequestV3 - File In Chunks");
     const start = Date.now();
     const {
       prompts: { prompt },
@@ -38,7 +38,6 @@ export async function openAiFileInChunks(
       chunkTokenOverlap,
     } = customizations;
     job.progress(0);
-
     const { account } = await guard_beforeRunningCustomRequest(email, model);
     const encoder = getEncoderForModel(model);
     let inputTokens = 0;
@@ -114,10 +113,10 @@ DATA: ${chunks[i]}`;
         chunk: i,
         completion: completionText,
       });
-      p("job.progress()", job.progress()); // for console debugging
-      p("i", i, "chunks.length", chunks.length); // for console debugging
+      p("job.progress()", job.progress());
+      p("i", i, "chunks.length", chunks.length);
       // prettier-ignore
-      p(`this collection of chunks represents ${Math.floor(100)}% of the total progress`); // for console debugging
+      p(`this collection of chunks represents ${Math.floor(100)}% of the total progress`);
       // prettier-ignore
       job.progress(job.progress() + ((1 / chunks.length) * 100));
       p("after job.progress() update", job.progress());
@@ -138,7 +137,7 @@ DATA: ${chunks[i]}`;
       inputTokens,
       outputTokens,
       CONFIG.models[model].pricing,
-      account, // account: any,
+      account,
       email,
       customRequestV3Record.id,
       locale

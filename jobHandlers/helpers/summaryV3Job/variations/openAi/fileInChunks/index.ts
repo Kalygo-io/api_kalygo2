@@ -21,7 +21,7 @@ const tpmDelay = 60000;
 export async function openAiSummarizeFileInChunks(
   customizations: SummaryV3OpenAiCustomizations,
   email: string,
-  file: Record<string, any>,
+  file: Express.Multer.File & { bucket: string; key: string; etag: string },
   bucket: string,
   job: any,
   batchId: string,

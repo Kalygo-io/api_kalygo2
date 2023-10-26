@@ -72,7 +72,6 @@ export async function replicateSummarizeEachFilePerPage(
           length,
           language,
         });
-
         // TODO - handle situation where page has "TOO MUCH" text on it : )
         if (
           isChunkValidForModelContext(
@@ -115,7 +114,7 @@ export async function replicateSummarizeEachFilePerPage(
           );
           console.log(
             "Now deducting from 'Cost of INPUT_TOKENS' from credits balance if no free credits exist..."
-          ); // TODO collapse 'FREE CREDITS' and 'USAGE CREDITS' into one system
+          );
           // ***
           if (!account?.SummaryCredits?.amount) {
             await prisma.usageCredits.update({

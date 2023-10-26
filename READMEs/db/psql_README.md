@@ -1,6 +1,6 @@
 sudo -u postgres psql
 
-## TODO
+## TIP FOR CREATING A DB USER?
 
 CREATE ROLE your-username WITH PASSWORD 'password';
 CREATE DATABASE database_name;

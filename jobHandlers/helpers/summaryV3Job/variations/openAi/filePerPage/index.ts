@@ -23,7 +23,6 @@ export async function openAiSummarizeFilePerPage(
   customizations: SummaryV3OpenAiCustomizations,
   email: string,
   file: any,
-  bucket: string,
   job: any,
   batchId: string,
   locale: string,
@@ -42,7 +41,7 @@ export async function openAiSummarizeFilePerPage(
     const fileToText: {
       partsOfFile: any[];
       originalName: string;
-    } = await convertFileToTextFormatWithMetadata(file, bucket);
+    } = await convertFileToTextFormatWithMetadata(file);
     p("splitting text.*.*.");
     let tpmAccum: number = 0;
     const originalNameOfFile = fileToText.originalName;

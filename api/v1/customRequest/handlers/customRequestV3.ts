@@ -22,6 +22,9 @@ export async function customRequestV3(
     let locale: string = req?.i18n?.language?.substring(0, 2) || "en";
     const batchId = req.body.batchId || v4();
 
+    if ((req.files?.length as number) > 10)
+      throw new Error("Max 10 files per batch");
+
     if (req.body.mode === ScanningMode.OVERALL) {
       jobQueue.add(
         {

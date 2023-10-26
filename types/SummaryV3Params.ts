@@ -3,15 +3,16 @@ import { SummaryV3ReplicateCustomizations } from "./SummaryV3ReplicateCustomizat
 
 export type SummaryV3Params = {
   batchId: string;
-  bucket: string;
   file:
     | (Express.Multer.File & { bucket: string; key: string; etag: string })
     | null;
-  files: (Express.Multer.File & {
-    bucket: string;
-    key: string;
-    etag: string;
-  })[];
+  files:
+    | (Express.Multer.File & {
+        bucket: string;
+        key: string;
+        etag: string;
+      })[]
+    | null;
   customizations:
     | SummaryV3OpenAiCustomizations
     | SummaryV3ReplicateCustomizations;

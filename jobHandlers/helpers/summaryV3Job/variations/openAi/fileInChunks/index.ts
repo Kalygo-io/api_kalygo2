@@ -22,7 +22,6 @@ export async function openAiSummarizeFileInChunks(
   customizations: SummaryV3OpenAiCustomizations,
   email: string,
   file: Express.Multer.File & { bucket: string; key: string; etag: string },
-  bucket: string,
   job: any,
   batchId: string,
   locale: string,

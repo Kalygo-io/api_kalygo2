@@ -18,20 +18,19 @@ export async function summarizeV3(
     let locale: string = req?.i18n?.language?.substring(0, 2) || "en";
     const batchId = req.body.batchId || v4();
 
-    if (
-      req.body.mode === ScanningMode.OVERALL &&
-      (req.files?.length as number) <= 10
-    ) {
+    if ((req.files?.length as number) > 10)
+      throw new Error("Max 10 files per batch");
+
+    if (req.body.mode === ScanningMode.OVERALL) {
       jobQueue.add(
         {
           jobType: QueueJobTypes.SummaryV3,
           params: {
             batchId,
-            bucket: process.env.S3_DOCUMENTS_BUCKET,
             files: req.files as any,
             customizations: {
               format: req.body.format,
-              mode: req.body.mode,
+              scanMode: req.body.mode,
               length: req.body.length,
               language: req.body.language,
               model: req.body.model,
@@ -48,17 +47,16 @@ export async function summarizeV3(
         }
       );
     } else {
-      for (let fIndex = 0; fIndex < 10; fIndex++) {
+      for (let fIndex = 0; fIndex < (req.files?.length as number); fIndex++) {
         jobQueue.add(
           {
             jobType: QueueJobTypes.SummaryV3,
             params: {
               batchId,
-              bucket: process.env.S3_DOCUMENTS_BUCKET,
               file: (req.files as any)[fIndex],
               customizations: {
                 format: req.body.format,
-                mode: req.body.mode,
+                scanMode: req.body.mode,
                 length: req.body.length,
                 language: req.body.language,
                 model: req.body.model,

@@ -25,7 +25,6 @@ export async function openAiSummarizeFilesOverall(
   customizations: SummaryV3OpenAiCustomizations,
   email: string,
   files: any[],
-  bucket: string,
   job: any,
   batchId: string,
   locale: string,

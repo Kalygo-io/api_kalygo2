@@ -25,10 +25,9 @@ export async function summaryV3JobLogic(
 ) {
   try {
     console.log("processing JOB with params...", params);
-    const { file, files, bucket, email, customizations, locale, batchId } =
-      params;
+    const { file, files, email, customizations, locale, batchId } = params;
     // console.log(bucket, file, email, customizations, locale, batchId);
-    if (!bucket || !email || !customizations || !locale || !batchId) {
+    if (!email || !customizations || !locale || !batchId) {
       done(new Error("Invalid Data"));
       return;
     }
@@ -36,8 +35,8 @@ export async function summaryV3JobLogic(
     console.log("-!-!-");
 
     // prettier-ignore
-    const { mode, format, length, language, model, chunkTokenOverlap } = customizations;
-    const summarizationType = mode;
+    const { scanMode, format, length, language, model, chunkTokenOverlap } = customizations;
+    const summarizationType = scanMode;
 
     console.log("-!-!-");
 
@@ -54,12 +53,11 @@ export async function summaryV3JobLogic(
               length,
               language,
               model: openAiModel,
-              mode,
+              scanMode,
               chunkTokenOverlap,
             } as SummaryV3OpenAiCustomizations,
             email,
             file!,
-            bucket,
             job,
             batchId,
             locale,
@@ -73,12 +71,11 @@ export async function summaryV3JobLogic(
               length,
               language,
               model: openAiModel,
-              mode,
+              scanMode,
               chunkTokenOverlap,
             } as SummaryV3OpenAiCustomizations,
             email,
             file!,
-            bucket,
             job,
             batchId,
             locale,
@@ -92,12 +89,11 @@ export async function summaryV3JobLogic(
               length,
               language,
               model: openAiModel,
-              mode,
+              scanMode,
               chunkTokenOverlap,
             } as SummaryV3OpenAiCustomizations,
             email,
             files!,
-            bucket,
             job,
             batchId,
             locale,
@@ -111,11 +107,10 @@ export async function summaryV3JobLogic(
               length,
               language,
               model: openAiModel,
-              mode,
+              scanMode,
             } as SummaryV3OpenAiCustomizations,
             email,
             file,
-            bucket,
             job,
             batchId,
             locale,

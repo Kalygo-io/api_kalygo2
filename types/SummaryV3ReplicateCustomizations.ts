@@ -3,7 +3,7 @@ import { SupportedReplicateModels } from "./SupportedReplicateModels";
 
 export type SummaryV3ReplicateCustomizations = {
   format: "bullet-points" | "paragraph";
-  mode: ScanningMode;
+  scanMode: ScanningMode;
   length: string;
   language: string;
   model: SupportedReplicateModels;

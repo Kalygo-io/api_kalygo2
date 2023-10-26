@@ -2,17 +2,14 @@ import { s3, GetObjectCommand } from "@/clients/s3_client";
 import { convertPDFToTextWithMetadata } from "@/utils/convertPDFToTextWithMetadata";
 import { streamToString } from "@/utils/streamToString";
 
-export async function convertFileToTextFormatWithMetadata(
-  file: any,
-  bucket: string
-): Promise<{
+export async function convertFileToTextFormatWithMetadata(file: any): Promise<{
   partsOfFile: any[];
   originalName: string;
 }> {
-  console.log("file", file.originalname); // for console debugging...
+  console.log("file", file.originalname);
   // -v-v- DOWNLOAD EACH FILE FROM S3 -v-v-
   const command = new GetObjectCommand({
-    Bucket: bucket,
+    Bucket: file.bucket,
     Key: file.key,
   });
   const { Body } = await s3.send(command);

@@ -3,7 +3,7 @@ import { SupportedOpenAiModels } from "./SupportedOpenAiModels";
 
 export type SummaryV3OpenAiCustomizations = {
   format: "bullet-points" | "paragraph";
-  mode: ScanningMode;
+  scanMode: ScanningMode;
   length: string;
   language: string;
   model: SupportedOpenAiModels;

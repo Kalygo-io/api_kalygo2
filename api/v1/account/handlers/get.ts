@@ -13,9 +13,6 @@ export async function getAccount(
   try {
     console.log("GET account");
 
-    // @ts-ignore
-    // console.log("req.user", req.user);
-
     const account = await prisma.account.findFirst({
       where: {
         // @ts-ignore
@@ -28,6 +25,7 @@ export async function getAccount(
         UsageCredits: true,
         ProfilePicture: true,
         Files: true,
+        AwsSecretsManagerApiKey: true,
       },
     });
 
@@ -61,6 +59,7 @@ export async function getAccount(
           "lastName",
           "subscriptionPlan",
           "Files",
+          "AwsSecretsManagerApiKey",
           "referralCode",
         ]),
         subscriptions: subscriptions,
@@ -96,6 +95,8 @@ export async function getAccount(
           "lastName",
           "subscriptionPlan",
           "Files",
+          "AwsSecretsManagerApiKey",
+          "referralCode",
         ]),
         subscriptions: subscriptions,
         stripeDefaultSource: customerSearchResults.data[0]?.default_source,

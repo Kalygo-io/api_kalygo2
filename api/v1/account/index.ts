@@ -39,7 +39,7 @@ router
   .route("/create-stripe-account")
   .get(authenticateToken, createStripeAccount);
 
-// router.route("/add-api-key").post(addApiKey);
+router.route("/add-api-key").post([authenticateToken], addApiKey);
 // router.route("/get-api-key").get(getApiKey);
 
 router.route("/add-stripe-card").post(authenticateToken, addStripeCard);

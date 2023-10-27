@@ -17,46 +17,47 @@ model MailingList {
 }
 
 model Account {
-  id                     Int                       @id @default(autoincrement())
-  email                  String                    @unique
-  firstName              String?
-  lastName               String?
-  alias                  String?
-  phone                  String?
-  passwordHash           String?
-  resetPasswordToken     String?
-  emailVerificationToken String?
-  emailVerified          Boolean                   @default(false)
-  markAsDeleted          Boolean                   @default(false)
-  isGoogleAccount        Boolean                   @default(false)
-  CustomRequest          CustomRequest[]
-  Summaries              Summary[]
-  VectorSearches         VectorSearch[]
-  createdAt              DateTime?                 @default(now())
-  updatedAt              DateTime?                 @updatedAt
-  subscriptionPlan       SubscriptionPlan          @default(FREE)
-  Logins                 Login[]
-  SummaryCredits         SummaryCredits?
-  VectorSearchCredits    VectorSearchCredits?
-  CustomRequestCredits   CustomRequestCredits?
-  OpenAiCharges          OpenAiCharges[]
-  Roles                  Role[]
-  SummaryV2              SummaryV2[]
-  SummaryV3              SummaryV3[]
-  Ratings                Rating[]
-  SmartSearch            SmartSearch[]
-  UsageCredits           UsageCredits?
-  MemberedAccessGroups   AccountsAndAccessGroups[] @relation("Membered")
-  Prompts                Prompt[]
-  CreatedAccessGroups    AccountsAndAccessGroups[] @relation("Created")
-  AccessGroups           AccessGroup[]
-  AccountContext         File[]                    @relation("AccountContext")
-  ProfilePicture         File?                     @relation("ProfilePicture")
-  Files                  File[]
-  RAGRequest             RagRequest[]
-  ReferralCodes          ReferralCode[]
-  referralCode           String                    @default("")
-  CustomRequestV3        CustomRequestV3[]
+  id                      Int                       @id @default(autoincrement())
+  email                   String                    @unique
+  firstName               String?
+  lastName                String?
+  alias                   String?
+  phone                   String?
+  passwordHash            String?
+  resetPasswordToken      String?
+  emailVerificationToken  String?
+  emailVerified           Boolean                   @default(false)
+  markAsDeleted           Boolean                   @default(false)
+  isGoogleAccount         Boolean                   @default(false)
+  CustomRequest           CustomRequest[]
+  Summaries               Summary[]
+  VectorSearches          VectorSearch[]
+  createdAt               DateTime?                 @default(now())
+  updatedAt               DateTime?                 @updatedAt
+  subscriptionPlan        SubscriptionPlan          @default(FREE)
+  Logins                  Login[]
+  SummaryCredits          SummaryCredits?
+  VectorSearchCredits     VectorSearchCredits?
+  CustomRequestCredits    CustomRequestCredits?
+  OpenAiCharges           OpenAiCharges[]
+  Roles                   Role[]
+  SummaryV2               SummaryV2[]
+  SummaryV3               SummaryV3[]
+  Ratings                 Rating[]
+  SmartSearch             SmartSearch[]
+  UsageCredits            UsageCredits?
+  MemberedAccessGroups    AccountsAndAccessGroups[] @relation("Membered")
+  Prompts                 Prompt[]
+  CreatedAccessGroups     AccountsAndAccessGroups[] @relation("Created")
+  AccessGroups            AccessGroup[]
+  AccountContext          File[]                    @relation("AccountContext")
+  ProfilePicture          File?                     @relation("ProfilePicture")
+  Files                   File[]
+  RAGRequest              RagRequest[]
+  ReferralCodes           ReferralCode[]
+  referralCode            String                    @default("")
+  CustomRequestV3         CustomRequestV3[]
+  AwsSecretsManagerApiKey AwsSecretsManagerApiKey[]
 }
 
 model ReferralCode {
@@ -65,6 +66,17 @@ model ReferralCode {
   code      String    @unique
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
+}
+
+model AwsSecretsManagerApiKey {
+  id        Int              @id @default(autoincrement())
+  Account   Account          @relation(fields: [accountId], references: [id])
+  accountId Int
+  secretId  String           @default("")
+  preview   String           @default("")
+  type      SupportedApiKeys
+
+  @@unique([accountId, type])
 }
 
 model Summary {
@@ -438,4 +450,10 @@ enum RatingType {
   CustomRequest
   CustomRequestV3
   Prompt
+}
+
+enum SupportedApiKeys {
+  OPEN_AI_API_KEY
+  AWS_SES_ACCESS_KEY
+  AWS_SES_SECRET_KEY
 }

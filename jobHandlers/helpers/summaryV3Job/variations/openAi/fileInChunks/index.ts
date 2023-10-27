@@ -41,15 +41,16 @@ export async function openAiSummarizeFileInChunks(
     const { format, length, language, model, chunkTokenOverlap } =
       customizations;
     job.progress(0);
-    const { account } = await guard_beforeRunningSummary(email, model);
-    const accountOpenAiApiKey = account?.AwsSecretsManagerApiKey.find((i) => {
-      return i.type === SupportedApiKeys.OPEN_AI_API_KEY;
-    });
+    const { account, accountOpenAiApiKeyReference } =
+      await guard_beforeRunningSummary(email, model);
     // vvv fetch account OPEN_AI_API_KEY from AWS Secrets Manager vvv
     const command = new GetSecretValueCommand({
-      SecretId: accountOpenAiApiKey?.secretId,
+      SecretId: accountOpenAiApiKeyReference?.secretId,
     });
-    const secretsManagerResponse = await secretsManagerClient.send(command);
+    let secretsManagerResponse = null;
+    try {
+      secretsManagerResponse = await secretsManagerClient.send(command);
+    } catch (e) {}
     // ^^^ ^^^
     const encoder = getEncoderForModel(model);
     const fileToText: { text: string; originalName: string } =
@@ -102,7 +103,7 @@ export async function openAiSummarizeFileInChunks(
       lastChunkBeforeFailing = i;
       await guard_beforeCallingModel(email, model);
       let completion;
-      if (accountOpenAiApiKey && secretsManagerResponse?.SecretString) {
+      if (secretsManagerResponse?.SecretString) {
         // get OpenAI client with account OPEN_AI_API_KEY
         completion =
           await generateOpenAiUserChatCompletionWithExponentialBackoff(
@@ -131,7 +132,7 @@ export async function openAiSummarizeFileInChunks(
         completion.data?.choices[0]?.message?.content || "ERROR: No Content";
       p(`snippet of last OpenAI completion - '${completionText.slice(0, 16)}'`);
       const outputTokenCount = encoder.encode(completionText).length;
-      if (!accountOpenAiApiKey) {
+      if (!secretsManagerResponse?.SecretString) {
         await deductCostOfOpenAiOutputTokens(
           outputTokenCount,
           model,

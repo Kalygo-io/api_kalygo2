@@ -43,15 +43,14 @@ export async function openAiSummarizeFileOverall(
       customizations;
     job.progress(0);
     // prettier-ignore
-    const { account } = await guard_beforeRunningSummary(email, model);
-    const accountOpenAiApiKey = account?.AwsSecretsManagerApiKey.find((i) => {
-      return i.type === SupportedApiKeys.OPEN_AI_API_KEY;
-    });
-    // vvv fetch account OPEN_AI_API_KEY from AWS Secrets Manager vvv
+    const { account, accountOpenAiApiKeyReference } = await guard_beforeRunningSummary(email, model);
     const command = new GetSecretValueCommand({
-      SecretId: accountOpenAiApiKey?.secretId,
+      SecretId: accountOpenAiApiKeyReference?.secretId,
     });
-    const secretsManagerResponse = await secretsManagerClient.send(command);
+    let secretsManagerResponse = null;
+    try {
+      secretsManagerResponse = await secretsManagerClient.send(command);
+    } catch (e) {}
     // ^^^ ^^^
     const encoder = getEncoderForModel(model);
     // prettier-ignore
@@ -96,7 +95,7 @@ export async function openAiSummarizeFileOverall(
       }
       await guard_beforeCallingModel(email, model); // GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
       let completion;
-      if (accountOpenAiApiKey && secretsManagerResponse?.SecretString) {
+      if (secretsManagerResponse?.SecretString) {
         console.log("Use account OPEN_AI_API_KEY");
         // get OpenAI client with account OPEN_AI_API_KEY
         completion =
@@ -128,7 +127,7 @@ export async function openAiSummarizeFileOverall(
         completion.data?.choices[0]?.message?.content || "No Content";
       p(`snippet of last OpenAI completion - '${completionText.slice(0, 16)}'`);
       const outputTokenCount = encoder.encode(completionText).length;
-      if (!accountOpenAiApiKey) {
+      if (!secretsManagerResponse?.SecretString) {
         await deductCostOfOpenAiOutputTokens(
           outputTokenCount,
           model,
@@ -177,7 +176,7 @@ export async function openAiSummarizeFileOverall(
       }
       await guard_beforeCallingModel(email, model);
       let completion;
-      if (accountOpenAiApiKey && secretsManagerResponse?.SecretString) {
+      if (secretsManagerResponse?.SecretString) {
         console.log("Use account OPEN_AI_API_KEY");
         completion =
           await generateOpenAiUserChatCompletionWithExponentialBackoff(
@@ -203,7 +202,7 @@ export async function openAiSummarizeFileOverall(
       const outputTokenCount = encoder.encode(
         finalBulletPointsCompletionText
       ).length;
-      if (!accountOpenAiApiKey) {
+      if (!secretsManagerResponse?.SecretString) {
         await deductCostOfOpenAiOutputTokens(
           outputTokenCount,
           model,

@@ -42,15 +42,16 @@ export async function openAiSummarizeFilesOverall(
     const { format, length, language, model, chunkTokenOverlap } =
       customizations;
     job.progress(0);
-    const { account } = await guard_beforeRunningSummary(email, model);
-    const accountOpenAiApiKey = account?.AwsSecretsManagerApiKey.find((i) => {
-      return i.type === SupportedApiKeys.OPEN_AI_API_KEY;
-    });
+    const { account, accountOpenAiApiKeyReference } =
+      await guard_beforeRunningSummary(email, model);
     // vvv fetch account OPEN_AI_API_KEY from AWS Secrets Manager vvv
     const command = new GetSecretValueCommand({
-      SecretId: accountOpenAiApiKey?.secretId,
+      SecretId: accountOpenAiApiKeyReference?.secretId,
     });
-    const secretsManagerResponse = await secretsManagerClient.send(command);
+    let secretsManagerResponse = null;
+    try {
+      secretsManagerResponse = await secretsManagerClient.send(command);
+    } catch (e) {}
     // ^^^ ^^^
     const encoder = getEncoderForModel(model);
     const filesToText: {
@@ -110,7 +111,7 @@ export async function openAiSummarizeFilesOverall(
         }
         await guard_beforeCallingModel(email, model);
         let completion;
-        if (accountOpenAiApiKey && secretsManagerResponse?.SecretString) {
+        if (secretsManagerResponse?.SecretString) {
           console.log("Use account OpenAI client");
           completion =
             await generateOpenAiUserChatCompletionWithExponentialBackoff(
@@ -141,7 +142,7 @@ export async function openAiSummarizeFilesOverall(
         // prettier-ignore
         p(`snippet of last OpenAI completion - '${completionText.slice(0,16)}'`);
         const outputTokenCount = encoder.encode(completionText).length;
-        if (!accountOpenAiApiKey) {
+        if (!secretsManagerResponse?.SecretString) {
           await deductCostOfOpenAiOutputTokens(
             outputTokenCount,
             model,
@@ -227,7 +228,7 @@ export async function openAiSummarizeFilesOverall(
       await guard_beforeCallingModel(email, model);
 
       let completion;
-      if (accountOpenAiApiKey && secretsManagerResponse?.SecretString) {
+      if (secretsManagerResponse?.SecretString) {
         console.log("Use account OpenAI client");
         completion =
           await generateOpenAiUserChatCompletionWithExponentialBackoff(

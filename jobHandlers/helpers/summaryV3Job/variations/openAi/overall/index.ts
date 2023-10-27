@@ -18,6 +18,10 @@ import { deductCostOfOpenAiOutputTokens } from "../../../shared/deductCostOfOpen
 import { saveToDb } from "./saveToDb";
 import { breakOffMaxChunkForContext } from "./breakOffMaxChunkForContext";
 import { getOverlapSegment } from "../../../shared/getOverlapSegment";
+import { SupportedApiKeys } from "@prisma/client";
+import { GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
+import { secretsManagerClient } from "@/clients/aws_secrets_manager_client";
+import { OpenAI, generateAccountOpenAI } from "@/clients/openai_client";
 
 const tpmDelay = 60000;
 
@@ -39,6 +43,15 @@ export async function openAiSummarizeFilesOverall(
       customizations;
     job.progress(0);
     const { account } = await guard_beforeRunningSummary(email, model);
+    const accountOpenAiApiKey = account?.AwsSecretsManagerApiKey.find((i) => {
+      return i.type === SupportedApiKeys.OPEN_AI_API_KEY;
+    });
+    // vvv fetch account OPEN_AI_API_KEY from AWS Secrets Manager vvv
+    const command = new GetSecretValueCommand({
+      SecretId: accountOpenAiApiKey?.secretId,
+    });
+    const secretsManagerResponse = await secretsManagerClient.send(command);
+    // ^^^ ^^^
     const encoder = getEncoderForModel(model);
     const filesToText: {
       text: string;
@@ -96,33 +109,47 @@ export async function openAiSummarizeFilesOverall(
           tpmAccum = 0;
         }
         await guard_beforeCallingModel(email, model);
-        await deductCostOfOpenAiInputTokens(
-          promptTokenCount,
-          model,
-          config,
-          account
-        );
-        let completion =
-          await generateOpenAiUserChatCompletionWithExponentialBackoff(
+        let completion;
+        if (!accountOpenAiApiKey) {
+          // use static OpenAI client as account does NOT have an OPEN_AI_API_KEY
+          await deductCostOfOpenAiInputTokens(
+            promptTokenCount,
             model,
-            prompt,
-            tpmDelay
+            config,
+            account
           );
+          completion =
+            await generateOpenAiUserChatCompletionWithExponentialBackoff(
+              model,
+              prompt,
+              tpmDelay,
+              OpenAI
+            );
+        } else {
+          completion =
+            await generateOpenAiUserChatCompletionWithExponentialBackoff(
+              model,
+              prompt,
+              tpmDelay,
+              generateAccountOpenAI(secretsManagerResponse?.SecretString!)
+            );
+        }
         const completionText =
           completion.data?.choices[0]?.message?.content || "No Content";
         // prettier-ignore
         p(`snippet of last OpenAI completion - '${completionText.slice(0,16)}'`);
         const outputTokenCount = encoder.encode(completionText).length;
-        await deductCostOfOpenAiOutputTokens(
-          outputTokenCount,
-          model,
-          config,
-          account
-        );
+        if (!accountOpenAiApiKey) {
+          await deductCostOfOpenAiOutputTokens(
+            outputTokenCount,
+            model,
+            config,
+            account
+          );
+        }
         outputTokens += outputTokenCount; // track output tokens
         tpmAccum += outputTokenCount; // accumulate total token count
         summaryForFile = completionText;
-
         // if additional chunks exist then grab the overlapping text
         // and prepend it to the subsequent chunk
         if (chunks.length > 1) {
@@ -196,18 +223,33 @@ export async function openAiSummarizeFilesOverall(
         tpmAccum = 0;
       }
       await guard_beforeCallingModel(email, model);
-      await deductCostOfOpenAiInputTokens(
-        finalPromptTokenCount,
-        model,
-        config,
-        account
-      );
-      let completion =
-        await generateOpenAiUserChatCompletionWithExponentialBackoff(
+
+      let completion;
+      if (!accountOpenAiApiKey) {
+        // use static OpenAI client as account does NOT have an OPEN_AI_API_KEY
+
+        await deductCostOfOpenAiInputTokens(
+          finalPromptTokenCount,
           model,
-          finalPrompt,
-          tpmDelay
+          config,
+          account
         );
+        completion =
+          await generateOpenAiUserChatCompletionWithExponentialBackoff(
+            model,
+            finalPrompt,
+            tpmDelay,
+            OpenAI
+          );
+      } else {
+        completion =
+          await generateOpenAiUserChatCompletionWithExponentialBackoff(
+            model,
+            finalPrompt,
+            tpmDelay,
+            generateAccountOpenAI(secretsManagerResponse?.SecretString!)
+          );
+      }
       const completionText =
         completion.data?.choices[0]?.message?.content || "No Content";
       const outputTokenCount = encoder.encode(completionText).length;

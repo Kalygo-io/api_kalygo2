@@ -16,6 +16,7 @@ export async function guard_beforeRunningSummary(
     include: {
       SummaryCredits: true,
       UsageCredits: true,
+      AwsSecretsManagerApiKey: true,
     },
   });
 

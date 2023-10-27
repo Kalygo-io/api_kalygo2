@@ -3,11 +3,14 @@ import { sleep } from "@/utils/sleep";
 import { generateOpenAiUserChatCompletion } from "./generateOpenAiUserChatCompletion";
 import { Tiktoken, encoding_for_model } from "@dqbd/tiktoken";
 import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
+import { OpenAIApi } from "openai";
+import { OpenAI } from "@/clients/openai_client";
 
 export async function generateOpenAiUserChatCompletionWithExponentialBackoff(
   model: SupportedOpenAiModels,
   prompt: string,
-  delay: number
+  delay: number,
+  accountOpenAiApiKey: OpenAIApi = OpenAI
 ) {
   p("call the A.I. model");
   console.log("model", model);
@@ -21,23 +24,27 @@ export async function generateOpenAiUserChatCompletionWithExponentialBackoff(
   let completion;
   try {
     // prettier-ignore
-    completion = await generateOpenAiUserChatCompletion(model, prompt);
+    completion = await generateOpenAiUserChatCompletion(model, prompt, accountOpenAiApiKey);
   } catch (e) {
     p("retry");
     await sleep(delay * 2);
     try {
       // prettier-ignore
-      completion = await generateOpenAiUserChatCompletion(model, prompt);
+      completion = await generateOpenAiUserChatCompletion(model, prompt, accountOpenAiApiKey);
     } catch (e) {
       p("retry");
       await sleep(delay * 4);
       try {
         // prettier-ignore
-        completion = await generateOpenAiUserChatCompletion(model, prompt);
+        completion = await generateOpenAiUserChatCompletion(model, prompt, accountOpenAiApiKey);
       } catch (e) {
         p("retry");
         await sleep(delay * 8);
-        completion = await generateOpenAiUserChatCompletion(model, prompt);
+        completion = await generateOpenAiUserChatCompletion(
+          model,
+          prompt,
+          accountOpenAiApiKey
+        );
       }
     }
   }

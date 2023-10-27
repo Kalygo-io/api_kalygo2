@@ -18,6 +18,10 @@ import { saveToDb } from "./saveToDb";
 import { getOverlapSegment } from "../../../shared/getOverlapSegment";
 import { deductCostOfOpenAiOutputTokens } from "../../../shared/deductCostOfOpenAiOutputTokens";
 import { deductCostOfOpenAiInputTokens } from "../../../shared/deductCostOfOpenAiInputTokens";
+import { SupportedApiKeys } from "@prisma/client";
+import { GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
+import { secretsManagerClient } from "@/clients/aws_secrets_manager_client";
+import { OpenAI, generateAccountOpenAI } from "@/clients/openai_client";
 
 const tpmDelay = 60000;
 
@@ -40,6 +44,15 @@ export async function openAiSummarizeFileOverall(
     job.progress(0);
     // prettier-ignore
     const { account } = await guard_beforeRunningSummary(email, model);
+    const accountOpenAiApiKey = account?.AwsSecretsManagerApiKey.find((i) => {
+      return i.type === SupportedApiKeys.OPEN_AI_API_KEY;
+    });
+    // vvv fetch account OPEN_AI_API_KEY from AWS Secrets Manager vvv
+    const command = new GetSecretValueCommand({
+      SecretId: accountOpenAiApiKey?.secretId,
+    });
+    const secretsManagerResponse = await secretsManagerClient.send(command);
+    // ^^^ ^^^
     const encoder = getEncoderForModel(model);
     // prettier-ignore
     const fileToText: { text: string; originalName: string; } = await convertFileToTextFormat(file);
@@ -82,29 +95,45 @@ export async function openAiSummarizeFileOverall(
         tpmAccum = 0; // reset the TPM LIMIT
       }
       await guard_beforeCallingModel(email, model); // GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
-      await deductCostOfOpenAiInputTokens(
-        promptTokenCount,
-        model,
-        config,
-        account
-      );
-      console.log("calling OpenAI...");
-      const completion =
-        await generateOpenAiUserChatCompletionWithExponentialBackoff(
-          model as SupportedOpenAiModels,
-          prompt,
-          tpmDelay
+      let completion;
+      if (!accountOpenAiApiKey) {
+        // use static OpenAI client as account does NOT have an OPEN_AI_API_KEY
+        await deductCostOfOpenAiInputTokens(
+          promptTokenCount,
+          model,
+          config,
+          account
         );
+        console.log("calling OpenAI...");
+        completion =
+          await generateOpenAiUserChatCompletionWithExponentialBackoff(
+            model as SupportedOpenAiModels,
+            prompt,
+            tpmDelay,
+            OpenAI
+          );
+      } else {
+        // get OpenAI client with account OPEN_AI_API_KEY
+        completion =
+          await generateOpenAiUserChatCompletionWithExponentialBackoff(
+            model,
+            prompt,
+            tpmDelay,
+            generateAccountOpenAI(secretsManagerResponse?.SecretString!)
+          );
+      }
       let completionText: string =
         completion.data?.choices[0]?.message?.content || "No Content";
       p(`snippet of last OpenAI completion - '${completionText.slice(0, 16)}'`);
       const outputTokenCount = encoder.encode(completionText).length;
-      await deductCostOfOpenAiOutputTokens(
-        outputTokenCount,
-        model,
-        config,
-        account
-      );
+      if (!accountOpenAiApiKey) {
+        await deductCostOfOpenAiOutputTokens(
+          outputTokenCount,
+          model,
+          config,
+          account
+        );
+      }
       outputTokens += outputTokenCount; // track output tokens
       tpmAccum += outputTokenCount; // accumulate total tokens
       summaryForFile = completionText;
@@ -137,7 +166,6 @@ export async function openAiSummarizeFileOverall(
       // prettier-ignore
       const prompt = generateBulletPointsPromptPrefix({ length, language, }, summaryForFile); // TODO - handle scenario where summaryForFile exceeds context
       const promptTokenCount = encoder.encode(prompt).length;
-      deductCostOfOpenAiInputTokens(promptTokenCount, model, config, account);
       p("finalBulletPointsPromptTokenCount", promptTokenCount);
       inputTokens += promptTokenCount;
       tpmAccum += promptTokenCount;
@@ -146,23 +174,37 @@ export async function openAiSummarizeFileOverall(
         tpmAccum = 0;
       }
       await guard_beforeCallingModel(email, model);
-      const completion =
-        await generateOpenAiUserChatCompletionWithExponentialBackoff(
-          model as SupportedOpenAiModels,
-          prompt,
-          tpmDelay
-        );
+      let completion;
+      if (!accountOpenAiApiKey) {
+        // use static OpenAI client as account does NOT have an OPEN_AI_API_KEY
+        deductCostOfOpenAiInputTokens(promptTokenCount, model, config, account);
+        completion =
+          await generateOpenAiUserChatCompletionWithExponentialBackoff(
+            model as SupportedOpenAiModels,
+            prompt,
+            tpmDelay
+          );
+      } else {
+        completion =
+          await generateOpenAiUserChatCompletionWithExponentialBackoff(
+            model as SupportedOpenAiModels,
+            prompt,
+            tpmDelay
+          );
+      }
       let finalBulletPointsCompletionText =
         completion.data?.choices[0]?.message?.content || "ERROR: No Content";
       const outputTokenCount = encoder.encode(
         finalBulletPointsCompletionText
       ).length;
-      await deductCostOfOpenAiOutputTokens(
-        outputTokenCount,
-        model,
-        config,
-        account
-      );
+      if (!accountOpenAiApiKey) {
+        await deductCostOfOpenAiOutputTokens(
+          outputTokenCount,
+          model,
+          config,
+          account
+        );
+      }
       outputTokens += outputTokenCount; // track output tokens
       tpmAccum += outputTokenCount; // accumulate total tokens
       // prettier-ignore

@@ -15,6 +15,10 @@ import { deductCostOfOpenAiInputTokens } from "../../../shared/deductCostOfOpenA
 import { deductCostOfOpenAiOutputTokens } from "../../../shared/deductCostOfOpenAiOutputTokens";
 import { areChunksWithPromptPrefixValidForModelContext } from "@/utils/areChunksWithPromptPrefixValidForModelContext";
 import { makeChunksFitContext } from "./makeChunksFitContext";
+import { OpenAI, generateAccountOpenAI } from "@/clients/openai_client";
+import { SupportedApiKeys } from "@prisma/client";
+import { GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
+import { secretsManagerClient } from "@/clients/aws_secrets_manager_client";
 
 const tpmDelay = 60000;
 
@@ -38,6 +42,15 @@ export async function openAiSummarizeFileInChunks(
       customizations;
     job.progress(0);
     const { account } = await guard_beforeRunningSummary(email, model);
+    const accountOpenAiApiKey = account?.AwsSecretsManagerApiKey.find((i) => {
+      return i.type === SupportedApiKeys.OPEN_AI_API_KEY;
+    });
+    // vvv fetch account OPEN_AI_API_KEY from AWS Secrets Manager vvv
+    const command = new GetSecretValueCommand({
+      SecretId: accountOpenAiApiKey?.secretId,
+    });
+    const secretsManagerResponse = await secretsManagerClient.send(command);
+    // ^^^ ^^^
     const encoder = getEncoderForModel(model);
     const fileToText: { text: string; originalName: string } =
       await convertFileToTextFormat(file);
@@ -66,7 +79,7 @@ export async function openAiSummarizeFileInChunks(
       );
       chunks = newChunks;
     }
-    // WE HAVE THE FILE IN CHUNKS THAT DON'T EXCEED THE MODEL CONTEXT LIMIT
+    // WE NOW HAVE THE FILE IN CHUNKS THAT DON'T EXCEED THE MODEL CONTEXT LIMIT
     // SO WE LOOP OVER THE CHUNKS AND STORE THE SUMMARY OF EACH CHUNK
     let summarizedChunksOfFile: {
       chunk: number;
@@ -88,28 +101,44 @@ export async function openAiSummarizeFileInChunks(
       p(`calling OpenAI to summarize chunk ${i} of file ${originalNameOfFile}...`);
       lastChunkBeforeFailing = i;
       await guard_beforeCallingModel(email, model);
-      await deductCostOfOpenAiInputTokens(
-        promptTokenCount,
-        model,
-        config,
-        account
-      );
-      const completion =
-        await generateOpenAiUserChatCompletionWithExponentialBackoff(
+      let completion;
+      if (!accountOpenAiApiKey) {
+        // use static OpenAI client as account does NOT have an OPEN_AI_API_KEY
+        await deductCostOfOpenAiInputTokens(
+          promptTokenCount,
           model,
-          prompt,
-          tpmDelay
+          config,
+          account
         );
+        completion =
+          await generateOpenAiUserChatCompletionWithExponentialBackoff(
+            model,
+            prompt,
+            tpmDelay,
+            OpenAI
+          );
+      } else {
+        // get OpenAI client with account OPEN_AI_API_KEY
+        completion =
+          await generateOpenAiUserChatCompletionWithExponentialBackoff(
+            model,
+            prompt,
+            tpmDelay,
+            generateAccountOpenAI(secretsManagerResponse?.SecretString!)
+          );
+      }
       const completionText: string =
         completion.data?.choices[0]?.message?.content || "ERROR: No Content";
       p(`snippet of last OpenAI completion - '${completionText.slice(0, 16)}'`);
       const outputTokenCount = encoder.encode(completionText).length;
-      await deductCostOfOpenAiOutputTokens(
-        outputTokenCount,
-        model,
-        config,
-        account
-      );
+      if (!accountOpenAiApiKey) {
+        await deductCostOfOpenAiOutputTokens(
+          outputTokenCount,
+          model,
+          config,
+          account
+        );
+      }
       outputTokens += outputTokenCount; // track output tokens
       tpmAccum += outputTokenCount; // accumulate total tokens
       summarizedChunksOfFile.push({ chunk: i, chunkSummary: completionText });

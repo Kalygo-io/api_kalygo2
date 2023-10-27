@@ -16,6 +16,10 @@ import { deductCostOfOpenAiOutputTokens } from "../../../shared/deductCostOfOpen
 import { saveToDb } from "./saveToDb";
 import { breakOffMaxChunkForContext } from "./breakOffMaxChunkForContext";
 import { getOverlapSegment } from "../../../shared/getOverlapSegment";
+import { SupportedApiKeys } from "@prisma/client";
+import { GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
+import { secretsManagerClient } from "@/clients/aws_secrets_manager_client";
+import { OpenAI, generateAccountOpenAI } from "@/clients/openai_client";
 
 const tpmDelay = 60000;
 
@@ -35,6 +39,15 @@ export async function openAiSummarizeFilePerPage(
       customizations;
     job.progress(0);
     const { account } = await guard_beforeRunningSummary(email, model);
+    const accountOpenAiApiKey = account?.AwsSecretsManagerApiKey.find((i) => {
+      return i.type === SupportedApiKeys.OPEN_AI_API_KEY;
+    });
+    // vvv fetch account OPEN_AI_API_KEY from AWS Secrets Manager vvv
+    const command = new GetSecretValueCommand({
+      SecretId: accountOpenAiApiKey?.secretId,
+    });
+    const secretsManagerResponse = await secretsManagerClient.send(command);
+    // ^^^ ^^^
     const encoder = getEncoderForModel(model);
     let inputTokens = 0;
     let outputTokens = 0;
@@ -93,26 +106,41 @@ export async function openAiSummarizeFilePerPage(
           tpmAccum = 0; // reset the TPM LIMIT
         }
         await guard_beforeCallingModel(email, model);
-        // prettier-ignore
-        await deductCostOfOpenAiInputTokens(promptTokenCount, model, config, account);
-        p("call the A.I. model");
-        let completion =
-          await generateOpenAiUserChatCompletionWithExponentialBackoff(
-            model,
-            prompt,
-            tpmDelay
-          );
+        let completion;
+        if (!accountOpenAiApiKey) {
+          // use static OpenAI client as account does NOT have an OPEN_AI_API_KEY
+          // prettier-ignore
+          await deductCostOfOpenAiInputTokens(promptTokenCount, model, config, account);
+          p("call the A.I. model");
+          completion =
+            await generateOpenAiUserChatCompletionWithExponentialBackoff(
+              model,
+              prompt,
+              tpmDelay,
+              OpenAI
+            );
+        } else {
+          completion =
+            await generateOpenAiUserChatCompletionWithExponentialBackoff(
+              model,
+              prompt,
+              tpmDelay,
+              generateAccountOpenAI(secretsManagerResponse?.SecretString!)
+            );
+        }
         const completionText =
           completion.data?.choices[0]?.message?.content || "No Content";
         // prettier-ignore
         p(`snippet of last OpenAI completion - '${completionText.slice(0,16)}'`);
         const outputTokenCount = encoder.encode(completionText).length;
-        await deductCostOfOpenAiOutputTokens(
-          outputTokenCount,
-          model,
-          config,
-          account
-        );
+        if (!accountOpenAiApiKey) {
+          await deductCostOfOpenAiOutputTokens(
+            outputTokenCount,
+            model,
+            config,
+            account
+          );
+        }
         outputTokens += outputTokenCount; // track output tokens
         summariesForPartsOfFile.push(completionText);
         job.progress((page / pageCountOfFile) * 90);

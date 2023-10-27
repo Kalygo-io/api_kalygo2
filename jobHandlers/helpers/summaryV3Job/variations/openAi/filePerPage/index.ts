@@ -107,8 +107,17 @@ export async function openAiSummarizeFilePerPage(
         }
         await guard_beforeCallingModel(email, model);
         let completion;
-        if (!accountOpenAiApiKey) {
-          // use static OpenAI client as account does NOT have an OPEN_AI_API_KEY
+        if (accountOpenAiApiKey && secretsManagerResponse?.SecretString) {
+          console.log("Use account OPEN_AI_API_KEY");
+          completion =
+            await generateOpenAiUserChatCompletionWithExponentialBackoff(
+              model,
+              prompt,
+              tpmDelay,
+              generateAccountOpenAI(secretsManagerResponse?.SecretString!)
+            );
+        } else {
+          console.log("Default to use default OPEN_AI_API_KEY");
           // prettier-ignore
           await deductCostOfOpenAiInputTokens(promptTokenCount, model, config, account);
           p("call the A.I. model");
@@ -118,14 +127,6 @@ export async function openAiSummarizeFilePerPage(
               prompt,
               tpmDelay,
               OpenAI
-            );
-        } else {
-          completion =
-            await generateOpenAiUserChatCompletionWithExponentialBackoff(
-              model,
-              prompt,
-              tpmDelay,
-              generateAccountOpenAI(secretsManagerResponse?.SecretString!)
             );
         }
         const completionText =

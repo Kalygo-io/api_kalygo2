@@ -102,7 +102,16 @@ export async function openAiSummarizeFileInChunks(
       lastChunkBeforeFailing = i;
       await guard_beforeCallingModel(email, model);
       let completion;
-      if (!accountOpenAiApiKey) {
+      if (accountOpenAiApiKey && secretsManagerResponse?.SecretString) {
+        // get OpenAI client with account OPEN_AI_API_KEY
+        completion =
+          await generateOpenAiUserChatCompletionWithExponentialBackoff(
+            model,
+            prompt,
+            tpmDelay,
+            generateAccountOpenAI(secretsManagerResponse?.SecretString!)
+          );
+      } else {
         // use static OpenAI client as account does NOT have an OPEN_AI_API_KEY
         await deductCostOfOpenAiInputTokens(
           promptTokenCount,
@@ -116,15 +125,6 @@ export async function openAiSummarizeFileInChunks(
             prompt,
             tpmDelay,
             OpenAI
-          );
-      } else {
-        // get OpenAI client with account OPEN_AI_API_KEY
-        completion =
-          await generateOpenAiUserChatCompletionWithExponentialBackoff(
-            model,
-            prompt,
-            tpmDelay,
-            generateAccountOpenAI(secretsManagerResponse?.SecretString!)
           );
       }
       const completionText: string =

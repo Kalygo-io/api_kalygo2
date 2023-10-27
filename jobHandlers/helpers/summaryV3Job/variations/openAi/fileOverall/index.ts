@@ -96,7 +96,18 @@ export async function openAiSummarizeFileOverall(
       }
       await guard_beforeCallingModel(email, model); // GUARD AND CONFIRM THAT BALANCE WILL NOT GET OVERDRAWN
       let completion;
-      if (!accountOpenAiApiKey) {
+      if (accountOpenAiApiKey && secretsManagerResponse?.SecretString) {
+        console.log("Use account OPEN_AI_API_KEY");
+        // get OpenAI client with account OPEN_AI_API_KEY
+        completion =
+          await generateOpenAiUserChatCompletionWithExponentialBackoff(
+            model,
+            prompt,
+            tpmDelay,
+            generateAccountOpenAI(secretsManagerResponse?.SecretString!)
+          );
+      } else {
+        console.log("Default to use default OPEN_AI_API_KEY");
         // use static OpenAI client as account does NOT have an OPEN_AI_API_KEY
         await deductCostOfOpenAiInputTokens(
           promptTokenCount,
@@ -111,15 +122,6 @@ export async function openAiSummarizeFileOverall(
             prompt,
             tpmDelay,
             OpenAI
-          );
-      } else {
-        // get OpenAI client with account OPEN_AI_API_KEY
-        completion =
-          await generateOpenAiUserChatCompletionWithExponentialBackoff(
-            model,
-            prompt,
-            tpmDelay,
-            generateAccountOpenAI(secretsManagerResponse?.SecretString!)
           );
       }
       let completionText: string =
@@ -175,21 +177,25 @@ export async function openAiSummarizeFileOverall(
       }
       await guard_beforeCallingModel(email, model);
       let completion;
-      if (!accountOpenAiApiKey) {
+      if (accountOpenAiApiKey && secretsManagerResponse?.SecretString) {
+        console.log("Use account OPEN_AI_API_KEY");
+        completion =
+          await generateOpenAiUserChatCompletionWithExponentialBackoff(
+            model as SupportedOpenAiModels,
+            prompt,
+            tpmDelay,
+            generateAccountOpenAI(secretsManagerResponse?.SecretString!)
+          );
+      } else {
+        console.log("Default to use default OPEN_AI_API_KEY");
         // use static OpenAI client as account does NOT have an OPEN_AI_API_KEY
         deductCostOfOpenAiInputTokens(promptTokenCount, model, config, account);
         completion =
           await generateOpenAiUserChatCompletionWithExponentialBackoff(
             model as SupportedOpenAiModels,
             prompt,
-            tpmDelay
-          );
-      } else {
-        completion =
-          await generateOpenAiUserChatCompletionWithExponentialBackoff(
-            model as SupportedOpenAiModels,
-            prompt,
-            tpmDelay
+            tpmDelay,
+            OpenAI
           );
       }
       let finalBulletPointsCompletionText =

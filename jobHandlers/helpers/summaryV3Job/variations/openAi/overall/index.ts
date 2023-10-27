@@ -110,7 +110,17 @@ export async function openAiSummarizeFilesOverall(
         }
         await guard_beforeCallingModel(email, model);
         let completion;
-        if (!accountOpenAiApiKey) {
+        if (accountOpenAiApiKey && secretsManagerResponse?.SecretString) {
+          console.log("Use account OpenAI client");
+          completion =
+            await generateOpenAiUserChatCompletionWithExponentialBackoff(
+              model,
+              prompt,
+              tpmDelay,
+              generateAccountOpenAI(secretsManagerResponse?.SecretString!)
+            );
+        } else {
+          console.log("Use static OpenAI client");
           // use static OpenAI client as account does NOT have an OPEN_AI_API_KEY
           await deductCostOfOpenAiInputTokens(
             promptTokenCount,
@@ -124,14 +134,6 @@ export async function openAiSummarizeFilesOverall(
               prompt,
               tpmDelay,
               OpenAI
-            );
-        } else {
-          completion =
-            await generateOpenAiUserChatCompletionWithExponentialBackoff(
-              model,
-              prompt,
-              tpmDelay,
-              generateAccountOpenAI(secretsManagerResponse?.SecretString!)
             );
         }
         const completionText =
@@ -225,9 +227,18 @@ export async function openAiSummarizeFilesOverall(
       await guard_beforeCallingModel(email, model);
 
       let completion;
-      if (!accountOpenAiApiKey) {
+      if (accountOpenAiApiKey && secretsManagerResponse?.SecretString) {
+        console.log("Use account OpenAI client");
+        completion =
+          await generateOpenAiUserChatCompletionWithExponentialBackoff(
+            model,
+            finalPrompt,
+            tpmDelay,
+            generateAccountOpenAI(secretsManagerResponse?.SecretString!)
+          );
+      } else {
+        console.log("Use static OpenAI client");
         // use static OpenAI client as account does NOT have an OPEN_AI_API_KEY
-
         await deductCostOfOpenAiInputTokens(
           finalPromptTokenCount,
           model,
@@ -240,14 +251,6 @@ export async function openAiSummarizeFilesOverall(
             finalPrompt,
             tpmDelay,
             OpenAI
-          );
-      } else {
-        completion =
-          await generateOpenAiUserChatCompletionWithExponentialBackoff(
-            model,
-            finalPrompt,
-            tpmDelay,
-            generateAccountOpenAI(secretsManagerResponse?.SecretString!)
           );
       }
       const completionText =

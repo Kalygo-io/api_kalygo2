@@ -37,7 +37,9 @@ export async function addApiKey(
           type: a.type,
         },
       });
-      if (referenceToSecret && account) {
+      if (referenceToSecret && account && a) {
+        console.log("referenceToSecret && account", a);
+
         await prisma.awsSecretsManagerApiKey.updateMany({
           where: {
             accountId: account?.id!,
@@ -54,6 +56,7 @@ export async function addApiKey(
         });
         await secretsManagerClient.send(command);
       } else {
+        console.log("referenceToSecret && account", a);
         // Create the API key in AWS Secrets Manager, and then store a reference to it in the DB
         const apiKeyId = v4();
         // prettier-ignore

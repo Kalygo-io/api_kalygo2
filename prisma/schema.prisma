@@ -72,7 +72,7 @@ model AwsSecretsManagerApiKey {
   id        Int              @id @default(autoincrement())
   Account   Account          @relation(fields: [accountId], references: [id])
   accountId Int
-  secretId  String           @default("")
+  secretId  String           @unique @default("")
   preview   String           @default("")
   type      SupportedApiKeys
 

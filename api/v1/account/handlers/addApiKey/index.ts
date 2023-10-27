@@ -30,6 +30,11 @@ export async function addApiKey(
         email: req.user.email,
       },
     });
+
+    if (accountApiKeys.length > 3) {
+      res.status(400).send();
+    }
+
     for (let a of accountApiKeys) {
       const referenceToSecret = await prisma.awsSecretsManagerApiKey.findFirst({
         where: {

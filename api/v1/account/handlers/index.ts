@@ -24,10 +24,12 @@ import { downloadContextDocument } from "./downloadContextDocument";
 import { downloadFile } from "./downloadFile";
 import { deleteFile } from "./deleteFile";
 import { addApiKey } from "./addApiKey";
+import { deleteApiKey } from "./deleteApiKey";
 import { getApiKey } from "./getApiKey";
 
 export {
   addApiKey,
+  deleteApiKey,
   getApiKey,
   buyCredits,
   createStripeAccount,

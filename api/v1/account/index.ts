@@ -23,6 +23,7 @@ import {
   deleteFile,
   getReferralCodes,
   addApiKey,
+  deleteApiKey,
   getApiKey,
   getBatchOfJobs,
 } from "./handlers";
@@ -40,6 +41,7 @@ router
   .get(authenticateToken, createStripeAccount);
 
 router.route("/add-api-key").post([authenticateToken], addApiKey);
+router.route("/delete-api-key").delete([authenticateToken], deleteApiKey);
 // router.route("/get-api-key").get(getApiKey);
 
 router.route("/add-stripe-card").post(authenticateToken, addStripeCard);

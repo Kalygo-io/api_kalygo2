@@ -20,6 +20,7 @@ import { Router } from "express";
 import canCallerPushToQueue from "@/middleware/canCallerPushToQueue";
 
 import { isCustomRequestPublic } from "@middleware/index";
+import { isCustomRequestV3Public } from "@/middleware/isCustomRequestV3Public";
 
 const router = Router();
 
@@ -70,7 +71,7 @@ router
   .get([authenticateToken], getCustomRequestV3s);
 router
   .route("/get-public-custom-request-v3/:id")
-  .get([isCustomRequestPublic], getPublicCustomRequestV3);
+  .get([isCustomRequestV3Public], getPublicCustomRequestV3);
 router
   .route("/rate-custom-request-v3/:id")
   .post([authenticateToken], rateCustomRequestV3);

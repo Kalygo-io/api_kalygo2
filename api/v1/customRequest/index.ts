@@ -66,7 +66,7 @@ router
   .route("/custom-request-v3/:id")
   .get([authenticateToken], getCustomRequestV3);
 router
-  .route("/custom-request-v3s")
+  .route("/custom-requests-v3")
   .get([authenticateToken], getCustomRequestV3s);
 router
   .route("/get-public-custom-request-v3/:id")

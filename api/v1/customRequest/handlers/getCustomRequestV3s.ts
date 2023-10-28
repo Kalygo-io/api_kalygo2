@@ -19,7 +19,7 @@ export async function getCustomRequestV3s(
     console.log("account", account);
     console.log("req.params.id", req.params.id);
 
-    const customRequests = await prisma.customRequest.findMany({
+    const customRequestV3 = await prisma.customRequestV3.findMany({
       orderBy: [
         {
           createdAt: "desc",
@@ -32,10 +32,10 @@ export async function getCustomRequestV3s(
     });
 
     console.log("account", account);
-    console.log("customRequests", customRequests);
+    console.log("customRequestV3", customRequestV3);
 
-    if (customRequests) {
-      res.status(200).json(customRequests);
+    if (customRequestV3) {
+      res.status(200).json(customRequestV3);
     } else {
       res.status(404).send();
     }

@@ -13,7 +13,7 @@ export async function rateCustomRequestV3(
   try {
     console.log("POST rateCustomRequestV3");
 
-    const customRequestId = req.params.id;
+    const customRequestV3Id = req.params.id;
     const { rating, ratingMax } = req.body;
 
     // @ts-ignore
@@ -32,7 +32,7 @@ export async function rateCustomRequestV3(
     // -v-v- GUARD IF NO ACCOUNT FOUND -v-v-
     if (
       !account?.CustomRequestV3?.find((el) => {
-        return el.id === Number.parseInt(customRequestId);
+        return el.id === Number.parseInt(customRequestV3Id);
       })
     ) {
       res.status(401).send();
@@ -42,7 +42,7 @@ export async function rateCustomRequestV3(
     const ratingRecord = await prisma.rating.findFirst({
       where: {
         accountId: account!.id,
-        customRequestV3Id: Number.parseInt(customRequestId),
+        customRequestV3Id: Number.parseInt(customRequestV3Id),
       },
     });
 
@@ -60,7 +60,7 @@ export async function rateCustomRequestV3(
       await prisma.rating.create({
         data: {
           accountId: account!.id,
-          customRequestV3Id: Number.parseInt(customRequestId),
+          customRequestV3Id: Number.parseInt(customRequestV3Id),
           ratingType: "CustomRequestV3",
           rating,
           ratingMax,

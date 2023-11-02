@@ -18,6 +18,7 @@ import prompt from "./prompt";
 import accessGroup from "./accessGroup";
 import referral from "./referral";
 import ocr from "./ocr";
+import openLaw from "./openLaw";
 
 const router = express.Router();
 
@@ -33,6 +34,7 @@ router.use("/feedback", feedback);
 router.use("/referral", referral);
 router.use("/fun", fun);
 router.use("/ocr", ocr);
+router.use("/openLaw", openLaw);
 
 router.use(customRequest);
 router.use(download);

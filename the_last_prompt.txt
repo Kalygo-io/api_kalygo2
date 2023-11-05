@@ -1,0 +1,339 @@
+PROMPT:
+What is Yasmine Greenfelder's number?
+
+CONTEXT:
+ 
+Company: Franecki Group
+
+CONTACT #187:
+Full name: Jimmy Fay
+First name: Jimmy
+Last name: Fay
+Data of birth: Mon Nov 28 2022 22:09:20 GMT-0500 (Eastern Standard Time)
+Primary email address: Zella_Haley-Lindgren26@yahoo.com
+Primary phone number: 465.741.0675 x3566
+Company: Jenkins, Kessler and Toy
+
+CONTACT #188:
+Full name: Ryan Connelly
+First name: Ryan
+Last name: Connelly
+Data of birth: Wed Nov 22 2023 09:43:06 GMT-0500 (Eastern Standard Time)
+Primary email address: Minerva_Carter@hotmail.com
+Primary phone number: 519-930-8773 x35305
+Company: Conn, Marquardt and Wunsch
+
+CONTACT #189:
+Full name: Amy Heidenreich
+First name: Amy
+Last name: Heidenreich
+Data of birth: Fri Jun 07 2024 13:32:07 GMT-0400 (Eastern Daylight Time)
+Primary email address: Annette71@gmail.com
+Primary phone number: (643) 305-7503 x486
+Company: Barton - Nolan
+
+CONTACT #190:
+Full name: Eve Abernathy
+First name: Eve
+Last name: Abernathy
+Data of birth: Wed Aug 16 2023 22:15:27 GMT-0400 (Eastern Daylight Time)
+Primary email address: Dessie_Wisozk@yahoo.com
+Primary phone number: 882.760.6808 x81123
+Company: DuBuque Inc
+
+CONTACT #191:
+Full name: Irma White
+First name: Irma
+Last name: White
+Data of birth: Mon Sep 18 2023 19:55:23 GMT-0400 (Eastern Daylight Time)
+Primary email address: Shyanne.Pollich@hotmail.com
+Primary phone number: 815-230-0678 x817
+Company: Cronin - Kertzmann
+
+CONTACT #192:
+Full name: Jailyn O'Conner
+First name: Jailyn
+Last name: O'Conner
+Data of birth: Fri Nov 03 2023 10:56:46 GMT-0400 (Eastern Daylight Time)
+Primary email address: Haley_Goldner2@yahoo.com
+Primary phone number: (704) 526-7887
+Company: Mills - Abernathy
+
+CONTACT #193:
+Full name: Nellie Lowe
+First name: Nellie
+Last name: Lowe
+Data of birth: Tue Mar 26 2024 08:19:19 GMT-0400 (Eastern Daylight Time)
+Primary email address: Carlee.Kuhic@yahoo.com
+Primary phone number: 951-523-6310 x104
+Company: Ebert - Ebert
+
+CONTACT #194:
+Full name: Christelle Ledner
+First name: Christelle
+Last name: Ledner
+Data of birth: Wed Oct 11 2023 06:12:20 GMT-0400 (Eastern Daylight Time)
+Primary email address: Vincent74@yahoo.com
+Primary phone number: 1-671-632-9677 x81730
+Company: Bradtke and Sons
+
+CONTACT #195:
+Full name: Willow Hayes
+First name: Willow
+Last name: Hayes
+Data of birth: Sun May 05 2024 11:24:18 GMT-0400 (Eastern Daylight Time)
+Primary email address: Tremayne.Ebert65@gmail.com
+Primary phone number: 1-308-210-3941
+Company: Harvey - Ruecker
+
+CONTACT #196:
+Full name: Kane Jerde
+First name: Kane
+Last name: Jerde
+Data of birth: Mon Aug 14 2023 14:19:50 GMT-0400 (Eastern Daylight Time)
+Primary email address: Ulices.Skiles8@hotmail.com
+Primary phone number: (911) 291-0040 x097
+Company: McKenzie, Lemke and Stoltenberg
+
+CONTACT #197:
+Full name: Verla Dicki
+First name: Verla
+Last name: Dicki
+Data of birth: Thu Nov 23 2023 00:36:09 GMT-0500 (Eastern Standard Time)
+Primary email address: Hayden3@yahoo.com
+Primary phone number: (474) 246-1249 x047
+Company: Leuschke - Carter
+
+CONTACT #198:
+Full name: Nasir Towne
+First name: Nasir
+Last name: Towne
+Data of birth: Sat Nov 05 2022 11:57:16 GMT-0400 (Eastern Daylight Time)
+Primary email address: Viviane_DuBuque@hotmail.com
+Primary phone number: 758-240-5325
+Company: Brown - Dickinson
+
+CONTACT #199:
+Full name: Erwin Auer
+First name: Erwin
+Last name: Auer
+Data of birth: Tue Jul 09 2024 03:01:19 GMT-0400 (Eastern Daylight Time)
+Primary email address: Darryl.Hessel@hotmail.com
+Primary phone number: 1-321-939-7668 x420
+Company: Corkery Group
+
+CONTACT #200:
+Full name: Lois Boehm
+First name: Lois
+Last name: Boehm
+Data of birth: Wed Aug 14 2024 09:32:20 GMT-0400 (Eastern Daylight Time)
+Primary email address: Gardner14@hotmail.com
+Primary phone number: 1-285-324-5255 x2096
+Company: Witting, Champlin and Mante
+
+CONTACT #201:
+Full name: German Lindgren
+First name: German
+Last name: Lindgren
+Data of birth: Fri Oct 13 2023 01:20:53 GMT-0400 (Eastern Daylight Time)
+Primary email address: Owen.Cummings0@yahoo.com
+Primary phone number: 969-391-1710
+Company: Bahringer Group
+
+CONTACT #202:
+Full name: Minnie Koss
+First name: Minnie
+Last name: Koss
+Data of birth: Mon Nov 13 2023 04:45:41 GMT-0500 (Eastern Standard Time)
+Primary email address: Deon.Jaskolski27@gmail.com
+Primary phone number: 394-722-9328 x05214
+Company: McKenzie Group
+
+CONTACT #203:
+Full name: Margie Gislason
+First name: Margie
+Last name: Gislason
+Data of birth: Thu May 30 2024 20:19:16 GMT-0400 (Eastern Daylight Time)
+Primary email address: Elizabeth_Fay23@gmail.com
+Primary phone number: 526.204.4604 x48898
+Company: Klocko - Hilll
+
+CONTACT #204:
+Full name: Aracely Sporer
+First name: Aracely
+Last name: Sporer
+Data of birth: Thu May 02 2024 01:38:38 GMT-0400 (Eastern Daylight Time)
+Primary email address: Skylar75@hotmail.com
+Primary phone number: 1-607-218-7447 x6572
+Company: Hegmann Inc
+
+CONTACT #205:
+Full name: Emmie Kiehn
+First name: Emmie
+Last name: Kiehn
+Data of birth: Sat Jul 29 2023 06:29:55 GMT-0400 (Eastern Daylight Time)
+Primary email address: Riley56@gmail.com
+Primary phone number: 209-694-0996 x462
+Company: Cruickshank - Thompson
+
+CONTACT #206:
+Full name: Kip Fisher
+First name: Kip
+Last name: Fisher
+Data of birth: Thu Aug 15 2024 03:14:31 GMT-0400 (Eastern Daylight Time)
+Primary email address: Billy.Sanford2@hotmail.com
+Primary phone number: 1-904-897-5689 x86972
+Company: Reichert, Becker and Moen
+
+CONTACT #207:
+Full name: Kody Kulas
+First name: Kody
+Last name: Kulas
+Data of birth: Mon Nov 28 2022 22:43:42 GMT-0500 (Eastern Standard Time)
+Primary email address: Daphne.Bartoletti48@hotmail.com
+Primary phone number: 986-411-1617 x715
+Company: Boehm, O'Kon and Gislason
+
+CONTACT #208:
+Full name: Dahlia Jerde
+First name: Dahlia
+Last name: Jerde
+Data of birth: Mon Aug 05 2024 19:41:27 GMT-0400 (Eastern Daylight Time)
+Primary email address: Simone.Moen30@yahoo.com
+Primary phone number: 221.581.3644 x132
+Company: Ward - Rogahn
+
+CONTACT #209:
+Full name: Earnestine Goldner
+First name: Earnestine
+Last name: Goldner
+Data of birth: Fri May 17 2024 00:56:01 GMT-0400 (Eastern Daylight Time)
+Primary email address: Hermann35@gmail.com
+Primary phone number: 1-920-431-0064 x80392
+Company: Altenwerth, Cummerata and Howell
+
+CONTACT #210:
+Full name: Dessie Fadel
+First name: Dessie
+Last name: Fadel
+Data of birth: Sun Mar 12 2023 14:40:34 GMT-0400 (Eastern Daylight Time)
+Primary email address: Gregory48@gmail.com
+Primary phone number: 1-563-695-1046 x851
+Company: Hettinger, Davis and Miller
+
+CONTACT #211:
+Full name: Krystal Jacobson
+First name: Krystal
+Last name: Jacobson
+Data of birth: Sun Apr 30 2023 06:21:19 GMT-0400 (Eastern Daylight Time)
+Primary email address: Jerrod_Reilly-Schuster15@hotmail.com
+Primary phone number: 821-448-4211
+Company: Koepp Inc
+
+CONTACT #212:
+Full name: Mollie Prosacco
+First name: Mollie
+Last name: Prosacco
+Data of birth: Sun Dec 25 2022 20:22:39 GMT-0500 (Eastern Standard Time)
+Primary email address: Elinor_Sawayn16@gmail.com
+Primary phone number: (448) 868-4227 x19090
+Company: Wintheiser - Stracke
+
+CONTACT #213:
+Full name: Nella Wilkinson
+First name: Nella
+Last name: Wilkinson
+Data of birth: Tue Jun 20 2023 15:02:10 GMT-0400 (Eastern Daylight Time)
+Primary email address: Alexandre.Kuvalis@gmail.com
+Primary phone number: (513) 404-6975 x887
+Company: Beier - Hegmann
+
+CONTACT #214:
+Full name: Margie Schinner
+First name: Margie
+Last name: Schinner
+Data of birth: Mon Aug 07 2023 18:13:08 GMT-0400 (Eastern Daylight Time)
+Primary email address: Freida_Jerde@yahoo.com
+Primary phone number: 1-785-448-0128
+Company: Mitchell LLC
+
+CONTACT #215:
+Full name: Jimmie Herman
+First name: Jimmie
+Last name: Herman
+Data of birth: Fri Feb 10 2023 06:34:53 GMT-0500 (Eastern Standard Time)
+Primary email address: Jarod_Haag91@hotmail.com
+Primary phone number: 1-673-522-2777 x066
+Company: Dibbert, Kerluke and Bednar
+
+CONTACT #216:
+Full name: Annamarie Beier
+First name: Annamarie
+Last name: Beier
+Data of birth: Tue Jul 04 2023 19:51:19 GMT-0400 (Eastern Daylight Time)
+Primary email address: Santa_Metz47@gmail.com
+Primary phone number: 705-489-4287 x848
+Company: Bode, Sipes and Bernier
+
+CONTACT #217:
+Full name: Adelia Howell
+First name: Adelia
+Last name: Howell
+Data of birth: Thu Mar 02 2023 22:42:12 GMT-0500 (Eastern Standard Time)
+Primary email address: Gillian_Bechtelar51@gmail.com
+Primary phone number: 430.658.1260 x8143
+Company: Schiller - Stoltenberg
+
+CONTACT #218:
+Full name: Jeanette Lehner
+First name: Jeanette
+Last name: Lehner
+Data of birth: Mon Apr 15 2024 07:37:09 GMT-0400 (Eastern Daylight Time)
+Primary email address: Carson_Mitchell8@yahoo.com
+Primary phone number: (624) 261-5273 x1107
+Company: Schoen, Brakus and Daniel
+
+CONTACT #219:
+Full name: Zoe West
+First name: Zoe
+Last name: West
+Data of birth: Thu Jan 11 2024 00:11:39 GMT-0500 (Eastern Standard Time)
+Primary email address: Cameron27@hotmail.com
+Primary phone number: 766.637.7304 x752
+Company: Nicolas and Sons
+
+CONTACT #220:
+Full name: Yazmin Watsica
+First name: Yazmin
+Last name: Watsica
+Data of birth: Sat Oct 05 2024 02:33:57 GMT-0400 (Eastern Daylight Time)
+Primary email address: Loyal_Labadie25@hotmail.com
+Primary phone number: 986.923.3101
+Company: Ryan Group
+
+CONTACT #221:
+Full name: Paula Murphy
+First name: Paula
+Last name: Murphy
+Data of birth: Tue Mar 19 2024 20:20:06 GMT-0400 (Eastern Daylight Time)
+Primary email address: Jess_Carter@gmail.com
+Primary phone number: 1-814-751-7718 x871
+Company: McGlynn - Stokes
+
+CONTACT #222:
+Full name: Yoshiko Denesik
+First name: Yoshiko
+Last name: Denesik
+Data of birth: Tue May 14 2024 18:04:21 GMT-0400 (Eastern Daylight Time)
+Primary email address: Alyce.Altenwerth69@gmail.com
+Primary phone number: 226-439-0991 x63080
+Company: Conroy, Barrows and Bergnaum
+
+CONTACT #223:
+Full name: Kiley Legros
+First name: Kiley
+Last name: Legros
+Data of birth: Tue Jun 25 2024 18:48:52 GMT-0400 (Eastern Daylight Time)
+Primary email address: Theresa_Collins@hotmail.com
+Primary phone number: (593) 692-4211 x957
+Company: Hane - Durgan

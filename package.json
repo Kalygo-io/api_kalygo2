@@ -25,7 +25,9 @@
     "deleteAccount": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/deleteAccount",
     "splitBySpace": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/splitBySpace",
     "encodeText": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/encodeText",
-    "fixModeColumn": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/copySummaryModeToScanModeColumn"
+    "fixModeColumn": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/copySummaryModeToScanModeColumn",
+    "convertJsonToFormattedTxt": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/convertJsonToFormattedTxt",
+    "mockClioContacts": "ts-node -r tsconfig-paths/register --project tsconfig.json scripts/mockClioContacts"
   },
   "repository": {
     "type": "git",
@@ -58,7 +60,6 @@
     "@google-cloud/documentai": "^8.0.1",
     "@google-cloud/translate": "^7.2.2",
     "@prisma/client": "^4.14.0",
-    "@types/express-serve-static-core": "^4.17.35",
     "argon2": "^0.30.3",
     "bull": "^4.10.4",
     "chromadb": "^1.5.2",
@@ -96,10 +97,12 @@
     "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.2.0",
     "@types/bull": "^4.10.0",
     "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
+    "@types/express-serve-static-core": "^4.17.35",
     "@types/jsonwebtoken": "^9.0.2",
     "@types/lodash.get": "^4.4.7",
     "@types/lodash.pick": "^4.4.7",

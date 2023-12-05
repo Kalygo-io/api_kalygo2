@@ -1,0 +1,27 @@
+# Reboot steps
+
+- EC2 > Instances > Instance State > Reboot instance
+- Tested redeploying app
+  - ansible-playbook --inventory inventory.prod --key-file "./*.pem" cicd.prod.yml
+- But Postgres needs to be restarted
+  - sudo systemctl status postgresql # showed `inactive (dead)`
+  - sudo systemctl start postgresql # for starting postgresql
+  - sudo systemctl enable postgresql # for marking postgresql for autostart on reboot √
+- docker start kalygo-redis-queue # restart Redis
+- ansible-playbook --inventory inventory.prod --key-file "./*.pem" cicd.prod.yml # restarted but still not working
+- Now looked at the ALB in the EC2 console
+- Had to restart nginx
+  - sudo systemctl status nginx.service
+  - sudo systemctl start nginx.service
+  - sudo systemctl status nginx.service
+  - sudo systemctl enable nginx.service
+  - sudo systemctl status nginx.service
+
+- AND IT WORKED!
+
+# Troubleshooting what were the system logs around the time of crashing
+
+- sudo journalctl --since "2023-12-05 00:00:00" --until "2023-12-05 04:00:00"
+- pm2 logs --err
+- date # to find timezone of machine
+- sudo journalctl --since "2023-12-04 00:00:00"

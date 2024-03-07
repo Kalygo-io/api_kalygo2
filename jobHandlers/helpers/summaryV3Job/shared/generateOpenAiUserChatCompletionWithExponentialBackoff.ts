@@ -12,6 +12,7 @@ export async function generateOpenAiUserChatCompletionWithExponentialBackoff(
   delay: number,
   accountOpenAiApiKey: OpenAIApi = OpenAI
 ) {
+  p("generateOpenAiUserChatCompletionWithExponentialBackoff");
   p("call the A.I. model");
   console.log("model", model);
   console.log("prompt.length", prompt.length);

@@ -57,3 +57,7 @@ npx prisma migrate dev
 ## Setting up an ADMIN role
 
 INSERT INTO "Role" ("type", "accountId", "createdAt") VALUES ('ADMIN', 105, NOW());
+
+##
+
+GRANT CREATE, USAGE, UPDATE ON SCHEMA public TO kalygo;

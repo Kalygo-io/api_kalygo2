@@ -30,6 +30,7 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
       data: {
         email,
         passwordHash,
+        emailVerified: true,
         emailVerificationToken,
         referralCode: referralCode || "",
       },

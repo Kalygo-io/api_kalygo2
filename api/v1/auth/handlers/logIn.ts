@@ -32,7 +32,7 @@ export async function logIn(
       },
     });
 
-    console.log("account", account);
+    // console.log("account", account);
 
     if (account) {
       const { passwordHash } = account;

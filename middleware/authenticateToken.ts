@@ -11,12 +11,12 @@ export default function authenticateToken(
   console.log("req.cookies", req.cookies);
   console.log("req.headers", req.headers);
 
-  // const jwtCookie = req.cookies["jwt"];
-  // const token = jwtCookie;
+  const jwtCookie = req.cookies["jwt"];
+  const authHeaderCookie = req.headers?.authorization?.split(" ")[1];
 
-  const token = req.headers?.authorization?.split(" ")[1];
+  if (jwtCookie == null && authHeaderCookie == null) return res.sendStatus(401);
 
-  if (token == null) return res.sendStatus(401);
+  const token = jwtCookie || authHeaderCookie;
 
   jwt.verify(token, process.env.JWT_SECRET!, (err: any, user: any) => {
     if (err) {

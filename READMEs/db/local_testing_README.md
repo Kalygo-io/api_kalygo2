@@ -10,7 +10,7 @@ open -a Docker
 - docker run --name kalygo-test -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 postgres
 - docker ps
 
-- docker run -it --rm postgres psql -h 172.17.0.2 -U postgres √
+- docker run -it --rm postgres psql -h 172.17.0.1 -U postgres √
 
 ```
     in sql:
@@ -60,4 +60,4 @@ INSERT INTO "Role" ("type", "accountId", "createdAt") VALUES ('ADMIN', 105, NOW(
 
 ##
 
-GRANT CREATE, USAGE, UPDATE ON SCHEMA public TO kalygo;
+GRANT CREATE, USAGE ON SCHEMA public TO kalygo;

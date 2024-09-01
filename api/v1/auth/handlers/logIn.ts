@@ -50,7 +50,7 @@ export async function logIn(
 
         console.log("roles for accessToken", roles);
 
-        const token = generateAccessToken(email, roles);
+        const token = generateAccessToken(email, account.id);
 
         res
           .status(200)

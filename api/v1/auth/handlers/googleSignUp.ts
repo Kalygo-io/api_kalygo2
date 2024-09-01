@@ -63,7 +63,7 @@ export async function googleSignUp(
         },
       });
 
-      const jwt = generateAccessToken(email, [RoleTypes.USER]);
+      const jwt = generateAccessToken(email, account.id);
       res
         .status(200)
         .cookie("jwt", jwt, {

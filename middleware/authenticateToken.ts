@@ -8,9 +8,6 @@ export default function authenticateToken(
 ) {
   console.log("authenticating !!! token...");
 
-  console.log("req.cookies", req.cookies);
-  console.log("req.headers", req.headers);
-
   const jwtCookie = req.cookies["jwt"];
   const authHeaderCookie = req.headers?.authorization?.split(" ")[1];
 

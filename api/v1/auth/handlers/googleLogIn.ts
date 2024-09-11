@@ -38,7 +38,7 @@ export async function googleLogin(
         console.log("after recording login");
 
         const roles = account.Roles.map((role) => role.type);
-        const jwt = generateAccessToken(email, account.id);
+        const jwt = generateAccessToken(email, roles);
         res
           .status(200)
           .cookie("jwt", jwt, {

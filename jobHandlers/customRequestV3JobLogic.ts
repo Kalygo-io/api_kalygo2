@@ -7,6 +7,7 @@ import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
 import { CustomRequestV3OpenAiCustomizations } from "@/types/CustomRequestV3OpenAiCustomizations";
 import { CustomRequestV3ReplicateCustomizations } from "@/types/CustomRequestV3ReplicateCustomizations";
 import { CustomRequestV3Params } from "@/types/CustomRequestV3Params";
+import { supportedOpenAiModels } from "@/config/models";
 
 export async function customRequestV3JobLogic(
   params: CustomRequestV3Params,
@@ -30,7 +31,12 @@ export async function customRequestV3JobLogic(
       return;
     }
 
-    if (["gpt-3.5-turbo", "gpt-3.5-turbo-16k", "gpt-4"].includes(model)) {
+    if (
+      [
+        ...supportedOpenAiModels,
+        "meta/llama-2-70b-chat:02e509c789964a7ea8736978a43525956ef40397be9033abf9fd2badfe68c9e3",
+      ].includes(model)
+    ) {
       switch (customizations.scanMode) {
         case ScanningMode.FILE_IN_CHUNKS:
           openAiFileInChunks(

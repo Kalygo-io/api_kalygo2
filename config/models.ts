@@ -4,7 +4,8 @@ import { SupportedReplicateModels } from "@/types/SupportedReplicateModels";
 export const supportedOpenAiModels: SupportedOpenAiModels[] = [
   "gpt-3.5-turbo",
   "gpt-3.5-turbo-16k",
-  "gpt-4",
+  "gpt-4o",
+  "gpt-4o-mini",
 ];
 
 export const supportedReplicateModels: SupportedReplicateModels[] = [

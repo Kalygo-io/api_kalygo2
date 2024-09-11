@@ -36,7 +36,8 @@ export async function guard_beforeRunningSummary(
         "meta/llama-2-70b-chat:02e509c789964a7ea8736978a43525956ef40397be9033abf9fd2badfe68c9e3" ||
         model === "gpt-3.5-turbo-16k" ||
         model === "gpt-3.5-turbo" ||
-        model === "gpt-4") &&
+        model === "gpt-4o" ||
+        model === "gpt-4o-mini") &&
       (account?.UsageCredits?.amount! >
         config.models[model].minimumCreditsRequired ||
         (account?.SummaryCredits?.amount! || 0) > 0)) ||

@@ -22,7 +22,8 @@ export async function guard_beforeCallingModel(
   if (
     ((model === "gpt-3.5-turbo" ||
       model === "gpt-3.5-turbo-16k" ||
-      model === "gpt-4") &&
+      model === "gpt-4o-mini" ||
+      model === "gpt-4o") &&
       account?.UsageCredits?.amount! >
         config.models[model].minimumCreditsRequired) ||
     (account?.CustomRequestCredits?.amount! || 0) > 0

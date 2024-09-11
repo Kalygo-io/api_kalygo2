@@ -25,7 +25,7 @@ router.route("/is-admin").get(authenticateToken, isAdmin);
 router.route("/log-in").post(logIn);
 router.route("/sign-up").post(signUp);
 router.route("/subscription-sign-up").post(subscriptionSignUp);
-router.route("/sign-out").delete(authenticateToken, signOut);
+router.route("/sign-out").delete(signOut);
 router.route("/request-password-reset").post(requestPasswordReset);
 router.route("/google-sign-up").post(googleSignUp);
 router.route("/google-log-in").post(googleLogin);

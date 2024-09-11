@@ -57,20 +57,37 @@ export default {
         },
       },
     },
-    "gpt-4": {
-      minimumCreditsRequired: 80,
-      context: 8000,
-      tpm: 10000,
+    "gpt-4o": {
+      minimumCreditsRequired: 10,
+      context: 128000,
+      tpm: 30000,
       rpm: -1, // TODO
       pricing: {
-        markUp: 1.5,
+        markUp: 1.4,
         input: {
-          rate: 0.03, // USD
-          perTokens: 1000,
+          rate: 5.0, // USD
+          perTokens: 1000000,
         },
         output: {
-          rate: 0.06, // USD
-          perTokens: 1000,
+          rate: 15.0, // USD
+          perTokens: 1000000,
+        },
+      },
+    },
+    "gpt-4o-mini": {
+      minimumCreditsRequired: 10,
+      context: 128000,
+      tpm: 200000,
+      rpm: -1, // TODO
+      pricing: {
+        markUp: 1.4,
+        input: {
+          rate: 0.15, // USD
+          perTokens: 1000000,
+        },
+        output: {
+          rate: 0.6, // USD
+          perTokens: 1000000,
         },
       },
     },

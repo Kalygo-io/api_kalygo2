@@ -6,12 +6,14 @@ export default function authenticateToken(
   res: Response,
   next: NextFunction
 ) {
-  console.log("authenticating token...");
+  console.log("authenticating !!! token...");
 
   const jwtCookie = req.cookies["jwt"];
-  const token = jwtCookie;
+  const authHeaderCookie = req.headers?.authorization?.split(" ")[1];
 
-  if (token == null) return res.sendStatus(401);
+  if (jwtCookie == null && authHeaderCookie == null) return res.sendStatus(401);
+
+  const token = jwtCookie || authHeaderCookie;
 
   jwt.verify(token, process.env.JWT_SECRET!, (err: any, user: any) => {
     if (err) {

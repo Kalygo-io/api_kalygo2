@@ -6,8 +6,17 @@ import { openAiFilePerPage } from "./helpers/customRequestV3Job/variations/openA
 import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
 import { CustomRequestV3OpenAiCustomizations } from "@/types/CustomRequestV3OpenAiCustomizations";
 import { CustomRequestV3ReplicateCustomizations } from "@/types/CustomRequestV3ReplicateCustomizations";
+import { CustomRequestV3AnthropicCustomizations } from "@/types/CustomRequestV3AnthropicCustomizations";
 import { CustomRequestV3Params } from "@/types/CustomRequestV3Params";
-import { supportedOpenAiModels } from "@/config/models";
+import {
+  supportedAnthropicModels,
+  supportedOpenAiModels,
+} from "@/config/models";
+import { SupportedAnthropicModels } from "@/types/SupportedAnthropicModels";
+import { anthropicFileInChunks } from "./helpers/customRequestV3Job/variations/anthropic/fileInChunks";
+import { anthropicFileOverall } from "./helpers/customRequestV3Job/variations/anthropic/fileOverall";
+import { anthropicOverall } from "./helpers/customRequestV3Job/variations/anthropic/overall";
+import { anthropicFilePerPage } from "./helpers/customRequestV3Job/variations/anthropic/filePerPage";
 
 export async function customRequestV3JobLogic(
   params: CustomRequestV3Params,
@@ -30,6 +39,8 @@ export async function customRequestV3JobLogic(
       done(new Error("Invalid Data"));
       return;
     }
+
+    console.log("--- model ---", model);
 
     if (
       [
@@ -90,11 +101,60 @@ export async function customRequestV3JobLogic(
           throw new Error("Unsupported Data Scanning Mode");
       }
     } else if (
-      [
-        "meta/llama-2-70b-chat:02e509c789964a7ea8736978a43525956ef40397be9033abf9fd2badfe68c9e3",
-      ].includes(model)
+      supportedAnthropicModels.includes(model as SupportedAnthropicModels)
     ) {
-      throw new Error("Unsupported Data Scanning Mode");
+      switch (customizations.scanMode) {
+        case ScanningMode.FILE_IN_CHUNKS:
+          anthropicFileInChunks(
+            customizations as CustomRequestV3AnthropicCustomizations,
+            email,
+            file!,
+            job,
+            batchId,
+            locale,
+            done
+          );
+          break;
+
+        case ScanningMode.FILE_OVERALL:
+          anthropicFileOverall(
+            customizations as CustomRequestV3AnthropicCustomizations,
+            email,
+            file!,
+            job,
+            batchId,
+            locale,
+            done
+          );
+          break;
+
+        case ScanningMode.OVERALL:
+          anthropicOverall(
+            customizations as CustomRequestV3AnthropicCustomizations,
+            email,
+            files!,
+            job,
+            batchId,
+            locale,
+            done
+          );
+          break;
+
+        case ScanningMode.FILE_PER_PAGE:
+          anthropicFilePerPage(
+            customizations as CustomRequestV3AnthropicCustomizations,
+            email,
+            file!,
+            job,
+            batchId,
+            locale,
+            done
+          );
+          break;
+
+        default:
+          throw new Error("Unsupported Data Scanning Mode");
+      }
     } else {
       throw new Error("Unsupported Model");
     }

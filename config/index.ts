@@ -122,5 +122,24 @@ export default {
         },
       },
     },
+    anthropic: {
+      "claude-3-5-sonnet-20240620": {
+        minimumCreditsRequired: 100,
+        context: 200000,
+        tpm: 40000,
+        rpm: 50, // TODO
+        pricing: {
+          markUp: 1.5,
+          input: {
+            rate: 3, // USD
+            perTokens: 1000000,
+          },
+          output: {
+            rate: 15, // USD
+            perTokens: 1000000,
+          },
+        },
+      },
+    },
   },
 };

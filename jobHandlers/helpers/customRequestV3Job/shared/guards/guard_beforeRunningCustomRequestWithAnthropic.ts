@@ -1,14 +1,12 @@
 import { stripe } from "@/clients/stripe_client";
 import config from "@/config";
-import { supportedOpenAiModels } from "@/config/models";
+import { supportedAnthropicModels } from "@/config/models";
 import prisma from "@/db/prisma_client";
 import { SupportedAnthropicModels } from "@/types/SupportedAnthropicModels";
-import { SupportedOpenAiModels } from "@/types/SupportedOpenAiModels";
-import { SupportedReplicateModels } from "@/types/SupportedReplicateModels";
 
-export async function guard_beforeRunningCustomRequest(
+export async function guard_beforeRunningCustomRequestWithAnthropic(
   email: string,
-  model: SupportedOpenAiModels | SupportedReplicateModels
+  model: SupportedAnthropicModels
 ) {
   let account = await prisma.account.findFirst({
     where: {
@@ -28,11 +26,9 @@ export async function guard_beforeRunningCustomRequest(
   });
   if (
     customerSearchResults.data[0].id &&
-    (model ===
-      "meta/llama-2-70b-chat:02e509c789964a7ea8736978a43525956ef40397be9033abf9fd2badfe68c9e3" ||
-      supportedOpenAiModels.includes(model)) &&
+    supportedAnthropicModels.includes(model) &&
     (account?.UsageCredits?.amount! >
-      config.models[model].minimumCreditsRequired ||
+      config.models.anthropic[model].minimumCreditsRequired ||
       (account?.CustomRequestCredits?.amount! || 0) > 0)
   ) {
     console.log("passing guard_beforeRunningCustomRequest...");

@@ -1,3 +1,4 @@
+import { CustomRequestV3AnthropicCustomizations } from "./CustomRequestV3AnthropicCustomizations";
 import { CustomRequestV3OpenAiCustomizations } from "./CustomRequestV3OpenAiCustomizations";
 import { CustomRequestV3ReplicateCustomizations } from "./CustomRequestV3ReplicateCustomizations";
 import { SupportedOpenAiModels } from "./SupportedOpenAiModels";
@@ -11,7 +12,8 @@ export type CustomRequestV3Params = {
     | null;
   customizations:
     | CustomRequestV3OpenAiCustomizations
-    | CustomRequestV3ReplicateCustomizations;
+    | CustomRequestV3ReplicateCustomizations
+    | CustomRequestV3AnthropicCustomizations;
   email: string;
   batchId: string;
   locale: string;

@@ -10,4 +10,5 @@ export type CustomRequestV3OpenAiCustomizations = {
   scanMode: ScanningMode;
   model: SupportedOpenAiModels;
   chunkTokenOverlap: number;
+  chunkSize?: string;
 };

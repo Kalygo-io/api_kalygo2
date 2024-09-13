@@ -40,6 +40,7 @@ export async function customRequestV3(
               },
               scanMode: req.body.mode,
               model: req.body.model,
+              chunkSize: req.body.chunkSize,
             },
             // @ts-ignore
             email: req.user.email,

@@ -55,6 +55,7 @@ export async function openAiOverall(
       originalName: string;
     }[] = await convertFilesToTextFormat(files);
     p("splitting text.*.*.");
+    p("<--- customizations.chunkSize --->", customizations.chunkSize);
     let completionForEachFile: {
       fileName: string;
       finalCompletionForFile: string;
@@ -82,14 +83,16 @@ DATA:`;
         while (
           !isChunkValidForModelContext(
             `${promptPrefix} ${chunks[0]}`,
-            CONFIG.models[model].context,
+            (customizations.chunkSize && parseInt(customizations.chunkSize)) ||
+              CONFIG.models[model].context, // FOR CONTROLLING CHUNK SIZE
             encoder
           )
         ) {
           chunks = breakOffMaxChunkForContext(
             promptPrefix,
             chunks,
-            CONFIG.models[model].context,
+            (customizations.chunkSize && parseInt(customizations.chunkSize)) ||
+              CONFIG.models[model].context, // FOR CONTROLLING CHUNK SIZE
             encoder
           );
         }
@@ -145,7 +148,21 @@ DATA:`;
             encoder
           );
           // prettier-ignore
-          job.progress(job.progress() + (tokenAccumWithoutPrefixForFile - chunkTokenOverlap)  / totalTokenCountInFile * (90 / files.length));
+          p("PROOOOGRESSSS");
+          p("job.progress()", job.progress());
+          job.progress(
+            job.progress() +
+              ((tokenAccumWithoutPrefixForFile - (chunkTokenOverlap || 0)) /
+                totalTokenCountInFile) *
+                (90 / files.length)
+          );
+
+          p("tokenAccumWithoutPrefixForFile", tokenAccumWithoutPrefixForFile);
+          p("chunkTokenOverlap", chunkTokenOverlap || 0);
+          p("totalTokenCountInFile", totalTokenCountInFile);
+          p("files.length", files.length);
+          p("PROOOOGRESSSS");
+
           p("progress:", job.progress());
           chunks[1] = overlapSegment + chunks[1];
         } else {
